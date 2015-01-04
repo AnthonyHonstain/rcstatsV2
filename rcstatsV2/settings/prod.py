@@ -27,3 +27,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 # ---------------------------------------------------------------------------
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+# Not going to use the default key - we expect this to come from heroku side,
+# we are going to use a blank since there should be no key in the repo
+#     http://stackoverflow.com/questions/21683846/unable-to-access-heroku-config-vars-from-django-settings-py
+#     https://devcenter.heroku.com/articles/buildpack-api
+SECRET_KEY = os.environ.get('SECRET_KEY')
