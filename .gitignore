@@ -19,7 +19,7 @@ celerybeat-schedule
 celeryev.pid
 
 # Settings
-rcstatsV2/settings_secret.py
+rcstatsV2/settings/settings_secret.py
 
 # Eclipse project
 .project
