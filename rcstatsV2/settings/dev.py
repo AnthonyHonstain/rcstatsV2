@@ -45,3 +45,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+# Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'rcstatsV2', 'templates')]

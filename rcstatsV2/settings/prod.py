@@ -36,3 +36,6 @@ STATICFILES_DIRS = (
 #     http://stackoverflow.com/questions/21683846/unable-to-access-heroku-config-vars-from-django-settings-py
 #     https://devcenter.heroku.com/articles/buildpack-api
 SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'rcstatsV2', 'templates')]
