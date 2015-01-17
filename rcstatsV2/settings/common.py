@@ -15,15 +15,29 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Application definition
 
-INSTALLED_APPS = (
+DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'django.contrib.sites',
 )
+
+THIRD_PARTY_APPS = (
+    # django-userena - account management app
+    'userena',
+    'guardian',
+    'easy_thumbnails',
+)
+
+LOCAL_APPS = (
+    'core',
+    'accounts',
+)
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,3 +66,26 @@ USE_L10N = True
 
 USE_TZ = True
 
+SITE_NAME = 'RC-STATS'
+
+# For the sites framework https://docs.djangoproject.com/en/1.7/ref/contrib/sites/#enabling-the-sites-framework
+SITE_ID = 1
+
+# ---------------------------------------------------------------------------
+# Userena Registration
+# ---------------------------------------------------------------------------
+# http://docs.django-userena.org/en/latest/installation.html
+# http://docs.django-userena.org/en/latest/installation.html#id2
+ANONYMOUS_USER_ID = -1
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
+LOGIN_URL = '/accounts/signin/'
+LOGOUT_URL = '/accounts/signout/'
+
+AUTHENTICATION_BACKENDS = (
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+# ---------------------------------------------------------------------------
