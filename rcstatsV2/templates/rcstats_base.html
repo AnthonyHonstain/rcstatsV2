@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block description %}{% endblock %}">
-    <link rel="icon" href="static/img/favicon.ico">
+    <link rel="icon" href="/static/img/favicon.ico">
     <title>
     {% block title %}
     {% endblock %}
     </title>
 
     <!-- Bootstrap -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="static/css/custom.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,24 +33,53 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">
-            <img style="max-width:100px; margin-top: -7px;" src="static/img/logo_white.png"/>
+          <a class="navbar-brand" href="/">
+            <img style="max-width:100px; margin-top: -7px;" src="/static/img/logo_white.png"/>
           </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
+
+        {% if user.is_authenticated %}
+
+        <div class="navbar-form navbar-right">
+          <div class="form-group">
+
+            <a class="btn btn-success"
+              href="{% url 'userena_profile_detail' user.username %}">
+              <img class="img-rounded" src="{{ user.my_profile.get_mugshot_url }}" width="20" />
+
+              {% if user.first_name %}
+                {{ user.first_name }} {{ user.last_name }}
+              {% else %}
+                {{ user.username }}
+              {% endif %}
+            </a> <a class="btn btn-warning" href="{% url 'userena_signout' %}">Signout</a>
+          </div>
+        </div>
+
+        {% else %}
+        <div class="navbar-form navbar-right">
+
+          <form action="{% url 'userena_signin' %}" method="post">
+            {% csrf_token %}
             <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
+              <input type="text" id="id_identification" name="identification" placeholder="Email/Username" class="form-control">
             </div>
             <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
+              <input type="password" id="id_password" name="password" placeholder="Password" class="form-control">
             </div>
+
             <button type="submit" class="btn btn-success">Sign in</button>
           </form>
+        </div>
+        <div class="navbar-form navbar-right">
+          <a class="btn btn-warning" href="{% url 'userena_signup' %}">Register</a>
+        </div>
+        {% endif %}
+
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
-
 
     {% block content %}
 
@@ -58,13 +87,15 @@
 
 
     <hr>
+    <div class="container">
     <footer>
       <p>Anthony Honstain 2015</p>
     </footer>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="static/js/jquery-1.11.2.min.js"></script>
+    <script src="/static/js/jquery-1.11.2.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
   </body>
 </html>
