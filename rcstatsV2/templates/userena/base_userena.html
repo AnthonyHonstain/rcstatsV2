@@ -1,0 +1,19 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div id="body">
+    {% block body %}
+      <div class="content_title">
+        {% block userena_content_title %}{% endblock %}
+      </div>
+      <div class="content">
+        {% block userena_content %}{% endblock %}
+      </div>
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}
+

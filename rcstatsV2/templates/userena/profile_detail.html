@@ -1,11 +1,12 @@
-{% extends "rcstats_base.html" %}
+{% extends 'userena/base_userena.html' %}
 {% load i18n %}
 {% load url from future %}
 
 {% block title %}{% blocktrans with profile.user.username as username %}{{ username }}'s profile.{% endblocktrans %}{% endblock %}
+{% block userena_content_title %}<h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}){% endif %}</h2>{% endblock %}
 
-{% block content %}
-  <div class="container">
+{% block userena_content %}
+  <div class="white-box">
     {% block profile_navigation %}
       {% comment %}Dirty hack. Will use django-guardian in the future.{% endcomment %}
       {% if user.username == profile.user.username %}
@@ -22,7 +23,7 @@
 
     <div id="details">
       {% block profile_details %}
-        <img class="mugshot img-rounded" src="{{ profile.get_mugshot_url }}" alt="{% trans "Your mugshot" %}" />
+        <img class="mugshot" src="{{ profile.get_mugshot_url }}" alt="{% trans "Your mugshot" %}" />
         <dl>
           {% block profile_definition_list %}
             {% if profile.user.get_full_name %}
