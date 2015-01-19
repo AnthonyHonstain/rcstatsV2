@@ -26,7 +26,7 @@ class RacerIdAdmin(admin.ModelAdmin):
 
 
 class SupportedTrackNameAdmin(admin.ModelAdmin):
-    list_display = ('trackkey', 'trackurl')
+    list_display = ('trackkey',)
 
 
 class OfficialClassNamesAdmin(admin.ModelAdmin):

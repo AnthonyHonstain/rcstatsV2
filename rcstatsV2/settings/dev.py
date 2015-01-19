@@ -12,6 +12,13 @@ from rcstatsV2.settings.settings_secret import *
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
+# Show stack trace for warning - http://stackoverflow.com/questions/11557119/django-how-to-get-stack-traces-for-runtime-warnings
+import warnings
+warnings.filterwarnings(
+    'error', r"DateTimeField .* received a naive datetime",
+    RuntimeWarning, r'django\.db\.models\.fields')
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -45,6 +52,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+# Location for files uploaded by the user.
+MEDIA_USER_UPLOAD = os.path.join(BASE_DIR, "track_uploads")
 
 # Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'core', 'templates'),

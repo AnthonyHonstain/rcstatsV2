@@ -20,10 +20,6 @@ class SupportedTrackName(models.Model):
     (especially information that is not stored in race results).
     '''
     trackkey = models.ForeignKey(TrackName)
-    trackurl = models.URLField()
-    region = models.CharField(max_length=200) # TODO - This might be better as an enum?
-    # I am going to pass on this for now:
-    # trackimage = models.FilePathField(path="//home/asymptote/Desktop/RCRacePerformance/rcdata_media/images")
 
 
 # A single racer, their name (probably not going be be unique by default)

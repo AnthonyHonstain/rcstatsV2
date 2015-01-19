@@ -1,0 +1,39 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+RC-Stats - Upload
+{% endblock %}
+
+{% block description %}
+RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Easy Upload Race Results</h1>
+  <h3>Upload race results from the scoring system.</h3>
+
+  <h2>Please select a RCScoringPro .txt file to upload.</h2>
+  <h2>{{ error_status }}</h2>
+
+  <form action="{% url 'easyupload_fileselect' track.trackkey.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file" multiple />
+    </br>
+    <input type="submit" name="submit" value="Upload" />
+  </form>
+  {{ form.errors }}
+  {{ form.non_field_errors }}
+
+
+  </br>
+  </br>
+  </br>
+
+  <h4>This should be the file created by RCScoringPro that contains the results and lap times.</h4>
+  <div class="message-box yellow">
+    <h4>WARNING</h4>
+    <p>This is an important step, it must be a text file in the correct format. Do not try to upload a PDF or similar format (do not try to paste pdf results into a text file, that will not work).</p>
+  </div>
+</div>
+{% endblock %}

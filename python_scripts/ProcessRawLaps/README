@@ -1,0 +1,6 @@
+The scripts contained here are primarily for uploading results or
+modifying race data in the DB.
+
+Overview
+    singlerace.py and rcscoringprotxtparser* are the parsers used to read
+        the scoring txt file.
