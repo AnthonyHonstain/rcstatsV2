@@ -15,7 +15,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
   <h3>Select a track you want to upload race results for:</h3>
   {% if track_list %}
   {% for track in track_list %}
-  <a class="btn btn-lg btn-success" href="{% url 'easyupload_fileselect' track.trackkey.id %}">{{ track.trackkey.trackname }}</a>
+  <a class="btn btn-lg btn-success" href="{% url 'easyupload_fileselect' track.id %}">{{ track.trackkey.trackname }}</a>
   </br>
   {% endfor %}
   {% else %}
