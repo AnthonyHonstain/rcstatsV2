@@ -3,9 +3,9 @@ from rcstatsV2.settings.common import *
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True if os.environ.get('DJANGO_DEBUG', None) == '1' else False
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True if os.environ.get('DJANGO_DEBUG', None) == '1' else False
 
 # ---------------------------------------------------------------------------
 # Following the heroku instructions - https://devcenter.heroku.com/articles/getting-started-with-django
