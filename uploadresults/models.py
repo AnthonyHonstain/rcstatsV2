@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from core.models import SingleRaceDetails, TrackName
+from core.models import SingleRaceDetails, TrackName, SupportedTrackName
 
 
 class EasyUploaderPrimaryRecord(models.Model):
@@ -37,6 +37,15 @@ class EasyUploadRecord(models.Model):
             str(self.uploadstart) + "|" +\
             str(self.processed) + "|" +\
             str(self.errorenum)
+
+
+class SingleRaceData(models.Model):
+    owner = models.ForeignKey('auth.User', related_name='snippets')
+    ip = models.IPAddressField()
+    trackname = models.ForeignKey(TrackName)
+    filename = models.CharField(max_length=200)
+    data = models.TextField('The contents of the race file.', null=False)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class EasyUploadedRaces(models.Model):

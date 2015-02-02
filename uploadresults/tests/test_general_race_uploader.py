@@ -1,7 +1,5 @@
 '''
-Created on April 2012
-
-Updated this to use the new easy race uploader.
+Created on Feb 2015
 
 @author: Anthony Honstain
 '''
@@ -113,11 +111,17 @@ Golf, Jon            #7         17         6:16.439         18.222            13
   6:14.6  6:11.9  6:07.1  6:02.4  6:05.1  6:03.3  6:16.4
     '''
 
-    racelist_to_upload = [{'filename': 'upload1', 'filecontent': singlerace_testfile1},
-                          {'filename': 'upload2', 'filecontent': singlerace_testfile2}]
+    class race_upload_record():
+        def __init__(self, filename, filecontent):
+            self.filename = None
+            self.filecontent = None
+            self.easy_uploader_primary_record = None
+
+    racelist_to_upload = [race_upload_record('upload1', singlerace_testfile1),
+                          race_upload_record('upload2', singlerace_testfile2)]
 
     def setUp(self):
-        uploaduser = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
@@ -129,43 +133,16 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         sup_trackname_obj.save()
         self.supported_trackname_obj = sup_trackname_obj
 
-        # Need to fake the file upload.
-        #     NEW - we are going to assume they were all uploaded at the same time.
-        #
-        #     Make sure its is created in the right location
-        #     Make sure there is a record of its upload in the logs.
-        utcnow = datetime.datetime.utcnow()
-        utcnow = utcnow.replace(tzinfo=pytz.utc)
-        primary_record = models.EasyUploaderPrimaryRecord(user=uploaduser,
-                                                          ip="1.1.1.1",
-                                                          filecount=len(self.racelist_to_upload),
-                                                          filecountsucceed=0,
-                                                          uploadstart=utcnow,
-                                                          trackname=trackname_obj)
-        primary_record.save()
-        self.primary_record = primary_record
-
         for upload in self.racelist_to_upload:
+            upload_data = {
+                "trackname": trackname_obj.id,
+                "filename": upload.filename,
+                "data": upload.filecontent}
+            response = self.client.post('/upload/single_race_upload/', upload_data)
+            self.assertEqual(response.status_code, 201)
 
-            filename = upload['filename']
-            with open(os.path.join(settings.MEDIA_USER_UPLOAD, filename), "w") as f:
-                f.write(upload['filecontent'])
-
-            log_entry = models.EasyUploadRecord(uploadrecord=primary_record,
-                                                origfilename="NO_origional_filename",
-                                                ip="1.1.1.1",
-                                                user=uploaduser,
-                                                filesize="56",
-                                                processed=False,
-                                                filename=filename)
-            log_entry.save()
-
-        response = self.client.get("/upload/easyupload_fileselect/" + str(trackname_obj.id) + "/")
-        self.assertEqual(response.status_code, 200)
-
-        # This starts the processing, bulk of the work is done here.
-        response = self.client.post('/upload/easyupload_results/' + str(primary_record.id) + '/')
-        self.assertEqual(response.status_code, 200)
+            response = self.client.get("/upload/single_race_upload_detail/" + str(response.data['pk']) + "/")
+            self.assertEqual(response.status_code, 200)
         # The race has now been uploaded into the system.
 
     def test_multipleraces_upload(self):
@@ -246,11 +223,11 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # ====================================================
         # Validate Upload Records
         # ====================================================
-        primary_record = models.EasyUploaderPrimaryRecord.objects.get(pk=self.primary_record.id)
-        self.assertEqual(primary_record.filecount, 2)
-        self.assertEqual(primary_record.filecountsucceed, 2)
-        self.assert_(primary_record.uploadfinish)
-
-        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record)
-        for record in records:
-            self.assert_(record.processed)
+#         primary_record = models.EasyUploaderPrimaryRecord.objects.get(pk=self.primary_record.id)
+#         self.assertEqual(primary_record.filecount, 1)
+#         self.assertEqual(primary_record.filecountsucceed, 1)
+#         self.assert_(primary_record.uploadfinish)
+#
+#         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record)
+#         for record in records:
+#             self.assert_(record.processed)

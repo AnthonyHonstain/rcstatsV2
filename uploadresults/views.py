@@ -31,10 +31,10 @@ from django import forms
 from django.utils import timezone
 
 from django.conf import settings
-from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces
+from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces, SingleRaceData
 from uploadresults.process_singlerace import process_singlerace, FileAlreadyUploadedError
 
-from core.models import SupportedTrackName
+from core.models import SupportedTrackName, TrackName
 
 from python_scripts.ProcessRawLaps.rcscoringprotxtparser import RCScoringProTXTParser
 
@@ -45,6 +45,107 @@ import re
 import sys
 import traceback
 
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import mixins
+from rest_framework import generics
+from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
+
+from rest_framework import permissions
+
+
+class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):
+    '''
+    API endpoint that allows EasyUploaderPrimaryRecord to be viewed.
+    '''
+    queryset = EasyUploaderPrimaryRecord.objects.all()
+    serializer_class = EasyUploaderPrimaryRecordSerializer
+
+
+class EasyUploadRecordViewSet(viewsets.ReadOnlyModelViewSet):
+    '''
+    API endpoint that allows EasyUploadRecord to be viewed.
+    '''
+    queryset = EasyUploadRecord.objects.all()
+    serializer_class = EasyUploadRecordSerializer
+
+
+class TrackNameList(viewsets.ReadOnlyModelViewSet):
+    queryset = TrackName.objects.all()
+    serializer_class = TrackNameSerializer
+
+
+from rest_framework.authentication import SessionAuthentication
+
+
+class UnsafeSessionAuthentication(SessionAuthentication):
+
+    def authenticate(self, request):
+        http_request = request._request
+        user = getattr(http_request, 'user', None)
+
+        if not user or not user.is_active:
+            return None
+
+        return (user, None)
+
+
+class SingleRaceDataCreate(generics.CreateAPIView):
+    '''
+    API endpoint that supports uploading a single race at a time.
+    '''
+    authentication_classes = (UnsafeSessionAuthentication,)
+    queryset = SingleRaceData.objects.all()
+    serializer_class = SingleRaceUploadSerializer
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        ip = "127.0.0.1"
+        if 'HTTP_X_FORWARDED_FOR' in self.request.META:
+            ip = self.request.META['HTTP_X_FORWARDED_FOR']
+        single_race_data = serializer.save(owner=self.request.user, ip=ip)
+
+        # First create a record for this upload action
+        primary_record = EasyUploaderPrimaryRecord(user=self.request.user,
+                                                   ip=ip,
+                                                   filecount=1,
+                                                   filecountsucceed=0,
+                                                   uploadstart=timezone.now(),
+                                                   trackname=single_race_data.trackname)
+        primary_record.save()
+
+        md5 = hashlib.md5()
+        md5.update(single_race_data.data.encode('utf-8'))
+        filemd5 = md5.hexdigest()
+
+        log_entry = EasyUploadRecord(uploadrecord=primary_record,
+                                     origfilename=single_race_data.filename,
+                                     filename=None,
+                                     ip=ip,
+                                     user=self.request.user,
+                                     filesize=sys.getsizeof(single_race_data.data),
+                                     filemd5=filemd5,
+                                     uploadstart=timezone.now(),
+                                     processed=False)
+        log_entry.save()
+
+
+class SingleRaceDataDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = SingleRaceData.objects.all()
+    serializer_class = SingleRaceUploadSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+# ----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
 
 class UploadFileForm(forms.Form):
     #title = forms.CharField(max_length=50)
