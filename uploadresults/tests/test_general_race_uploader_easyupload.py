@@ -24,7 +24,7 @@ from core.models import (
     RacerId)
 
 
-class GeneralRaceUploaderEasyUpload(TestCase):
+class GeneralRaceUploader(TestCase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 

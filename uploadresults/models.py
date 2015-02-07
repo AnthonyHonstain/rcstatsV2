@@ -40,10 +40,14 @@ class EasyUploadRecord(models.Model):
 
 
 class SingleRaceData(models.Model):
-    owner = models.ForeignKey('auth.User', related_name='snippets')
+    """
+    I think in the future we could probably condense this into the EasyUploadRecord
+    """
+    uploadrecord = models.ForeignKey(EasyUploaderPrimaryRecord)
+    owner = models.ForeignKey('auth.User')
     ip = models.IPAddressField()
-    trackname = models.ForeignKey(TrackName)
-    filename = models.CharField(max_length=200)
+    trackname = models.ForeignKey(TrackName, null=False)
+    filename = models.CharField(max_length=200, null=False)
     data = models.TextField('The contents of the race file.', null=False)
     created = models.DateTimeField(auto_now_add=True)
 

@@ -32,11 +32,15 @@ class TrackNameSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SingleRaceUploadSerializer(serializers.HyperlinkedModelSerializer):
-    pk = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    uploadrecord = serializers.ReadOnlyField(source='uploadrecord.id')
     owner = serializers.ReadOnlyField(source='owner.username')
     ip = serializers.ReadOnlyField()
     trackname = serializers.PrimaryKeyRelatedField(queryset=TrackName.objects.all())
+    filename = serializers.CharField(allow_blank=False)
+    data = serializers.CharField(allow_blank=False, min_length=10)
 
     class Meta:
         model = models.SingleRaceData
-        fields = ('pk', 'owner', 'ip', 'trackname', 'filename', 'data')
+        fields = ('id', 'uploadrecord', 'owner', 'ip', 'trackname', 'filename', 'data')
+

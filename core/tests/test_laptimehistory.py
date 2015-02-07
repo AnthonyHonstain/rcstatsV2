@@ -5,7 +5,7 @@ Created on Aug 19, 2012
 '''
 from django.test import TestCase
 from core.models import LapTimes, SingleRaceDetails, RacerId
-import uploadresults.tests.test_general_race_uploader as uploadresultstests
+import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 
 from core.laptimehistory import _get_lap_time_history, _get_laptime_median
 

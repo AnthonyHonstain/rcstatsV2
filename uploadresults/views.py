@@ -109,7 +109,8 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         ip = "127.0.0.1"
         if 'HTTP_X_FORWARDED_FOR' in self.request.META:
             ip = self.request.META['HTTP_X_FORWARDED_FOR']
-        single_race_data = serializer.save(owner=self.request.user, ip=ip)
+
+        trackname = TrackName.objects.get(pk=serializer.validated_data['trackname'].id)
 
         # First create a record for this upload action
         primary_record = EasyUploaderPrimaryRecord(user=self.request.user,
@@ -117,8 +118,10 @@ class SingleRaceDataCreate(generics.CreateAPIView):
                                                    filecount=1,
                                                    filecountsucceed=0,
                                                    uploadstart=timezone.now(),
-                                                   trackname=single_race_data.trackname)
+                                                   trackname=trackname)
         primary_record.save()
+
+        single_race_data = serializer.save(uploadrecord=primary_record, owner=self.request.user, ip=ip)
 
         md5 = hashlib.md5()
         md5.update(single_race_data.data.encode('utf-8'))

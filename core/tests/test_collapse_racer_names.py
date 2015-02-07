@@ -11,7 +11,7 @@ from core.models import (
     SingleRaceResults,
     RacerId)
 
-import uploadresults.tests.test_general_race_uploader as uploadresultstests
+import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 
 from core.database_cleanup import _ProcessRacerId
 

@@ -7,7 +7,7 @@ Created on May 2013
 from core.models import LapTimes, SingleRaceDetails, RacerId
 
 import uploadresults.models as models
-from uploadresults.tests.test_general_race_uploader import GeneralRaceUploader
+from uploadresults.tests.test_general_race_uploader_easyupload import GeneralRaceUploader
 
 
 class BadRaceFilesTest(GeneralRaceUploader):

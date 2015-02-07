@@ -17,13 +17,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SingleRaceData',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('ip', models.IPAddressField()),
                 ('filename', models.CharField(max_length=200)),
                 ('data', models.TextField(verbose_name='The contents of the race file.')),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('owner', models.ForeignKey(related_name='snippets', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('trackname', models.ForeignKey(to='core.TrackName')),
+                ('uploadrecord', models.ForeignKey(to='uploadresults.EasyUploaderPrimaryRecord')),
             ],
             options={
             },
