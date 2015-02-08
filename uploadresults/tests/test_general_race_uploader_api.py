@@ -154,7 +154,6 @@ Golf, Jon            #7         17         6:16.439         18.222            13
             self.assertEqual(response.status_code, 200)
         # The race has now been uploaded into the system.
 
-
     def test(self):
         pass
 
@@ -172,7 +171,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                 pk=race_to_upload.easy_uploader_primary_record_pk)
 
 #             self.assertEqual(primary_record.filecount, 1)
-#             self.assertEqual(primary_record.filecountsucceed, 0)
+#             self.assertEqual(primary_rord.filecountsucceed, 0)
 #             # TODO - enable after refactor starts
 # #             self.assert_(primary_record.uploadfinish)
 #

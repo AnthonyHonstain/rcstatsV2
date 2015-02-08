@@ -8,8 +8,8 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_auto_20150118_1943'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('core', '0002_auto_20150118_1943'),
         ('uploadresults', '0001_initial'),
     ]
 
@@ -17,14 +17,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SingleRaceData',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('ip', models.IPAddressField()),
                 ('filename', models.CharField(max_length=200)),
                 ('data', models.TextField(verbose_name='The contents of the race file.')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('primaryrecord', models.ForeignKey(to='uploadresults.EasyUploaderPrimaryRecord')),
                 ('trackname', models.ForeignKey(to='core.TrackName')),
-                ('uploadrecord', models.ForeignKey(to='uploadresults.EasyUploaderPrimaryRecord')),
+                ('uploadrecord', models.ForeignKey(to='uploadresults.EasyUploadRecord')),
             ],
             options={
             },

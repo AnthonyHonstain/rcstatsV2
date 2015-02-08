@@ -16,7 +16,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
   <h2>Please select a RCScoringPro .txt file to upload.</h2>
   <h2>{{ error_status }}</h2>
 
-  <form action="{% url 'easyupload_fileselect' track.trackkey.id %}" method="post" enctype="multipart/form-data">
+  <form action="{% url 'easyupload_fileselect' supported_track.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="file" multiple />
     </br>

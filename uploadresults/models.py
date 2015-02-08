@@ -16,6 +16,11 @@ class EasyUploaderPrimaryRecord(models.Model):
     uploadfinish = models.DateTimeField('Datetime the upload was completed.', null=True)
     trackname = models.ForeignKey(TrackName, null=True)  # In the future I can see letting you set the track at the next page.
 
+    def __str__(self):
+        return '<EasyUploadPrimaryRecord id:' + str(self.id) + "|" +\
+            str(self.user) + "|" +\
+            str(self.trackname) + '>'
+
 
 class EasyUploadRecord(models.Model):
     uploadrecord = models.ForeignKey(EasyUploaderPrimaryRecord)
@@ -32,24 +37,28 @@ class EasyUploadRecord(models.Model):
     errorenum = models.IntegerField(null=True)
 
     def __str__(self):
-        return str(self.filename) + " | " +\
-            str(self.user) + " | " +\
+        return '<EasyUploadRecord id:' + str(self.id) + "|" +\
+            str(self.filename) + "|" +\
             str(self.uploadstart) + "|" +\
             str(self.processed) + "|" +\
-            str(self.errorenum)
+            str(self.errorenum) + '>'
 
 
 class SingleRaceData(models.Model):
     """
     I think in the future we could probably condense this into the EasyUploadRecord
     """
-    uploadrecord = models.ForeignKey(EasyUploaderPrimaryRecord)
+    primaryrecord = models.ForeignKey(EasyUploaderPrimaryRecord)
+    uploadrecord = models.ForeignKey(EasyUploadRecord)
     owner = models.ForeignKey('auth.User')
     ip = models.IPAddressField()
     trackname = models.ForeignKey(TrackName, null=False)
     filename = models.CharField(max_length=200, null=False)
     data = models.TextField('The contents of the race file.', null=False)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '<SingleRaceData id:' + str(self.id) + '>'
 
 
 class EasyUploadedRaces(models.Model):
