@@ -145,6 +145,69 @@ class SingleRaceDataCreate(generics.CreateAPIView):
                         owner=self.request.user,
                         ip=ip)
 
+        # ----------------------------------------------------------
+        # WARNING - this is a shameless copy paste from easyupload_results
+        # TODO - REFACTOR ALL THIS STUFF and break out some unit tests for
+        # the new methods (good integration coverage already).
+        # ----------------------------------------------------------
+
+        upload_errors = [
+            'Pass',
+            'Invalid filename - it is possible the upload to the server drive failed',
+            'Unable to parse the file - likely is has incompatible format',
+            'No races found in the file',
+            'There was no trackname/header set',
+            'Not all races in the file had the same trackname/header',
+            'This race has ALREADY been uploaded.',
+            'Unknown error processing the file.']
+
+        single_race_data_records = SingleRaceData.objects.filter(primaryrecord=primary_record).order_by('id')
+
+        # TODO - log what records we are planning to start on.
+        # print('single_race_data_records', single_race_data_records)
+
+        resultpage_list = []
+
+        # =======================================================================
+        # Primary loop - process each file uploaded.
+        #     Note we keep this as a separate lookup so that we get them all saved to disk before validation
+        # =======================================================================
+        for single_race_data in single_race_data_records:
+            resultpage_prevalidated = _initial_validation_of_uploaded_file(single_race_data)
+            if resultpage_prevalidated:
+                resultpage_list.append(ResultPage(single_race_data, single_race_data.uploadrecord, resultpage_prevalidated))
+
+        for result_page in resultpage_list:
+            result_page.upload_record.uploadstart = timezone.now()
+            result_page.upload_record.save()
+
+            # DATA RESTORATION - This is to hopefully simplify restoring data in the event of
+            # an emergency (all that would be needed would be these text files).
+            first_trackname_on_page = result_page.parsed_races[0].trackName
+            _modify_trackname(single_race_data, first_trackname_on_page, trackname.trackname)
+
+            # Short term fix - set the trackname here in case in the future we want to break it out
+            result_page.upload_record.trackname = trackname
+
+            _final_validation_and_upload(result_page)
+
+            # Set all the error messages to display
+            if result_page.upload_record.errorenum:
+                result_page.error_message = upload_errors[result_page.upload_record.errorenum]
+            else:
+                result_page.upload_time = str(result_page.upload_record.uploadfinish - result_page.upload_record.uploadstart)
+
+        # TODO - maybe save another DB hit if we were a little smarter with our data structures
+        # through this upload process.
+        upload_records = EasyUploadRecord.objects.filter(uploadrecord=primary_record).order_by('id')
+        error_list = [x.errorenum for x in upload_records if x.errorenum]  # Just want to know if any other errors occured.
+        fail_count = len(error_list)
+
+        # Need to record the finals stats on the upload.
+        primary_record.uploadfinish = timezone.now()
+        primary_record.filecountsucceed = primary_record.filecount - fail_count
+        primary_record.save()
+
 
 class SingleRaceDataDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = SingleRaceData.objects.all()
