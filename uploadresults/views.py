@@ -36,7 +36,7 @@ from uploadresults.process_singlerace import process_singlerace, FileAlreadyUplo
 
 from core.models import SupportedTrackName, TrackName
 
-from python_scripts.ProcessRawLaps.rcscoringprotxtparser import RCScoringProTXTParser
+from uploadresults.rcscoringprotxtparser import RCScoringProTXTParser
 
 import hashlib
 import io
