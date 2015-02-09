@@ -14,6 +14,7 @@ import os
 import pytz
 
 import uploadresults.models as models
+from uploadresults import views
 
 from core.models import (
     LapTimes,
@@ -28,7 +29,7 @@ class GeneralRaceUploader(TestCase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 
-                   TACOMA R/C RACEWAY
+                   TACOMA R/C RACEWAY FridayNight
 
 MODIFIED BUGGY A Main                                         Round# 3, Race# 2
 
@@ -75,7 +76,7 @@ Echo, Jon            #1          1           35.952         35.952
 
     singlerace_testfile2 = '''Scoring Software by www.RCScoringPro.com                9:21:34 PM  08/07/2012
 
-                     TACOMA R/C RACEWAY
+                     TACOMA R/C RACEWAY FridayNight
 
 MODIFIED BUGGY A Main                                            Round# 3, Race# 1
 
@@ -129,6 +130,8 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         sup_trackname_obj.save()
         self.supported_trackname_obj = sup_trackname_obj
 
+        test_ip = "1.1.1.1"
+
         # Need to fake the file upload.
         #     NEW - we are going to assume they were all uploaded at the same time.
         #
@@ -145,22 +148,29 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         primary_record.save()
         self.primary_record = primary_record
 
+        class FakeInMemoryUploadedFile():
+            # https://docs.djangoproject.com/en/1.7/ref/files/uploads/
+            def __init__(self, filename, data):
+                self.name = filename
+                self.data = data
+                self.size = "56"
+
+            def chunks(self):
+                # http://stackoverflow.com/questions/606191/convert-bytes-to-a-python-string
+                return [self.data.encode('utf8')]
+
         for upload in self.racelist_to_upload:
+            # TODO - this is NOT good testing, I really should have more
+            # unit test coverage on these individual methods, and actually
+            # test that user upload works (not just the backend).
+            views._process_inmemmory_file(
+                primary_record,
+                test_ip,
+                trackname_obj,
+                uploaduser,
+                FakeInMemoryUploadedFile(upload['filename'], upload['filecontent']))
 
-            filename = upload['filename']
-            with open(os.path.join(settings.MEDIA_USER_UPLOAD, filename), "w") as f:
-                f.write(upload['filecontent'])
-
-            log_entry = models.EasyUploadRecord(uploadrecord=primary_record,
-                                                origfilename="NO_origional_filename",
-                                                ip="1.1.1.1",
-                                                user=uploaduser,
-                                                filesize="56",
-                                                processed=False,
-                                                filename=filename)
-            log_entry.save()
-
-        response = self.client.get("/upload/easyupload_fileselect/" + str(trackname_obj.id) + "/")
+        response = self.client.get("/upload/easyupload_fileselect/" + str(sup_trackname_obj.id) + "/")
         self.assertEqual(response.status_code, 200)
 
         # This starts the processing, bulk of the work is done here.

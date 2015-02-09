@@ -44,7 +44,7 @@ ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
      27/     28/     25/     29/     26/     26/     26/     27/     27/     25/
   8:04.7  8:00.5  8:07.7  8:08.6  8:14.3  8:10.1  8:01.7  8:04.4  8:15.2  8:13.1
 '''
-from python_scripts.ProcessRawLaps.singlerace import SingleRace
+from uploadresults.singlerace import SingleRace
 import re
 
 

@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = (
     'userena',
     'guardian',
     'easy_thumbnails',
+    'rest_framework',
 )
 
 LOCAL_APPS = (
@@ -90,3 +91,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 # ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Django Rest Framework - http://www.django-rest-framework.org/tutorial/quickstart/
+# ---------------------------------------------------------------------------
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'PAGINATE_BY': 10
+}

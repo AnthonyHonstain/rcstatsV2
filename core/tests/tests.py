@@ -97,23 +97,25 @@ class SingleRace(TestCase):
                                                                   mainevent=1)
 
         self.results = []
-        result0 = models.SingleRaceResults.objects.create(id=1,
-                                 raceid=self.singlerace,
-                                 racerid=self.racer0,
-                                 carnum=2,
-                                 lapcount=28,
-                                 racetime=datetime.time(second=20),
-                                 fastlap="16.939",
-                                 finalpos=1)
+        result0 = models.SingleRaceResults.objects.create(
+            id=1,
+            raceid=self.singlerace,
+            racerid=self.racer0,
+            carnum=2,
+            lapcount=28,
+            racetime=datetime.time(second=20),
+            fastlap="16.939",
+            finalpos=1)
 
-        result1 = models.SingleRaceResults.objects.create(id=2,
-                                 raceid=self.singlerace,
-                                 racerid=self.racer1,
-                                 carnum=1,
-                                 lapcount=27,
-                                 racetime=datetime.time(second=20),
-                                 fastlap="16.900",
-                                 finalpos=2)
+        result1 = models.SingleRaceResults.objects.create(
+            id=2,
+            raceid=self.singlerace,
+            racerid=self.racer1,
+            carnum=1,
+            lapcount=27,
+            racetime=datetime.time(second=20),
+            fastlap="16.900",
+            finalpos=2)
         self.results.append(result0)
         self.results.append(result1)
 
@@ -125,12 +127,13 @@ class SingleRace(TestCase):
 
         lapcount = 0
         for lap in prepared_laps:
-            racer0_lap = models.LapTimes.objects.create(id=lapid,
-                            raceid=self.singlerace,
-                            racerid=self.racer0,
-                            racelap=lapcount,
-                            raceposition=1,
-                            racelaptime=float(lap))
+            racer0_lap = models.LapTimes.objects.create(
+                id=lapid,
+                raceid=self.singlerace,
+                racerid=self.racer0,
+                racelap=lapcount,
+                raceposition=1,
+                racelaptime=float(lap))
             self.racer0_laps.append(racer0_lap)
             lapcount += 1
             lapid += 1
@@ -142,16 +145,16 @@ class SingleRace(TestCase):
 
         lapcount = 0
         for lap in prepared_laps:
-            racer1_lap = models.LapTimes.objects.create(id=lapid,
-                            raceid=self.singlerace,
-                            racerid=self.racer1,
-                            racelap=lapcount,
-                            raceposition=2,
-                            racelaptime=lap)
+            racer1_lap = models.LapTimes.objects.create(
+                id=lapid,
+                raceid=self.singlerace,
+                racerid=self.racer1,
+                racelap=lapcount,
+                raceposition=2,
+                racelaptime=lap)
             self.racer1_laps.append(racer1_lap)
             lapcount += 1
             lapid += 1
-
 
     def tearDown(self):
 
@@ -171,13 +174,8 @@ class SingleRace(TestCase):
 
         self.track.delete()
 
-
-
     def test_basic_racedata(self):
         """
         Sanity Check - Validate the basic track information is loaded.
         """
         self.assertEqual(models.TrackName.objects.get(pk=1).trackname, "Test_Track_0")
-
-
-

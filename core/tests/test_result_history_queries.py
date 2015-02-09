@@ -8,7 +8,7 @@ import pytz
 
 from core.models import SingleRaceDetails, RacerId
 
-import uploadresults.tests.general_race_uploader as uploadresultstests
+import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 import core.result_history_queries as result_history
 
 

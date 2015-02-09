@@ -25,8 +25,12 @@ class RacerIdAdmin(admin.ModelAdmin):
     search_fields = ('racerpreferredname',)
 
 
+class TrackNameAdmin(admin.ModelAdmin):
+    list_display = ('id', 'trackname',)
+
+
 class SupportedTrackNameAdmin(admin.ModelAdmin):
-    list_display = ('trackkey',)
+    list_display = ('id', 'trackkey',)
 
 
 class OfficialClassNamesAdmin(admin.ModelAdmin):
@@ -40,7 +44,7 @@ class AliasClassNamesAdmin(admin.ModelAdmin):
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
 # admin.site.register(LapTimes, LapTimesAdmin)
 admin.site.register(RacerId, RacerIdAdmin)
-admin.site.register(TrackName)
+admin.site.register(TrackName, TrackNameAdmin)
 admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)
 admin.site.register(OfficialClassNames, OfficialClassNamesAdmin)
 admin.site.register(AliasClassNames, AliasClassNamesAdmin)

@@ -10,7 +10,7 @@ from core.models import (
     SingleRaceResults,
     RacerId)
 
-from uploadresults.tests.general_race_uploader import GeneralRaceUploader
+from uploadresults.tests.test_general_race_uploader_easyupload import GeneralRaceUploader
 
 
 class PaceInfoInLapTimesTest(GeneralRaceUploader):

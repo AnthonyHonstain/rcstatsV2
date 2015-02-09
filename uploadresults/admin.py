@@ -1,11 +1,5 @@
-from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces
+from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces, SingleRaceData
 from django.contrib import admin
-
-
-class EasyUploaderPrimaryRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'ip', 'trackname', 'filecount', 'filecountsucceed', 'uploadstart')
-    list_filter = ['user', 'ip', 'trackname']
-    ordering = ('-uploadstart',)
 
 
 class EasyUploadRecordAdmin(admin.ModelAdmin):
@@ -30,6 +24,26 @@ class EasyUploadedRacesAdmin(admin.ModelAdmin):
         return '%s' % (obj.racedetails.racedate)
     get_racedate.short_description = 'Date'
 
+
+class SingleRaceDataInline(admin.StackedInline):
+    # https://docs.djangoproject.com/en/1.7/ref/contrib/admin/#inlinemodeladmin-objects
+    model = SingleRaceData
+#     max_num = 1
+
+
+class SingleRaceDataAdmin(admin.ModelAdmin):
+    list_display = ('id', 'owner', 'ip', 'trackname', 'filename', 'created')
+
+
+class EasyUploaderPrimaryRecordAdmin(admin.ModelAdmin):
+    inlines = [SingleRaceDataInline]
+    list_display = ('id', 'user', 'ip', 'trackname', 'filecount', 'filecountsucceed', 'uploadstart')
+    list_filter = ['user', 'ip', 'trackname']
+    ordering = ('-uploadstart',)
+
+
 admin.site.register(EasyUploaderPrimaryRecord, EasyUploaderPrimaryRecordAdmin)
 admin.site.register(EasyUploadRecord, EasyUploadRecordAdmin)
 admin.site.register(EasyUploadedRaces, EasyUploadedRacesAdmin)
+
+admin.site.register(SingleRaceData, SingleRaceDataAdmin)
