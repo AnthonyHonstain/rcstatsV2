@@ -1,4 +1,16 @@
 '''
+Major rework/addition Feb 2015
+
+Switching over to storing the raw race files in database record instead of
+trying to keep track of races in a file (requiring me to juggle them into
+a cloud like S3).
+
+Add api for uploading files, since we are automating away the manual process
+I wanted a fairly reasonable API to support the upload process, this code
+as a whole needs MUCH better logging and a solid refactor, but at least
+I was able to greatly improve the unit testing.
+
+----------------------------------------------
 Created on April 2013
 
 The revised uploader, I further stream lined the user scenario so that
@@ -10,15 +22,15 @@ you need to click less buttons to get the nights race results uploaded.
     There is lots of special logic to collect and process metadata like ranking or
     fixing of the class names or racer names.
 
-----------------------------------------------
-SIMPLE OVERIVEW
-----------------------------------------------
-    STEP 1) easyupload_track
-        -
-    STEP 2) easyupload_fileselect
-        -
-    STEP 3) easyupload_results
-        - Take the stuff from part 2 and start uploading.
+    ----------------------------------------------
+    SIMPLE OVERIVEW of UI upload.
+    ----------------------------------------------
+        STEP 1) easyupload_track
+            -
+        STEP 2) easyupload_fileselect
+            -
+        STEP 3) easyupload_results
+            - Take the stuff from part 2 and start uploading.
 
 @author: Anthony Honstain
 '''
@@ -41,22 +53,14 @@ from uploadresults.rcscoringprotxtparser import RCScoringProTXTParser
 import hashlib
 import io
 import logging
-import os.path
 import re
 import sys
 import traceback
 
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework import generics
 from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
-
-from rest_framework import permissions
 
 
 class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):
@@ -221,7 +225,7 @@ class SingleRaceDataDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
 # ----------------------------------------------------------------------------------
 
 class UploadFileForm(forms.Form):
-    #title = forms.CharField(max_length=50)
+    # title = forms.CharField(max_length=50)
     file = forms.FileField()
 
 
@@ -332,7 +336,7 @@ def _process_inmemmory_file(primary_record, ip, track, user, inmem_file):
     for chunk in inmem_file.chunks():
         # http://stackoverflow.com/questions/606191/convert-bytes-to-a-python-string
         upload_data.append(chunk.decode('utf8'))
-        md5.update(chunk) #.encode('utf8'))
+        md5.update(chunk)
 
     # Note - we are using a hex digest here instead of plain 'digest'
     # so that we can store it as a string in the db without dealing with
@@ -556,10 +560,9 @@ def _final_validation_and_upload(result_page):
             result_page.upload_record.errorenum = 7
             result_page.upload_record.save()
 
-
     # TODO - push out and run in Celery so we wont wait forever here.
-    #
-    #_update_ranking(track, uploaded_raceid_list)
+
+    # _update_ranking(track, uploaded_raceid_list)
 
     # Log this upload as processed (we do NOT want to support
     # multiple attempts at uploading the file).

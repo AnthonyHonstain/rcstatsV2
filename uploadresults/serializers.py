@@ -44,4 +44,3 @@ class SingleRaceUploadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.SingleRaceData
         fields = ('id', 'primaryrecord', 'uploadrecord', 'owner', 'ip', 'trackname', 'filename', 'data')
-

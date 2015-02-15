@@ -152,7 +152,7 @@ Huddleston, Chris            #3          3           51.832         23.550
   6:18.7
  '''
 
-    racelist_to_upload = [{'filename': 'upload1', 'filecontent': singlerace_testfile1},]
+    racelist_to_upload = [{'filename': 'upload1', 'filecontent': singlerace_testfile1}, ]
 
     def test_multipleraces_upload(self):
         # ====================================================

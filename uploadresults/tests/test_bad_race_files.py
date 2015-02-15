@@ -4,7 +4,7 @@ Created on May 2013
 @author: Anthony Honstain
 '''
 
-from core.models import LapTimes, SingleRaceDetails, RacerId
+from core.models import SingleRaceDetails, RacerId
 
 import uploadresults.models as models
 from uploadresults.tests.test_general_race_uploader_easyupload import GeneralRaceUploader
@@ -361,7 +361,7 @@ Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
 
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload4')
         self.assert_(not records[0].processed)
-        self.assertEqual(records[0].errorenum, 2) # This should probably be a 3, but I am not going to sweat it.
+        self.assertEqual(records[0].errorenum, 2)  # This should probably be a 3, but I am not going to sweat it.
 
 #         all_races = SingleRaceDetails.objects.all()
 #         for race in all_races:

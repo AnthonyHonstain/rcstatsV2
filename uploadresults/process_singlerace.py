@@ -7,7 +7,6 @@ from core.models import (
     SingleRaceDetails,
     RacerId)
 
-import time
 import datetime
 import pytz
 from django.utils import timezone
@@ -39,7 +38,7 @@ def process_singlerace(race):
     racelength = _calculate_race_length(race.raceHeaderData)
 
     # Find Winning lap count
-    maxlaps = 0;
+    maxlaps = 0
     for racer in race.raceHeaderData:
         if (racer['Laps'] > maxlaps):
             maxlaps = racer['Laps']
@@ -76,7 +75,7 @@ def process_singlerace(race):
     # ====================================================
     # We want to add a new racerid if one does not already exist.
     for racer in race.raceHeaderData:
-        racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
+        racer_obj, _ = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
         racer['racer_obj'] = racer_obj
 
     # ====================================================
@@ -112,7 +111,7 @@ def process_singlerace(race):
             # I am going to try and move on, it is not totally un-expected that the race director
             # might mangle this part. SIMPLE - Racer in header, but no laps recorded.
             continue
-            #raise FileUnableToParseError("This racer %s is missing his laps: %s" % (index, race.raceHeaderData))
+            # raise FileUnableToParseError("This racer %s is missing his laps: %s" % (index, race.raceHeaderData))
         for row in range(0, len(race.lapRowsTime[index])):
             # print "Debug: ", racer
             # print "Debug: ", lapRowsPosition[index]
@@ -126,7 +125,7 @@ def process_singlerace(race):
                                raceposition=race.lapRowsPosition[index][row],
                                racelaptime=race.lapRowsTime[index][row])
             bulk_laptimes.append(lap_obj)
-            #lap_obj.save()
+
     LapTimes.objects.bulk_create(bulk_laptimes)
 
     # ====================================================
@@ -165,7 +164,7 @@ def process_singlerace(race):
                                               fastlap=racer['Fast Lap'],
                                               behind=racer['Behind'],
                                               finalpos=racer['Final Position'])
-        #individual_result.save()
+
         bulk_raceheader.append(individual_result)
 
     SingleRaceResults.objects.bulk_create(bulk_raceheader)

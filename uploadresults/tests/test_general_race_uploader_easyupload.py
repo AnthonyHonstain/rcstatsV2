@@ -5,12 +5,10 @@ Updated this to use the new easy race uploader.
 
 @author: Anthony Honstain
 '''
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 
 import datetime
-import os
 import pytz
 
 import uploadresults.models as models
