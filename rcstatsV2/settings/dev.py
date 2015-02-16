@@ -53,9 +53,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-# Location for files uploaded by the user.
-MEDIA_USER_UPLOAD = os.path.join(BASE_DIR, "track_uploads")
-
 # Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'core', 'templates'),
                  os.path.join(BASE_DIR, 'accounts', 'templates'),
