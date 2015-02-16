@@ -5,7 +5,9 @@ from raceAPI import views
 
 router = routers.DefaultRouter()
 router.register(r'TrackName', views.TrackNameList)
-router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails', views.SingleRaceDetailsList)
+router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails',
+                views.SingleRaceDetailsList,
+                base_name='singleracedetail')
 
 urlpatterns = patterns(
     '',

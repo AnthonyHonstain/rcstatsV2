@@ -3,8 +3,8 @@ from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework import generics
 
-from core.models import TrackName, SingleRaceDetails, SingleRaceResults
-from raceAPI.serializers import TrackNameSerializer, SingleRaceDetailsSerializer, SingleRaceResultsSerializer
+from core.models import TrackName, SingleRaceDetails
+from raceAPI.serializers import TrackNameSerializer, SingleRaceDetailsSerializer
 
 
 class TrackNameList(viewsets.ReadOnlyModelViewSet):

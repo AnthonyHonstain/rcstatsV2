@@ -20,7 +20,7 @@ RC-Stats is a racing community to track and share your RC race results.
 <div class="container">
   <!-- Example row of columns -->
   <div class="row">
-    <div class="col-md-4 well">
+    <div class="col-md-5 well">
       <h2>NEW RC-Stats</h2>
       <p>
         Mobile friendly, email updates, and more social. In order to support these new goals I have undertaken a rewrite of the site.
@@ -34,11 +34,72 @@ RC-Stats is a racing community to track and share your RC race results.
       </ul>
     </div>
     <div class="col-md-1"></div>
-    <div class="col-md-4 well">
-      <h2>Heading</h2>
-      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    {% if singleracedetail != null %}
+    <div class="col-md-6 well">
+      <h2>New Race in the System</h2>
+      <div id="span-new-race"></div>
+      <table id="table-new-race">
+        <thead>
+        <tr>
+            <th data-field="finalpos">Pos</th>
+            <th data-field="racerid">Name</th>
+            <th data-field="lapcount">Laps</th>
+            <th data-field="racetime">Time</th>
+            <th data-field="fastlap">FastLap</th>
+        </tr>
+        </thead>
+      </table>
    </div>
+   {% endif %}
   </div>
 </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+
+{% if singleracedetail != null %}
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+  $.ajax({
+    // Example - http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/125/
+    url: "{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}",
+    contentType:"application/json; charset=utf-8",
+    dataType: "json",
+    type: "GET"
+  }).error(function(r){
+    console.log(r);
+  }).success(function(r){
+    //console.log("success", r);
+
+    var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + r.racedate;
+    $("#span-new-race").html(header);
+
+    var raceresults = r.raceresults;
+
+    // We want to clean up the times.
+    racedata = _.map(raceresults, function(race) {
+      // We want to trim off the zeros, example: "06:17.251000"
+      if (race.racetime){
+        // only trim first char if its zero.
+        if (race.racetime[0] = '0'){
+          race.racetime =  race.racetime.substring(1, race.racetime.length-1);
+        }
+        race.racetime =  race.racetime.substring(0, (race.racetime.length-1-2));
+      }
+      return race;
+    });
+
+    //console.log("Data for the graph:", racedata);
+    $("#table-new-race").bootstrapTable({
+      data: raceresults,
+      header: "foo"
+    });
+  })
+});
+{% endif %}
+
+</script>
 {% endblock %}
