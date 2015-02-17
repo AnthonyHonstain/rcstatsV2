@@ -58,3 +58,10 @@ uploadresults
 important third party apps
 * Userena 1.4
 * Django Rest Framework 3
+
+javascript and css
+* jquery (required for bootstrap)
+* bootstrap http://getbootstrap.com/getting-started/
+* bootstrap-table http://bootstrap-table.wenzhixin.net.cn/getting-started/
+* underscore http://underscorejs.org/
+* moment http://momentjs.com/docs/

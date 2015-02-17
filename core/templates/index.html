@@ -76,6 +76,7 @@ $(document).ready(function(){
     var racedate = moment(r.racedate);
     var formatedRace = "";
     racedate.local();
+    // Reference - http://momentjs.com/docs/#/displaying/
     formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
 
     var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + formatedDate;
