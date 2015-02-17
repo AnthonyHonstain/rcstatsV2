@@ -73,8 +73,12 @@ $(document).ready(function(){
     console.log(r);
   }).success(function(r){
     //console.log("success", r);
+    var racedate = moment(r.racedate);
+    var formatedRace = "";
+    racedate.local();
+    formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
 
-    var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + r.racedate;
+    var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + formatedDate;
     $("#span-new-race").html(header);
 
     var raceresults = r.raceresults;
@@ -95,7 +99,6 @@ $(document).ready(function(){
     //console.log("Data for the graph:", racedata);
     $("#table-new-race").bootstrapTable({
       data: raceresults,
-      header: "foo"
     });
   })
 });
