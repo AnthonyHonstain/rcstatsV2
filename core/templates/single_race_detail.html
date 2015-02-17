@@ -1,57 +1,29 @@
 {% extends "rcstats_base.html" %}
 
 {% block title %}
-RC-Stats
+Results
 {% endblock %}
 
 {% block description %}
-RC-Stats is a racing community to track and share your RC race results.
+Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}
 {% endblock %}
 
 {% block content %}
 
 <div class="jumbotron">
   <div class="container">
-    <img class="img-responsive" src="static/img/logo.png"/>
-    <p>RC Racing Community.</p>
+    <img class="img-responsive" src="/static/img/logo.png"/>
+    <h3>{{ trackname.trackname }}</h3>
   </div>
 </div>
 
-<div class="container">
+<div class="container well">
   <!-- Example row of columns -->
-  <div class="row">
-    <div class="col-md-5 well">
-      <h2>NEW RC-Stats</h2>
-      <p>
-        Mobile friendly, email updates, and more social. In order to support these new goals I have undertaken a rewrite of the site.
-        <br/>
-        New functionality:
-      </p>
-      <ul>
-      <li>Profile creation and login - follow your friends.</li>
-      <li>Email race results directly to your inbox.</li>
-      <li>Automatic race uploads, no more gaps in race coverage.</li>
-      </ul>
-    </div>
-    <div class="col-md-1"></div>
-    {% if singleracedetail != null %}
-    <div class="col-md-6 well">
-      <h2>New Race in the System</h2>
+
+      <h2>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h2>
       <div id="span-new-race"></div>
-      <table id="table-new-race">
-        <thead>
-        <tr>
-            <th data-field="finalpos"></th>
-            <th data-field="racerid">Name</th>
-            <th data-field="lapcount">Laps</th>
-            <th data-field="racetime">Time</th>
-            <th data-field="fastlap">FastLap</th>
-        </tr>
-        </thead>
-      </table>
-   </div>
-   {% endif %}
-  </div>
+      <table id="table-new-race"></table>
+
 </div>
 
 
@@ -100,6 +72,22 @@ $(document).ready(function(){
     //console.log("Data for the graph:", racedata);
     $("#table-new-race").bootstrapTable({
       data: raceresults,
+      columns: [{
+          field: 'finalpos',
+          title: ''
+      }, {
+          field: 'racerid',
+          title: 'Name'
+      }, {
+          field: 'lapcount',
+          title: 'Laps'
+      }, {
+          field: 'racetime',
+          title: 'Time'
+      }, {
+          field: 'fastlap',
+          title: 'FastLap'
+      }]
     });
   })
 });

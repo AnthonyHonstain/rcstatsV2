@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from core.models import TrackName, SingleRaceDetails
 
 
@@ -12,3 +12,10 @@ def index(request):
         maineventparsed__isnull=False).order_by('-id').first()
 
     return render(request, 'index.html', {'trackname': trackname, 'singleracedetail': singleracedetail})
+
+
+def single_race_details(request, single_race_detail_id):
+    single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
+    trackname = single_race_detail.trackkey
+    return render(request, 'single_race_detail.html',
+                  {'trackname': trackname, 'singleracedetail': single_race_detail})
