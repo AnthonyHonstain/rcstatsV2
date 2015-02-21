@@ -1,0 +1,343 @@
+[
+  {
+    "pk": 1,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Stock Buggy"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Mod Buggy"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Stock Short Course"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Mod Short Course"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Novice"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Stock Truck"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "4wd Short Course"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "4wd Buggy"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Stock Touring Car"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Pro Stock Touring Car"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Mod Touring Car"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 1,
+      "raceclass": "stock 2w buggy"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 1,
+      "raceclass": "stock bugg"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 2,
+      "raceclass": "MODIFIED BUGGY"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 3,
+      "raceclass": "sct stock 17.5"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 7,
+      "raceclass": "pro 4"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 8,
+      "raceclass": "mod 4x4 buggy"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 2,
+      "raceclass": "2wd mod"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 7,
+      "raceclass": "4x4 OPEN SC"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 4,
+      "raceclass": "modified short course"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 7,
+      "raceclass": "4w sc"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 8,
+      "raceclass": "mod 4w buggy"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 2,
+      "raceclass": "mod 2w buggy"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 8,
+      "raceclass": "4wd modified"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 1,
+      "raceclass": "2wd stock buggy"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 7,
+      "raceclass": "sc pro 4"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 4,
+      "raceclass": "pro 2"
+    }
+  },
+  {
+    "pk": 17,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 3,
+      "raceclass": "pro lite"
+    }
+  },
+  {
+    "pk": 18,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 3,
+      "raceclass": "sc pro lite"
+    }
+  },
+  {
+    "pk": 19,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Blinky Invite"
+    }
+  },
+  {
+    "pk": 20,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Blinky Invite."
+    }
+  },
+  {
+    "pk": 21,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Sedan"
+    }
+  },
+  {
+    "pk": 22,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Stock"
+    }
+  },
+  {
+    "pk": 23,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Invite"
+    }
+  },
+  {
+    "pk": 24,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "Stock TC"
+    }
+  },
+  {
+    "pk": 25,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 10,
+      "raceclass": "Pro Touring"
+    }
+  },
+  {
+    "pk": 26,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 10,
+      "raceclass": "17.5 Pro Invite"
+    }
+  },
+  {
+    "pk": 27,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 10,
+      "raceclass": "13.5 Pro Invite"
+    }
+  },
+  {
+    "pk": 28,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 11,
+      "raceclass": "Touring Mod"
+    }
+  },
+  {
+    "pk": 29,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 11,
+      "raceclass": "Mod Touring"
+    }
+  },
+  {
+    "pk": 30,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 11,
+      "raceclass": "Mod Sedan"
+    }
+  },
+  {
+    "pk": 31,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 10,
+      "raceclass": "13.5 Invite"
+    }
+  },
+  {
+    "pk": 32,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 9,
+      "raceclass": "17.5 Blinky "
+    }
+  },
+  {
+    "pk": 33,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 7,
+      "raceclass": "4x4 Short Course"
+    }
+  }
+]

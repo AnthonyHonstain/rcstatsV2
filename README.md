@@ -21,6 +21,11 @@ cd rcstatsV2
 pip install -r reqs/dev.txt
 ```
 
+Install initial SQL Data (sync db first)
+```
+python manage.py loaddata core/fixture/ClassNames.json
+```
+
 
 Dev Cheat Sheet
 -------------
