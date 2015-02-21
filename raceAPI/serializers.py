@@ -44,4 +44,19 @@ class SingleRaceDetailsSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
+class SingleRaceDetailsSlimSerializer(serializers.HyperlinkedModelSerializer):
+    trackkey = serializers.PrimaryKeyRelatedField(queryset=TrackName.objects.all())
+
+    class Meta:
+        model = SingleRaceDetails
+        fields = (
+            'id',
+            'trackkey',
+            'racedata',
+            'roundnumber',
+            'racenumber',
+            'racedate',
+            'racelength',
+            'maineventparsed',
+        )
 

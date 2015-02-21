@@ -18,80 +18,19 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 </div>
 
 <div class="container well">
-  <!-- Example row of columns -->
-
-      <h2>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h2>
-      <div id="span-new-race"></div>
-      <table id="table-new-race"></table>
-
+  <h2>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h2>
+  <div id="span-new-race-{{ singleracedetail.id }}"></div>
+  <table id="table-new-race-{{ singleracedetail.id }}"></table>
 </div>
-
-
 
 {% endblock %}
 
 {% block script %}
-
-{% if singleracedetail != null %}
+<script src="/static/js/rcstats.js"></script>
 <script type="text/javascript" charset="utf-8">
+
 $(document).ready(function(){
-  $.ajax({
-    // Example - http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/125/
-    url: "{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}",
-    contentType:"application/json; charset=utf-8",
-    dataType: "json",
-    type: "GET"
-  }).error(function(r){
-    console.log(r);
-  }).success(function(r){
-    //console.log("success", r);
-    var racedate = moment(r.racedate);
-    var formatedRace = "";
-    racedate.local();
-    // Reference - http://momentjs.com/docs/#/displaying/
-    formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
-
-    var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + formatedDate;
-    $("#span-new-race").html(header);
-
-    var raceresults = r.raceresults;
-
-    // We want to clean up the times.
-    racedata = _.map(raceresults, function(race) {
-      // We want to trim off the zeros, example: "06:17.251000"
-      if (race.racetime){
-        // only trim first char if its zero.
-        if (race.racetime[0] = '0'){
-          race.racetime =  race.racetime.substring(1, race.racetime.length-1);
-        }
-        race.racetime =  race.racetime.substring(0, (race.racetime.length-1-2));
-      }
-      return race;
-    });
-
-    //console.log("Data for the graph:", racedata);
-    $("#table-new-race").bootstrapTable({
-      data: raceresults,
-      columns: [{
-          field: 'finalpos',
-          title: ''
-      }, {
-          field: 'racerid',
-          title: 'Name'
-      }, {
-          field: 'lapcount',
-          title: 'Laps'
-      }, {
-          field: 'racetime',
-          title: 'Time'
-      }, {
-          field: 'fastlap',
-          title: 'FastLap'
-      }]
-    });
-  })
+    populateSingleRaceFromRestEndpoint("{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
 });
-{% endif %}
-
 </script>
 {% endblock %}

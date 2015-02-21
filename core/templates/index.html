@@ -37,73 +37,87 @@ RC-Stats is a racing community to track and share your RC race results.
     {% if singleracedetail != null %}
     <div class="col-md-6 well">
       <h2>New Race in the System</h2>
-      <div id="span-new-race"></div>
-      <table id="table-new-race">
-        <thead>
-        <tr>
-            <th data-field="finalpos"></th>
-            <th data-field="racerid">Name</th>
-            <th data-field="lapcount">Laps</th>
-            <th data-field="racetime">Time</th>
-            <th data-field="fastlap">FastLap</th>
-        </tr>
-        </thead>
-      </table>
+      <div id="span-new-race-{{ singleracedetail.id }}"></div>
+      <table id="table-new-race-{{ singleracedetail.id }}"></table>
    </div>
    {% endif %}
+
+   <div class="col-md-5 well">
+     <h2>{{ trackname.trackname }} Past Races</h2>
+     <table id="table-all-races-{{ trackname.id }}"></table>
+   </div>
   </div>
 </div>
-
-
 
 {% endblock %}
 
 {% block script %}
 
 {% if singleracedetail != null %}
+<script src="/static/js/rcstats.js"></script>
 <script type="text/javascript" charset="utf-8">
+
 $(document).ready(function(){
+  populateSingleRaceFromRestEndpoint("{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+
+  // We want to create a basic list of past races so they can quickly scan through them.
   $.ajax({
-    // Example - http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/125/
-    url: "{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}",
-    contentType:"application/json; charset=utf-8",
-    dataType: "json",
-    type: "GET"
-  }).error(function(r){
-    console.log(r);
-  }).success(function(r){
-    //console.log("success", r);
-    var racedate = moment(r.racedate);
-    var formatedRace = "";
-    racedate.local();
-    // Reference - http://momentjs.com/docs/#/displaying/
-    formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
+      // Example - http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetailsSlim/
+      url: "{% url 'singleracedetailslim-list' trackname=trackname.id %}",
+      contentType:"application/json; charset=utf-8",
+      dataType: "json",
+      type: "GET"
+    }).error(function(r){
+      console.log(r);
+    }).success(function(raceData){
+      //console.log("success", raceData);
 
-    var header = r.racedata + " " + r.maineventparsed + " Rnd:" + r.roundnumber + " Race:" + r.racenumber + " </br>" + formatedDate;
-    $("#span-new-race").html(header);
+      // TODO - probably want to handle this farther upstream.
+      raceData.reverse();
 
-    var raceresults = r.raceresults;
+      // We want to clean up the times.
+      var raceDataFormated = _.map(raceData, function(race) {
+        var racedate = moment(race.racedate);
+        var formatedRace = "";
+        racedate.local();
+        // Reference - http://momentjs.com/docs/#/displaying/
+        formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
+        race.racedate = formatedDate;
+        return race;
+      });
 
-    // We want to clean up the times.
-    racedata = _.map(raceresults, function(race) {
-      // We want to trim off the zeros, example: "06:17.251000"
-      if (race.racetime){
-        // only trim first char if its zero.
-        if (race.racetime[0] = '0'){
-          race.racetime =  race.racetime.substring(1, race.racetime.length-1);
-        }
-        race.racetime =  race.racetime.substring(0, (race.racetime.length-1-2));
-      }
-      return race;
-    });
-
-    //console.log("Data for the graph:", racedata);
-    $("#table-new-race").bootstrapTable({
-      data: raceresults,
-    });
-  })
+      //console.log("Data for the graph:", raceData);
+      $("#table-all-races-" + {{ trackname.id }}).bootstrapTable({
+        data: raceData,
+        pagination: "true",
+        onClickRow: function (row) {
+            console.log('Event: onClickRow, data: ' + JSON.stringify(row));
+            window.location.href = "{% url 'results-singleracedetail' '1111111' %}".replace("1111111", row.id)
+        },
+        columns: [{
+            field: "id",
+            title: "",
+            visible: false
+        }, {
+            field: "racedata",
+            title: "Class"
+        }, {
+            field: "roundnumber",
+            title: "Rnd"
+        }, {
+            field: "racenumber",
+            title: "Race"
+        }, {
+            field: "racedate",
+            title: "Date"
+        }, {
+            field: "racelength",
+            title: "Len"
+        }]
+      });
+    })
 });
+</script>
 {% endif %}
 
-</script>
 {% endblock %}
