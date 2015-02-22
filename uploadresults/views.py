@@ -84,26 +84,26 @@ class TrackNameList(viewsets.ReadOnlyModelViewSet):
     serializer_class = TrackNameSerializer
 
 
-from rest_framework.authentication import SessionAuthentication
-
-
-class UnsafeSessionAuthentication(SessionAuthentication):
-
-    def authenticate(self, request):
-        http_request = request._request
-        user = getattr(http_request, 'user', None)
-
-        if not user or not user.is_active:
-            return None
-
-        return (user, None)
+# It would appear I don't need this.
+# from rest_framework.authentication import SessionAuthentication
+# http://stackoverflow.com/questions/16501770/csrf-exempt-failure-apiview-csrf-django-rest-framework
+# class UnsafeSessionAuthentication(SessionAuthentication):
+#
+#     def authenticate(self, request):
+#         http_request = request._request
+#         user = getattr(http_request, 'user', None)
+#
+#         if not user or not user.is_active:
+#             return None
+#
+#         return (user, None)
 
 
 class SingleRaceDataCreate(generics.CreateAPIView):
     '''
     API endpoint that supports uploading a single race at a time.
     '''
-    authentication_classes = (UnsafeSessionAuthentication,)
+    #authentication_classes = (UnsafeSessionAuthentication,)
     queryset = SingleRaceData.objects.all()
     serializer_class = SingleRaceUploadSerializer
 

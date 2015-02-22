@@ -34,3 +34,7 @@ class SingleRaceDetailsSlimList(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     queryset = SingleRaceDetails.objects.all()
     serializer_class = SingleRaceDetailsSlimSerializer
+
+    def get_queryset(self):
+        trackkey = self.kwargs['trackname']
+        return SingleRaceDetails.objects.filter(trackkey__exact=trackkey).order_by('-racedate')

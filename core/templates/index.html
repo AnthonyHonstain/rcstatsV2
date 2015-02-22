@@ -36,7 +36,7 @@ RC-Stats is a racing community to track and share your RC race results.
     <div class="col-md-1"></div>
     {% if singleracedetail != null %}
     <div class="col-md-6 well">
-      <h2>New Race in the System</h2>
+      <h2>Newest Race in the System</h2>
       <div id="span-new-race-{{ singleracedetail.id }}"></div>
       <table id="table-new-race-{{ singleracedetail.id }}"></table>
    </div>
@@ -71,9 +71,6 @@ $(document).ready(function(){
       console.log(r);
     }).success(function(raceData){
       //console.log("success", raceData);
-
-      // TODO - probably want to handle this farther upstream.
-      raceData.reverse();
 
       // We want to clean up the times.
       var raceDataFormated = _.map(raceData, function(race) {

@@ -24,6 +24,8 @@ pip install -r reqs/dev.txt
 Install initial SQL Data (sync db first)
 ```
 python manage.py loaddata core/fixture/ClassNames.json
+// FOR HEROKU
+heroku run python manage.py loaddata core/fixture/ClassNames.json
 ```
 
 

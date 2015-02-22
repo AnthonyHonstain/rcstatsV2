@@ -51,6 +51,7 @@ var populateSingleRaceFromRestEndpoint = function(restURL, singleRaceDetailID) {
     //console.log("Data for the graph:", racedata);
     $("#table-new-race-" + singleRaceDetailID).bootstrapTable({
       data: raceresults,
+      sortName: 'finalpos',
       columns: [{
           field: 'finalpos',
           title: ''
