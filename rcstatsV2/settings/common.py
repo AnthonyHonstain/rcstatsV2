@@ -7,11 +7,36 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
+from __future__ import absolute_import
+# ^^^ The above is required if you want to import from the celery
+# library.  If you don't have this then `from celery.schedules import`
+# becomes `proj.celery.schedules` in Python 2.x since it allows
+# for relative imports by default.
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # See settings_secret.py_TEMPLATE
 
+import os
+redis_url = os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0')
+
+# ---------------------------------------------------------------------------
+# Celery
+# ---------------------------------------------------------------------------
+# http://celery.readthedocs.org/en/latest/django/first-steps-with-django.html
+
+# Celery settings
+BROKER_URL = redis_url  # 'amqp://guest:guest@localhost//'
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+# You need the CELERYBEAT_SCHEDULER if you want to configures period tasks through the admin page.
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 # Application definition
 
@@ -31,6 +56,8 @@ THIRD_PARTY_APPS = (
     'guardian',
     'easy_thumbnails',
     'rest_framework',
+    'djcelery',
+    'kombu.transport.django.KombuAppConfig',
 )
 
 LOCAL_APPS = (
