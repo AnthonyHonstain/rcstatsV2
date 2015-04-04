@@ -1,0 +1,42 @@
+<html lang="en">
+<body>
+<p>
+Here are new race results you requested {{ username }}
+</p>
+
+<h3>New Race Results - {{ single_race_detail.trackkey }}</h3>
+
+{% load tz %}
+<p> Race date {{ single_race_detail.racedate |timezone:"America/Los_Angeles"}} </p>
+
+<a href="http://{{ host }}{% url 'results-singleracedetail' single_race_detail.id %}">
+{{ single_race_detail.racedata }}
+{% if single_race_detail.maineventparsed %}
+    {{ single_race_detail.maineventparsed }}
+{% endif %}
+Round: {{ single_race_detail.roundnumber }}
+Race: {{ single_race_detail.racenumber }}
+</a>
+
+<table>
+<tr>
+  <td>Pos</td>
+  <td>Name</td>
+  <td>Laps</td>
+  <td>Time</td>
+  <td>Fast</td>
+</tr>
+
+{% for result in single_race_results %}
+<tr>
+<td>{{ result.finalpos }}</td>
+<td>{{ result.racerid }}</td>
+<td>{{ result.lapcount }}</td>
+<td>{{ result.racetime|time:"i:s" }}</td>
+<td>{{ result.fastlap }}</td>
+</tr>
+{% endfor %}
+
+</table>
+</body>
+</html>

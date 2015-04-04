@@ -25,3 +25,6 @@ rcstatsV2/settings/settings_secret.py
 .project
 .pydevproject
 .settings
+
+# Ipython notebook
+.ipynb_checkpoints/

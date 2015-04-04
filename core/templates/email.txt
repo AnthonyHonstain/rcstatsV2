@@ -1,0 +1,14 @@
+Here are new race results you requested {{ username }}
+
+New Race Results - {{ single_race_detail.trackkey }}
+
+{% load tz %}
+Race date {{ single_race_detail.racedate |timezone:"America/Los_Angeles"}}
+
+http://{{ host }}{% url 'results-singleracedetail' single_race_detail.id %} {{ single_race_detail.racedata }} {% if single_race_detail.maineventparsed %}{{ single_race_detail.maineventparsed }}{% endif %} Round: {{ single_race_detail.roundnumber }} Race: {{ single_race_detail.racenumber }}
+
+Pos|Name|Laps|Time|Fast
+{% for result in single_race_results %}
+{{ result.finalpos }}|{{ result.racerid }}|{{ result.lapcount }}|{{ result.racetime|time:"i:s" }}|{{ result.fastlap }}
+{% endfor %}
+

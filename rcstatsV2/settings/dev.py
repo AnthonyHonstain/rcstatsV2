@@ -41,6 +41,10 @@ DATABASES = {
     }
 }
 
+THIRD_PARTY_APPS += (
+    'django_extensions',
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 

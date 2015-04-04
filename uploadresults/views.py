@@ -62,6 +62,8 @@ from rest_framework import mixins
 from rest_framework import generics
 from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
 
+from core.celery import mail_single_race
+
 
 class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):
     '''
@@ -548,6 +550,14 @@ def _final_validation_and_upload(result_page):
             EasyUploadedRaces.objects.create(upload=result_page.upload_record, racedetails=new_singleracedetails)
             result_page.uploaded_race_list.append((race.raceClass, new_singleracedetails.id))
             result_page.uploaded_raceid_list.append(new_singleracedetails.id)
+
+            # TODO - generalize this so it is manageable.
+            # Go ahead an queue an outgoing email if this is a mod buggy race.
+            print('Checking {0}'.format(new_singleracedetails.racedata))
+            if new_singleracedetails.racedata == 'Mod Buggy':
+                print('Calling delay on {0}'.format(new_singleracedetails.id))
+                mail_single_race.delay(new_singleracedetails.id)
+
         except FileAlreadyUploadedError:
             # result_page.upload_record.filename
             logger.error("This race has already been uploaded, filename=" + result_page.upload_record.filename + " raceobject:" + str(race))

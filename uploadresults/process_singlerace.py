@@ -181,7 +181,7 @@ def process_singlerace(race):
     # Note - this likely changed the race's name.
     collapse_alias_classnames(SingleRaceDetails.objects.filter(id__exact=details_obj.id))
 
-    return details_obj
+    return SingleRaceDetails.objects.get(pk=details_obj.id)
 
 
 def _calculate_race_length(raceHeaderData):

@@ -1,2 +1,7 @@
 -r common.txt
 
+# Django extensions https://github.com/django-extensions/django-extensions
+django-extensions==1.5.2
+# Just install this one manually: pip install ipython[all]
+# ipython[all]==3.1.0
+
