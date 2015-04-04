@@ -45,7 +45,11 @@ python manage.py migrate uploadresults 0001_initial
 python manage.py makemigrations 
 python manage.py migrate
 ```
-
+Deployment
+```
+// Remeber to deploy database changes.
+heroku run python manage.py migrate
+```
 
 
 Project Structure
