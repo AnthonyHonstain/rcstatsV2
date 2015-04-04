@@ -14,6 +14,7 @@ from rcstatsV2.settings.settings_secret import *
 
 # Show stack trace for warning - http://stackoverflow.com/questions/11557119/django-how-to-get-stack-traces-for-runtime-warnings
 import warnings
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
 warnings.filterwarnings(
     'error', r"DateTimeField .* received a naive datetime",
     RuntimeWarning, r'django\.db\.models\.fields')
@@ -65,7 +66,7 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'core', 'templates'),
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.mandrillapp.com'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
 EMAIL_HOST_PASSWORD = SECRET_EMAIL_HOST_PASSWORD
@@ -84,4 +85,7 @@ EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = EMAIL_HOST_USER
+
+# Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # ---------------------------------------------------------------------------
