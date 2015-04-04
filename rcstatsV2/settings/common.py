@@ -58,7 +58,6 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'djcelery',
     'kombu.transport.django.KombuAppConfig',
-    'django_extensions',
 )
 
 LOCAL_APPS = (
