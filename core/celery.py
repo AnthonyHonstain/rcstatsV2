@@ -67,7 +67,7 @@ def _mail_single_race(user, single_race_detail):
     #print(text_content)
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
     msg.attach_alternative(html_content, "text/html")
-    #msg.send(fail_silently=False)
+    msg.send(fail_silently=False)
     return
 
 
