@@ -30,6 +30,8 @@ STATICFILES_DIRS = (
 )
 # ---------------------------------------------------------------------------
 
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 ADMINS = [os.environ.get('ADMINS', 'your_email@example.com'), ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key

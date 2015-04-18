@@ -44,6 +44,8 @@ DATABASES = {
 THIRD_PARTY_APPS += (
     'django_extensions',
 )
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
