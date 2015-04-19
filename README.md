@@ -39,12 +39,20 @@ Basic dev tasks.
 ```
 // Run the dev env so it can be accessed while developing in VM.
 python manage.py runserver 0.0.0.0:8000
+// Start Celery running - best to use a seperate terminal.
+python manage.py celeryd -E -B --loglevel=INFO
+// Can use IPython notebook to run commands.
+python manage.py shell_plus --notebook
 
 // Resetting DB for testing
 python manage.py migrate uploadresults 0001_initial
 python manage.py makemigrations 
 python manage.py migrate
 ```
+Important dev links -
+* http://127.0.0.1:8000/admin/  Django admin site
+* http://127.0.0.1:8000/  Site root
+
 Deployment
 ```
 // Remeber to deploy database changes.
@@ -76,3 +84,21 @@ javascript and css
 * bootstrap-table http://bootstrap-table.wenzhixin.net.cn/getting-started/
 * underscore http://underscorejs.org/
 * moment http://momentjs.com/docs/
+
+
+Deployment
+-------------
+Deployed and hosted using Heroku
+
+Currently (4/18) set to use a single heroku web dyno (even though we have both a web client and a celery worker).
+* Honcho to start additional process http://www.radekdostal.com/content/heroku-running-multiple-python-processes-single-dyno-using-honcho
+
+Monitoring
+Heroku System Logs - a really good guide https://devcenter.heroku.com/articles/logging
+```
+heroku logs -t -s heroku
+```
+Application Logs - Need to update app name
+```
+heroku logs -t -s nameless-ridge-5720
+```
