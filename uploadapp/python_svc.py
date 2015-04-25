@@ -2,7 +2,7 @@ r'''
 Requirements - Python3, Python for Windows extensions http://sourceforge.net/projects/pywin32/
 Windows logging - http://stackoverflow.com/questions/1067531/are-there-any-log-file-about-windows-services-status
 
-Usage : python aservice.py install (or / then start, stop, remove, update)
+Usage : C:\Python34\python.exe aservice.py install (or / then start, stop, remove, update)
 
 Tail the logs in powershell
     Get-Content -Path .\rcstats_upload.log -Wait
