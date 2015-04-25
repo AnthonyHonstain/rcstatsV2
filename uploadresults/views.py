@@ -52,7 +52,6 @@ from uploadresults.rcscoringprotxtparser import RCScoringProTXTParser
 
 import hashlib
 import io
-import logging
 import re
 import sys
 import traceback
@@ -63,6 +62,9 @@ from rest_framework import generics
 from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
 
 from core.celery import mail_single_race
+
+import logging
+logger = logging.getLogger('jsonlogger')
 
 
 class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):
@@ -113,6 +115,9 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
+
+        logger.debug('Starting API upload')
+
         ip = "127.0.0.1"
         if 'HTTP_X_FORWARDED_FOR' in self.request.META:
             ip = self.request.META['HTTP_X_FORWARDED_FOR']
@@ -213,6 +218,8 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         primary_record.uploadfinish = timezone.now()
         primary_record.filecountsucceed = primary_record.filecount - fail_count
         primary_record.save()
+
+        logger.debug('Completed API upload')
 
 
 class SingleRaceDataDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):

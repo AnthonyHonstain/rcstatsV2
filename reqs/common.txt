@@ -34,3 +34,6 @@ redis==2.10.3
 # Using honco as an alternative to foreman, to try and save setting up another dyno for heroku
 # http://www.radekdostal.com/content/heroku-running-multiple-python-processes-single-dyno-using-honcho
 honcho==0.6.6
+
+# Logging to json
+python-json-logger==0.1.2

@@ -126,3 +126,62 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'PAGINATE_BY': 10
 }
+
+# ---------------------------------------------------------------------------
+# Django Logging https://docs.python.org/3/howto/logging.html
+# ---------------------------------------------------------------------------
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    # Formatters specify the layout of log records in the final output
+    'formatters': {
+        'verbose': {
+            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
+                       'pathname=%(pathname)s lineno=%(lineno)s ' +
+                       'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            # 'fmt': '%(levelname)s %(asctime)s %(message)s',
+            'fmt': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
+                    'pathname=%(pathname)s lineno=%(lineno)s ' +
+                    'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    # Handlers send the log records to the appropriate destination
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'stream': {
+            'level': 'DEBUG',
+            'formatter': 'json',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    # Expose the interface for application code to directly interact with
+    'loggers': {
+        # A good default logger for heroku
+        'testlogger': {
+            'handlers': ['console', 'stream'],
+            'level': 'DEBUG',
+        },
+        # Trying some json machine readable logs
+        'jsonlogger': {
+            'handlers': ['stream'],
+            'level': 'DEBUG',
+        }
+    }
+}

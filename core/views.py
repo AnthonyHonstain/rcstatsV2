@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from core.models import TrackName, SingleRaceDetails
 
+import logging
+logger = logging.getLogger('jsonlogger')
+
 
 def index(request):
     # Get the most recent TRCR race if it exists.
@@ -15,6 +18,8 @@ def index(request):
 
 
 def single_race_details(request, single_race_detail_id):
+    # TODO - test logging to check integration with logentries app
+    logger.debug('Visiting the single_race_details page')
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
     trackname = single_race_detail.trackkey
     return render(request, 'single_race_detail.html',
