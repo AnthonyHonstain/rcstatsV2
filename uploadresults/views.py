@@ -64,7 +64,7 @@ from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyU
 from core.celery import mail_single_race
 
 import logging
-logger = logging.getLogger('jsonlogger')
+logger = logging.getLogger('defaultlogger')
 
 
 class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):

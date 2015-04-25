@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from core.models import TrackName, SingleRaceDetails
 
 import logging
-logger = logging.getLogger('jsonlogger')
+logger = logging.getLogger('defaultlogger')
 
 
 def index(request):

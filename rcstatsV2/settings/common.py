@@ -138,20 +138,12 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-                       'pathname=%(pathname)s lineno=%(lineno)s ' +
-                       'funcname=%(funcName)s %(message)s'),
+                       'filename=%(filename)s lineno=%(lineno)s ' +
+                       'funcname=%(funcName)s message="%(message)s"'),
             'datefmt': '%Y-%m-%d %H:%M:%S'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
-        },
-        'json': {
-            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-            # 'fmt': '%(levelname)s %(asctime)s %(message)s',
-            'fmt': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-                    'pathname=%(pathname)s lineno=%(lineno)s ' +
-                    'funcname=%(funcName)s %(message)s'),
-            'datefmt': '%Y-%m-%d %H:%M:%S'
         },
     },
     # Handlers send the log records to the appropriate destination
@@ -164,23 +156,13 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
-        },
-        'stream': {
-            'level': 'DEBUG',
-            'formatter': 'json',
-            'class': 'logging.StreamHandler',
-        },
+        }
     },
     # Expose the interface for application code to directly interact with
     'loggers': {
         # A good default logger for heroku
-        'testlogger': {
-            'handlers': ['console', 'stream'],
-            'level': 'DEBUG',
-        },
-        # Trying some json machine readable logs
-        'jsonlogger': {
-            'handlers': ['stream'],
+        'defaultlogger': {
+            'handlers': ['console'],
             'level': 'DEBUG',
         }
     }
