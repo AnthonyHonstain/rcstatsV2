@@ -74,3 +74,28 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Django Logging https://docs.python.org/3/howto/logging.html
+# ---------------------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # Formatters specify the layout of log records in the final output
+    'formatters': {
+        'verbose': {
+            # We are dropping off the time and changing the format some for production
+            # because heroku logging + logentries will look better this way.
+            'format': ('process=%(process)d level=%(levelname)s ' +
+                       'filename=%(filename)s line=%(lineno)s ' +
+                       'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': LOGGING_HANDLERS,
+    'loggers': LOGGING_LOGGERS,
+}

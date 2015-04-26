@@ -19,7 +19,8 @@ def index(request):
 
 def single_race_details(request, single_race_detail_id):
     # TODO - test logging to check integration with logentries app
-    logger.debug('Visiting the single_race_details page')
+    logger.debug('metric=singleracedetail single_race_detail_id=%s', single_race_detail_id)
+
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
     trackname = single_race_detail.trackkey
     return render(request, 'single_race_detail.html',

@@ -95,3 +95,27 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Django Logging https://docs.python.org/3/howto/logging.html
+# ---------------------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # Formatters specify the layout of log records in the final output
+    'formatters': {
+        'verbose': {
+            # Using a different format for dev, than prod
+            'format': ('%(asctime)s [%(levelname)s] %(message)s [%(process)d] ' +
+                       'filename=%(filename)s line=%(lineno)s ' +
+                       'funcname=%(funcName)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': LOGGING_HANDLERS,
+    'loggers': LOGGING_LOGGERS,
+}

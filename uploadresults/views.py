@@ -44,7 +44,7 @@ from django.utils import timezone
 
 from django.conf import settings
 from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces, SingleRaceData
-from uploadresults.process_singlerace import process_singlerace, FileAlreadyUploadedError
+from uploadresults.process_singlerace import create_single_race_details, FileAlreadyUploadedError
 
 from core.models import SupportedTrackName, TrackName
 
@@ -64,7 +64,7 @@ from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyU
 from core.celery import mail_single_race
 
 import logging
-logger = logging.getLogger('defaultlogger')
+log = logging.getLogger('defaultlogger')
 
 
 class EasyUploaderPrimaryRecordViewSet(viewsets.ReadOnlyModelViewSet):
@@ -116,9 +116,9 @@ class SingleRaceDataCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
 
-        logger.debug('Starting API upload')
+        log.debug('metric=Starting_API_Upload')
 
-        ip = "127.0.0.1"
+        ip = '127.0.0.1'
         if 'HTTP_X_FORWARDED_FOR' in self.request.META:
             ip = self.request.META['HTTP_X_FORWARDED_FOR']
 
@@ -184,17 +184,16 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         #     Note we keep this as a separate lookup so that we get them all saved to disk before validation
         # =======================================================================
         for single_race_data in single_race_data_records:
-            resultpage_prevalidated = _initial_validation_of_uploaded_file(single_race_data)
-            if resultpage_prevalidated:
-                resultpage_list.append(ResultPage(single_race_data, single_race_data.uploadrecord, resultpage_prevalidated))
+            single_race_list = _initial_validation_of_uploaded_file(single_race_data)
+            if single_race_list:
+                resultpage_list.append(ResultPage(single_race_data, single_race_data.uploadrecord, single_race_list))
 
         for result_page in resultpage_list:
             result_page.upload_record.uploadstart = timezone.now()
             result_page.upload_record.save()
 
-            # DATA RESTORATION - This is to hopefully simplify restoring data in the event of
-            # an emergency (all that would be needed would be these text files).
-            first_trackname_on_page = result_page.parsed_races[0].trackName
+            # We are going to set every race to have the same track name
+            first_trackname_on_page = result_page.single_race_list[0].trackName
             _modify_trackname(single_race_data, first_trackname_on_page, trackname.trackname)
 
             # Short term fix - set the trackname here in case in the future we want to break it out
@@ -219,7 +218,7 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         primary_record.filecountsucceed = primary_record.filecount - fail_count
         primary_record.save()
 
-        logger.debug('Completed API upload')
+        log.debug('metric=Completed_API_Upload')
 
 
 class SingleRaceDataDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -291,7 +290,7 @@ def easyupload_fileselect(request, track_id):
             # way for this to work in production and in development.
             #     In the dev enviro, 'HTTP_X_FORWARD_FOR' is not a
             #     key in request.META
-            ip = "127.0.0.1"
+            ip = '127.0.0.1'
             if 'HTTP_X_FORWARDED_FOR' in request.META:
                 ip = request.META['HTTP_X_FORWARDED_FOR']
 
@@ -312,7 +311,7 @@ def easyupload_fileselect(request, track_id):
 
             return redirect('easyupload_results', upload_id=primary_record.id)
         else:
-            error = "Failed to upload file."
+            error = 'Failed to upload file.'
             return render_to_response('easyupload_fileselect.html',
                                       {'form': form, 'track': track, 'error_status': error},
                                       context_instance=RequestContext(request))
@@ -380,11 +379,19 @@ class ResultPage():
         '''
         Contains all the data associated with a single file of race results.
         Including results prior to database upload, and what to display to the users.
+
+        Parameters
+        ----------
+        single_race_data : SingleRaceData
+        upload_record : EasyUploadRecord
+        single_race_list : List[SingleRace]
+           List of SingleRace objects that contains the raw data parsed from the original race file
         '''
-        def __init__(self, single_race_data, upload_record, parsed_races):
+        def __init__(self, single_race_data, upload_record, single_race_list):
             self.single_race_data = single_race_data
             self.upload_record = upload_record
-            self.parsed_races = parsed_races  # List of parsed races from a single file upload
+            # The SingleRace objects that have been parsed.
+            self.single_race_list = single_race_list  # List of parsed races from a single file upload
             self.uploaded_race_list = []  # For display to the user.
             # TODO - ranking
             self.uploaded_raceid_list = []  # For ranking
@@ -394,18 +401,18 @@ class ResultPage():
 
 @login_required(login_url='/login')
 def easyupload_results(request, upload_id):
-    """
+    '''
     Final view to trigger the final generation of race results.
 
     Step 3
-    """
+    '''
     primary_upload_record = get_object_or_404(EasyUploaderPrimaryRecord, pk=upload_id)
     track = primary_upload_record.trackname
 
     # We have already recorded this file as processed, there is nothing more
     # this script can do at this point. It is likely a user error.
     if (primary_upload_record.filecount == primary_upload_record.filecountsucceed):
-        general_error_message = "All of these files have been processed. It is likely that the races are already in the system. An administrator can probably fix the problem quickly."
+        general_error_message = 'All of these files have been processed. It is likely that the races are already in the system. An administrator can probably fix the problem quickly.'
         return render_to_response('easyupload_validate.html',
                                   {'general_error': True, 'general_error_message': general_error_message},
                                   context_instance=RequestContext(request))
@@ -432,9 +439,9 @@ def easyupload_results(request, upload_id):
     #     Note we keep this as a separate lookup so that we get them all saved to disk before validation
     # =======================================================================
     for single_race_data in single_race_data_records:
-        resultpage_prevalidated = _initial_validation_of_uploaded_file(single_race_data)
-        if resultpage_prevalidated:
-            resultpage_list.append(ResultPage(single_race_data, single_race_data.uploadrecord, resultpage_prevalidated))
+        single_race_list = _initial_validation_of_uploaded_file(single_race_data)
+        if single_race_list:
+            resultpage_list.append(ResultPage(single_race_data, single_race_data.uploadrecord, single_race_list))
 
     for result_page in resultpage_list:
         result_page.upload_record.uploadstart = timezone.now()
@@ -442,7 +449,7 @@ def easyupload_results(request, upload_id):
 
         # DATA RESTORATION - This is to hopefully simplify restoring data in the event of
         # an emergency (all that would be needed would be these text files).
-        first_trackname_on_page = result_page.parsed_races[0].trackName
+        first_trackname_on_page = result_page.single_race_list[0].trackName
         _modify_trackname(single_race_data, first_trackname_on_page, track.trackname)
 
         # Short term fix - set the trackname here in case in the future we want to break it out
@@ -482,14 +489,17 @@ def easyupload_results(request, upload_id):
 
 
 def _initial_validation_of_uploaded_file(single_race_data):
-    """
+    '''
     Helper function to provide initial validation of the uploaded race file.
-    """
-    logger = logging.getLogger("uploadprocessing")
 
-    # TODO - enable logging
-    logger.debug('Starting processing of SingleRaceData id:%d' % single_race_data.id)
-    #print('Starting processing of SingleRaceData id:%d' % single_race_data.id)
+    SANITY CHECK the metadata on the race.
+
+    Parameters
+    ----------
+    single_race_data : SingleRaceData
+       Record of an individual race file being upload (can contain multiple races from a single round).
+    '''
+    log.debug('metric=Validate_SingleRaceData single_race_data=%s', single_race_data.id)
 
     easy_upload_record = EasyUploadRecord.objects.get(pk=single_race_data.uploadrecord.id)
 
@@ -498,12 +508,12 @@ def _initial_validation_of_uploaded_file(single_race_data):
     #    I expect most problems to be in the category (did they upload shit).
     # =======================================================================
     try:
-        prevalidation_race_list = _parse_raw_upload_string(single_race_data.filename, single_race_data.data)
+        single_race_list = _parse_raw_upload_string(single_race_data.filename, single_race_data.data)
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
-        logger.error('Unable to process SingleRaceData id:{0} exception:{1} \n {2}'
-                     .format(single_race_data.id, str(e), trace))
+        log.error('metric=UploadError type=Exception_SingleRaceData single_race_data={0} exception={1} {2}'
+                  .format(single_race_data.id, str(e), trace))
         easy_upload_record.errorenum = 2
         easy_upload_record.save()
         return
@@ -512,20 +522,21 @@ def _initial_validation_of_uploaded_file(single_race_data):
     # Phase B) sanity check that there is a race, it has a trackname, and the same trackname.
     # =======================================================================
     # There must be at least 1 race.
-    if (len(prevalidation_race_list) < 1):
-        logger.error("No races found in the SingleRaceData id:%d" % single_race_data.id)
+    if (len(single_race_list) < 1):
+        log.error('metric=UploadError type=No_Races_Found single_race_data=%s', single_race_data.id)
         easy_upload_record.errorenum = 3
         easy_upload_record.save()
         return
 
-    upload_trackname = prevalidation_race_list[0].trackName
+    # Check the first name of the list
+    upload_trackname = single_race_list[0].trackName
 
     # We are going to force them to have a trackname already set.
     #     It makes this code so much simpler, if they need to change
     #     the trackname (then I can easily replace it and save the
     #     modified version).
-    if (upload_trackname.strip() == ""):
-        logger.error("There was no trackname set in the SingleRaceData id:%d" % single_race_data.id)
+    if (upload_trackname.strip() == ''):
+        log.error('metric=UploadError type=TrackName_Missing single_race_data=%s', single_race_data.id)
         easy_upload_record.errorenum = 4
         easy_upload_record.save()
         return
@@ -533,47 +544,57 @@ def _initial_validation_of_uploaded_file(single_race_data):
     # Validate all the track names are the same.
     #     I don't think this would ever happen but I am going
     #     to check because I don't want people doing it.
-    for race in prevalidation_race_list:
+    for race in single_race_list:
         if (race.trackName != upload_trackname):
-            logger.error("Not all races have the same trackname in the SingleRaceData id:%d" % single_race_data.id)
+            log.error('metric=UploadError type=TrackName_Missmatch single_race_data=%s', single_race_data.id)
             easy_upload_record.errorenum = 5
             easy_upload_record.save()
             return
 
-    return prevalidation_race_list
+    return single_race_list
 
 
 def _final_validation_and_upload(result_page):
-    logger = logging.getLogger("uploadprocessing")
-
+    '''
+    Parameters
+    ----------
+    result_page : ResultPage
+       Object that holds all the data for a single race being uploaded.
+    '''
     # Process each race and load it into the DB.
-    for race in result_page.parsed_races:
+    for single_race in result_page.single_race_list:
         # Set the new trackname on each of the race objects.
-        race.trackName = result_page.upload_record.trackname.trackname
+        single_race.trackName = result_page.upload_record.trackname.trackname
 
         try:
-            new_singleracedetails = process_singlerace(race)
-            # We are going to track who uploaded this race.
-            EasyUploadedRaces.objects.create(upload=result_page.upload_record, racedetails=new_singleracedetails)
-            result_page.uploaded_race_list.append((race.raceClass, new_singleracedetails.id))
-            result_page.uploaded_raceid_list.append(new_singleracedetails.id)
+            single_race_details = create_single_race_details(single_race)
 
+            # We are going to track who uploaded this race.
+            EasyUploadedRaces.objects.create(upload=result_page.upload_record, racedetails=single_race_details)
+            result_page.uploaded_race_list.append((single_race.raceClass, single_race_details.id))
+            result_page.uploaded_raceid_list.append(single_race_details.id)
+
+            # ----------------------------------------------------
             # TODO - generalize this so it is manageable.
             # Go ahead an queue an outgoing email if this is a mod buggy race.
-            print('Checking {0}'.format(new_singleracedetails.racedata))
-            if new_singleracedetails.racedata == 'Mod Buggy':
-                print('Calling delay on {0}'.format(new_singleracedetails.id))
-                mail_single_race.delay(new_singleracedetails.id)
+            log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
+            if single_race_details.racedata == 'Mod Buggy':
+                log.trace('metric=Email single_race_details=%s', single_race_details.id)
+                mail_single_race.delay(single_race_details.id)
+            # ----------------------------------------------------
 
         except FileAlreadyUploadedError:
-            # result_page.upload_record.filename
-            logger.error("This race has already been uploaded, filename=" + result_page.upload_record.filename + " raceobject:" + str(race))
+            log.error('metric=UploadError type=DuplicateUpload filename=%s', result_page.upload_record.filename)
+
             result_page.upload_record.errorenum = 6
             result_page.upload_record.save()
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            logger.error("Unable to process file: {0} exception:{1} \n {2}".format(result_page.upload_record.filename, str(e), trace))
+
+            log.error('metric=UploadError type=Exception_SingleRaceDetails file={0} exception={1} {2}'
+                      .format(result_page.upload_record.filename, str(e), trace))
+
             result_page.upload_record.errorenum = 7
             result_page.upload_record.save()
 
@@ -589,17 +610,21 @@ def _final_validation_and_upload(result_page):
 
 
 def _parse_raw_upload_string(filename, raw_race_data_string):
-    """
+    '''
     There a many possible scenarios that could cause this to fail,
     we want to record as much as possible so either the admin or
     the user can make a change and hopefully succeed.
 
     I expect that people will accidentally (hopefully) throw a number
     invalid files at this.
-    """
-    raceresults_list = []
+
+    Returns
+    ----------
+        List of SingleRace objects that have been parsed
+    '''
+    single_race_list = []
     currentRaceStartIndex = 0
-    lastRace = ""
+    lastRace = ''
 
     # http://stackoverflow.com/questions/7472839/python-readline-from-a-string
     buf = io.StringIO(raw_race_data_string)
@@ -618,7 +643,7 @@ def _parse_raw_upload_string(filename, raw_race_data_string):
         if (content[i].find('www.RCScoringPro.com') != -1):
             # This means we have found a new race in the file.
 
-            # print "=" * 100
+            # print '=' * 100
             # print content[currentRaceStartIndex:i]
 
             # This is a special check, if they have modified the race
@@ -628,17 +653,17 @@ def _parse_raw_upload_string(filename, raw_race_data_string):
                 currentRaceStartIndex = i
                 continue
 
-            singlerace = RCScoringProTXTParser(filename, content[currentRaceStartIndex:i])
-            raceresults_list.append(singlerace)
+            single_race = RCScoringProTXTParser(filename, content[currentRaceStartIndex:i])
+            single_race_list.append(single_race)
 
             lastRace = content[currentRaceStartIndex + 4]
             currentRaceStartIndex = i
 
     # This triggers when we have found the final race in the file.
-    singlerace = RCScoringProTXTParser(filename, content[currentRaceStartIndex:len(content)])
-    raceresults_list.append(singlerace)
+    single_race = RCScoringProTXTParser(filename, content[currentRaceStartIndex:len(content)])
+    single_race_list.append(single_race)
 
-    return raceresults_list
+    return single_race_list
 
 
 def _modify_trackname(single_race_data, origional_trackname, new_trackname):
@@ -658,8 +683,8 @@ def _modify_trackname(single_race_data, origional_trackname, new_trackname):
     for line in content:
         search_result = pattern.search(line)
         if (search_result):
-            newline = " " * search_result.start(0)
-            newline += new_trackname + "\n"
+            newline = ' ' * search_result.start(0)
+            newline += new_trackname + '\n'
             modified_data_lines.append(newline)
         else:
             modified_data_lines.append(line)

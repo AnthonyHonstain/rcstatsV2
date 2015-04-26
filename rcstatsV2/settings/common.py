@@ -130,40 +130,23 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------------
 # Django Logging https://docs.python.org/3/howto/logging.html
 # ---------------------------------------------------------------------------
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    # Formatters specify the layout of log records in the final output
-    'formatters': {
-        'verbose': {
-            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
-                       'filename=%(filename)s lineno=%(lineno)s ' +
-                       'funcname=%(funcName)s message="%(message)s"'),
-            'datefmt': '%Y-%m-%d %H:%M:%S'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
+# Handlers send the log records to the appropriate destination
+LOGGING_HANDLERS = {
+    'null': {
+        'level': 'DEBUG',
+        'class': 'logging.NullHandler',
     },
-    # Handlers send the log records to the appropriate destination
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    # Expose the interface for application code to directly interact with
-    'loggers': {
-        # A good default logger for heroku
-        'defaultlogger': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        }
+    'console': {
+        'level': 'DEBUG',
+        'class': 'logging.StreamHandler',
+        'formatter': 'verbose'
+    }
+}
+# Expose the interface for application code to directly interact with
+LOGGING_LOGGERS = {
+    # A good default logger for heroku
+    'defaultlogger': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     }
 }
