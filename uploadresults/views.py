@@ -42,7 +42,6 @@ from django.contrib.auth.decorators import login_required
 from django import forms
 from django.utils import timezone
 
-from django.conf import settings
 from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces, SingleRaceData
 from uploadresults.process_singlerace import create_single_race_details, FileAlreadyUploadedError
 
@@ -579,7 +578,7 @@ def _final_validation_and_upload(result_page):
             # Go ahead an queue an outgoing email if this is a mod buggy race.
             log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
             if single_race_details.racedata == 'Mod Buggy':
-                log.trace('metric=Email single_race_details=%s', single_race_details.id)
+                log.info('metric=Email single_race_details=%s', single_race_details.id)
                 mail_single_race.delay(single_race_details.id)
             # ----------------------------------------------------
 
