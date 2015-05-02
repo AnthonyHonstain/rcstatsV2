@@ -14,6 +14,23 @@ source bin/activate
 http://askubuntu.com/questions/488529/pyvenv-3-4-error-returned-non-zero-exit-status-1
 http://askubuntu.com/questions/279959/how-to-create-a-virtualenv-with-python3-3-in-ubuntu
 
+> Additionally, you may also need to manually install setuptools and pip
+```
+source ./rcstats/bin/activate
+wget https://pypi.python.org/packages/source/s/setuptools/setuptools-3.4.4.tar.gz
+tar -vzxf setuptools-3.4.4.tar.gz
+cd setuptools-3.4.4
+python setup.py install
+cd ..
+wget https://pypi.python.org/packages/source/p/pip/pip-1.5.6.tar.gz
+tar -vzxf pip-1.5.6.tar.gz
+cd pip-1.5.6
+python setup.py install
+cd ..
+deactivate
+```
+
+
 Retrieve the project from git and install requirements.
 ```
 clone git@github.com:AnthonyHonstain/rcstatsV2.git
