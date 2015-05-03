@@ -49,7 +49,7 @@ RC-Stats is a racing community to track and share your RC race results.
       <table id="table-all-races-{{ trackname.id }}"></table>
     </div>
   </div>
-
+</div>
 
 {% endblock %}
 
@@ -80,7 +80,7 @@ $(document).ready(function(){
         var formatedRace = "";
         racedate.local();
         // Reference - http://momentjs.com/docs/#/displaying/
-        formatedDate = racedate.format("dddd MMM Do YYYY h:mm a");
+        formatedDate = racedate.format("MMM/D dddd h:mm");
         race.racedate = formatedDate;
         return race;
       });
@@ -104,14 +104,8 @@ $(document).ready(function(){
             field: "roundnumber",
             title: "Rnd"
         }, {
-            field: "racenumber",
-            title: "Race"
-        }, {
             field: "racedate",
             title: "Date"
-        }, {
-            field: "racelength",
-            title: "Len"
         }]
       });
     })
