@@ -12,7 +12,7 @@ def index(request):
     # We want to most recent main event.
     singleracedetail = SingleRaceDetails.objects.filter(
         trackkey__exact=trackname.id,
-        maineventparsed__isnull=False).order_by('-racedate').first()
+        mainevent__isnull=False).order_by('-racedate').first()
 
     return render(request, 'index.html', {'trackname': trackname, 'singleracedetail': singleracedetail})
 
