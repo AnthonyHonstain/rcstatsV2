@@ -119,3 +119,9 @@ Application Logs - Need to update app name
 ```
 heroku logs -t -s nameless-ridge-5720
 ```
+
+Architecture
+-------------
+* Static files
+** I am currently using gunicorn to host my statics directly on heroku, this not ideal. But it easy to understand and develop against (for a site with very low traffic) https://github.com/kennethreitz/dj-static https://github.com/rmohr/static3
+** In the future - this would be a better approach - https://devcenter.heroku.com/articles/s3
