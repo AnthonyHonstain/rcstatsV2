@@ -22,6 +22,9 @@ def single_race_details(request, single_race_detail_id):
     logger.debug('metric=singleracedetail single_race_detail_id=%s', single_race_detail_id)
 
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
+
+    if single_race_detail.maineventparsed == None:
+        single_race_detail.maineventparsed = ''
     trackname = single_race_detail.trackkey
     return render(request, 'single_race_detail.html',
                   {'trackname': trackname, 'singleracedetail': single_race_detail})
