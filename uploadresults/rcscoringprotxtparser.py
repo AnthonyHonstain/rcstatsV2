@@ -188,15 +188,15 @@ class RCScoringProTXTParser(SingleRace):
                 # If we are the end of the lap data
                 if (line.find('-----') != -1):
                     # Example: ' ------- ------- ------- ------- '
-                    index += 2 # WARNING - This is for additional laps logic below.
+                    index += 2  # WARNING - This is for additional laps logic below.
                     break
 
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # Special code for dealing with pace data.
-                if (pacedata_included == None): # Common case (no pace data)
+                if (pacedata_included is None):  # Common case (no pace data)
                     # Warning - we dont want to blanket strip this (white space matters)
                     self._lapRowsRaw.append(line.strip('\r\n'))
-                else: # Special case (pace data mixed in).
+                else:  # Special case (pace data mixed in).
                     if (pacedata_included % 3 == 0):
                         self._lapRowsRaw.append(line.strip('\r\n'))
                     pacedata_included += 1
@@ -221,7 +221,7 @@ class RCScoringProTXTParser(SingleRace):
             if ((not found_additional_laps) and (line.find('__11__') != -1)):
                 found_additional_laps = True
                 self._columnHeaders += line
-                if (pacedata_included != None):
+                if (pacedata_included is not None):
                     pacedata_included = 0
 
             elif found_additional_laps:
@@ -232,7 +232,7 @@ class RCScoringProTXTParser(SingleRace):
 
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # Special code for dealing with pace data.
-                if (pacedata_included == None):  # Common case (no pace data)
+                if (pacedata_included is None):  # Common case (no pace data)
                     self._lapRowsRaw[additional_lap_index] += line
                     additional_lap_index += 1
                 else:  # Special case (pace data mixed in)
@@ -297,7 +297,9 @@ class RCScoringProTXTParser(SingleRace):
         #     Explanation - Ignoring the first character [1:], find the next empty space.
         lap_width = self._columnHeaders[1:].find(' ') - 1
 
+        # Walk through each line of the raw lap times and extract racers position and time.
         for row in self._lapRowsRaw:
+
             index = 1
             racer_index = 0
             while index < len(row):
@@ -305,10 +307,28 @@ class RCScoringProTXTParser(SingleRace):
                     raise Exception("Error in the _lapRowsRaw resulting in" +
                                     " incorrect parsing (laps for more racers than expected")
                 pos, lap = self._parse_Lap(row[index:index + lap_width + 1])
+
                 self.lapRowsPosition[racer_index].append(pos)
                 self.lapRowsTime[racer_index].append(lap)
 
                 index += lap_width + 2  # +2 to skip the ' ' space.
+                racer_index += 1
+
+            '''
+            Example - note that the white spaces only extend as far right as the last race on the line
+             ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+             5/35.95 1/26.24 4/30.95 2/27.01 3/29.63
+                     1/17.48 4/18.05 2/17.83 3/17.74
+                     1/17.14         2/17.25 3/19.69
+                     1/17.61         2/17.11
+                     1/20.71
+             ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+            '''
+            # Create empty records for the rest of the racers in this row
+            # even if it ended early.
+            while racer_index < max_racers:
+                self.lapRowsPosition[racer_index].append('')
+                self.lapRowsTime[racer_index].append('')
                 racer_index += 1
 
     def _process_Raw_Header_Rows(self):

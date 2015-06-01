@@ -124,8 +124,8 @@ def create_single_race_details(single_race):
             continue
             # raise FileUnableToParseError("This racer %s is missing his laps: %s" % (index, single_race.raceHeaderData))
         for row in range(0, len(single_race.lapRowsTime[index])):
-            # print "Debug: ", racer
-            # print "Debug: ", lapRowsPosition[index]
+            # print("Debug: ", racer['racer_obj'], row, single_race.lapRowsPosition[index][row])
+
             if (single_race.lapRowsPosition[index][row] == ''):
                 single_race.lapRowsPosition[index][row] = None
                 single_race.lapRowsTime[index][row] = None
