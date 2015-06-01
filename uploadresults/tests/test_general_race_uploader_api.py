@@ -12,6 +12,7 @@ import os
 import pytz
 
 import uploadresults.models as models
+import core.models as core_models
 
 from core.models import (
     LapTimes,
@@ -26,7 +27,7 @@ class RaceUploadRecord():
     def __init__(self, filename, filecontent):
         self.filename = filename
         self.filecontent = filecontent
-        self.single_race_data_pk = None
+        self.single_race_details_pk = None
 
 
 class GeneralRaceUploaderAPI(TestCase):
@@ -138,27 +139,40 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         sup_trackname_obj.save()
         self.supported_trackname_obj = sup_trackname_obj
 
+        # Process each race/file from the list to upload separately.
         for race_to_upload in self.racelist_to_upload:
             upload_data = {
                 "trackname": trackname_obj.id,
                 "filename": race_to_upload.filename,
                 "data": race_to_upload.filecontent}
             response = self.client.post('/upload/single_race_upload/', upload_data)
-            # response.data {'data': 'None', 'owner': 'temporary', 'trackname': 1, 'pk': 1, 'filename': 'None', 'ip': '127.0.0.1'}
-            # print(response.data)
+            # response.data {
+            #     'uploadrecord': 2, 'id': 2, 'data': '.........raw-data....'
+            #     'owner': 'temporary', 'ip': '127.0.0.1', 'primaryrecord': 2,
+            #     'trackname': 1, 'filename': 'upload2'}
 
-            race_to_upload.easy_uploader_primary_record_pk = response.data['id']
+            single_race_data_pk = response.data['id']
+            uploadrecord_pk = response.data['uploadrecord']
             self.assertEqual(response.status_code, 201)
 
-            response = self.client.get("/upload/single_race_upload_detail/" + str(response.data['id']) + "/")
+            # Now that we have the new SingleRaceData record created we can sanity check the get endpoint
+            response = self.client.get("/upload/single_race_upload_detail/" + str(single_race_data_pk) + "/")
             self.assertEqual(response.status_code, 200)
-        # The race has now been uploaded into the system.
 
-    def test(self):
-        pass
+            # We are going to retrieve the single_race_details records for this upload.
+            # There is no use case beyond testing for the upload API to expose this, so we will
+            # get it from the model.
+            easy_uploaded_races = models.EasyUploadedRaces.objects.filter(upload__exact=uploadrecord_pk)
 
-    def test2(self):
-        pass
+            # TODO - WARNING - if we start including multiple races in a single upload (more realistic)
+            # we will need to address this.
+            self.assertEquals(len(easy_uploaded_races), 1, 'Test infastructure only supports single race event per upload')
+
+            # We are going to pull the single race details out of this and store it in our
+            # RaceUploadRecord so the different tests can use it.
+            race_to_upload.single_race_details_pk = easy_uploaded_races[0].racedetails.id
+
+        # All the races have now been uploaded into the system.
 
     def test_multipleraces_upload_records(self):
         # ====================================================
@@ -167,8 +181,8 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # because each file got uploaded separately, each will have its own primary record.
         for race_to_upload in self.racelist_to_upload:
 
-            single_race_data = models.SingleRaceData.objects.get(
-                pk=race_to_upload.easy_uploader_primary_record_pk)
+            single_race_details = core_models.SingleRaceDetails.objects.get(
+                pk=race_to_upload.single_race_details_pk)
 
 #             self.assertEqual(primary_record.filecount, 1)
 #             self.assertEqual(primary_rord.filecountsucceed, 0)
