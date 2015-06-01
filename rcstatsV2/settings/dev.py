@@ -94,6 +94,8 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 # Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+ENABLE_RACEUPDATE_EMAIL_KILLSWITCH = True
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------

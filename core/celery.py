@@ -67,7 +67,11 @@ def _mail_single_race(user, single_race_detail):
     #print(text_content)
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
     msg.attach_alternative(html_content, "text/html")
-    msg.send(fail_silently=False)
+
+    # TODO - clean this up so its more clear what is going on
+    # We want to be able to toggle this functionality from the configs
+    if settings.ENABLE_RACEUPDATE_EMAIL_KILLSWITCH:
+        msg.send(fail_silently=False)
     return
 
 
