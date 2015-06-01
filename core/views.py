@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from core.models import TrackName, SingleRaceDetails
+from core.models import TrackName, SingleRaceDetails, SingleRaceResults
 
 import logging
 logger = logging.getLogger('defaultlogger')
@@ -22,9 +22,11 @@ def single_race_details(request, single_race_detail_id):
     logger.debug('metric=singleracedetail single_race_detail_id=%s', single_race_detail_id)
 
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
+    race_results = SingleRaceResults.objects.filter(raceid=single_race_detail.id)\
+        .order_by('finalpos').select_related('racerid')
 
-    if single_race_detail.maineventparsed == None:
+    if single_race_detail.maineventparsed is None:
         single_race_detail.maineventparsed = ''
     trackname = single_race_detail.trackkey
     return render(request, 'single_race_detail.html',
-                  {'trackname': trackname, 'singleracedetail': single_race_detail})
+                  {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})

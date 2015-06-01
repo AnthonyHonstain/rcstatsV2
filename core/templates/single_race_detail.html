@@ -5,7 +5,7 @@ Results
 {% endblock %}
 
 {% block description %}
-Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}
+Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed }}
 {% endblock %}
 
 {% block content %}
@@ -18,19 +18,127 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 </div>
 
 <div class="container well">
+  <!-- The race results table -->
   <h2>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h2>
   <div id="span-new-race-{{ singleracedetail.id }}"></div>
   <table id="table-new-race-{{ singleracedetail.id }}"></table>
+  </br>
+</div>
+
+<div class="container well">
+  <!-- The flot laptime graph -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Graph Laptimes</h3>
+    </div>
+    <div class="panel-body ">
+      {% for result in raceresults %}
+      <button id="{{ result.racerid.id }}" class="fetchSeries btn btn-block">
+        {{ result.racerid.racerpreferredname }}
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="laptimegraph_placeholder" style="height:300px;"></div>
 </div>
 
 {% endblock %}
 
 {% block script %}
 <script src="/static/js/rcstats.js"></script>
+
+<!--
+Just for the laptime graph
+TODO - refactor this once it starts working
+ -->
+<script src="/static/js/jquery.flot.min.js"></script>
+<script src="/static/js/jquery.flot.resize.min.js"></script>
+
 <script type="text/javascript" charset="utf-8">
 
 $(document).ready(function(){
-    populateSingleRaceFromRestEndpoint("{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+    populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+});
+
+// TODO - refactor this once it starts working
+$(document).ready(function(){
+
+  var options = {
+    lines: { show: true },
+    points: { show: true },
+    xaxis: { tickDecimals: 0, tickSize: 1, font: { size: 8,  weight: "bold", variant: "small-caps"} },
+    // TODO - I want to dynamically set this to trim the outliers
+    //yaxis: { min: 15, max: 18 },
+    legend: { labelFormatter: null }
+  };
+
+  var data = [];
+  // Hold all the laptime data, we will bring down in a single call.
+  var completeData = [];
+  // Fetch one series, adding to what we already have
+  var alreadyFetched = {};
+
+  $("button.fetchSeries").click(function () {
+    // TODO - it would be nice to record how often users click these buttons
+    var button = $(this);
+
+    // Find the URL in the link right next to us, then fetch the data
+    var racerid = parseInt(button.attr("id"));
+    var newFlotLaps = {
+      label: '', // We are going to hide the labels and use the buttons to tell which active.
+      data: []
+    };
+
+    if (!alreadyFetched[racerid]) {
+      // TODO - this is widly ineficient, but it got the prototype running.
+      //    This pushes all the work to the client to iterate all the laps many times.
+      button.addClass('btn-success');
+
+      var goodlaps = _.filter(completeData, function(laptime) { return laptime.racerid == racerid; });
+      newFlotLaps.data = _.map(goodlaps, function(laptime) { return [laptime.racelap, laptime.racelaptime] });
+
+      alreadyFetched[racerid] = newFlotLaps;
+      data.push(newFlotLaps);
+    }
+    else {
+      // De-select the racer when they toggle the button.
+      button.removeClass('btn-success');
+
+      delete alreadyFetched[racerid];
+      console.log("REMOVE LAPDATA");
+
+      data = [];
+      _.each(alreadyFetched, function(fetched) {
+          data.push(fetched);
+      });
+    }
+
+    $.plot("#laptimegraph_placeholder", data, options);
+  });
+
+  function retreiveCompleteLapTimesData() {
+
+    function onDataReceived(series) {
+      completeData = series;
+      // WARNING - going to click the first racer to set some starting values
+      $("button.fetchSeries:first").click();
+    };
+
+    $.ajax({
+      //'http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/865/LapTimes/',
+      url: "{% url 'laptimes-list' trackname=trackname.id singleracedetails=singleracedetail.id  %}",
+      contentType:"application/json; charset=utf-8",
+      type: "GET",
+      dataType: "json",
+      success: onDataReceived
+    });
+  };
+
+  retreiveCompleteLapTimesData();
+  //We are going to rely on the default first button click to plot
+  //$.plot("#laptimegraph_placeholder", data, options);
+
 });
 </script>
 {% endblock %}

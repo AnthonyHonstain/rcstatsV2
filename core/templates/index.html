@@ -60,7 +60,7 @@ RC-Stats is a racing community to track and share your RC race results.
 <script type="text/javascript" charset="utf-8">
 
 $(document).ready(function(){
-  populateSingleRaceFromRestEndpoint("{% url 'singleracedetail-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+  populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
 
   // We want to create a basic list of past races so they can quickly scan through them.
   $.ajax({

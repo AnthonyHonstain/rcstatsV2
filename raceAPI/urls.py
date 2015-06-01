@@ -6,11 +6,25 @@ from raceAPI import views
 router = routers.DefaultRouter()
 router.register(r'TrackName', views.TrackNameList)
 router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails',
-                views.SingleRaceDetailsList,
-                base_name='singleracedetail')
+                views.SingleRaceDetailsByTrackList,
+                base_name='singleracedetailsbytrack')
 router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetailsSlim',
                 views.SingleRaceDetailsSlimList,
                 base_name='singleracedetailslim')
+
+# Starting to clean up an provide generic endpoints for the API
+router.register(r'RacerId',
+                views.RacerIdList,
+                base_name='racerid')
+router.register(r'SingleRaceDetails',
+                views.SingleRaceDetailsList,
+                base_name='singleracedetails')
+# TODO - starting with the laptimes, if this structure is cleaner than I should fix the
+# race details and the slim.
+router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails/(?P<singleracedetails>.+)/LapTimes',
+                views.LapTimesList,
+                base_name='laptimes')
+
 
 urlpatterns = patterns(
     '',
