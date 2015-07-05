@@ -4,54 +4,70 @@ RC-STATS V2
 
 Fresh Install
 -------------
+Dependencies (installed with Synaptic on ubuntu 15.04
+* python3 (already installed)
+* virtualenv and python3-virtualenv
+* postgresql
+ * Create a new postgresql user (I called it pgadmin) - "sudo -i -u postgres" and "createuser -P -s -e pgadmin"
+ * Adjust auth method for dev db (add one for your new user) and restart - http://stackoverflow.com/questions/18664074/getting-error-peer-authentication-failed-for-user-postgres-when-trying-to-ge
+ * Add the rcstats DB "createdb -U pgadmin -W rcstatsV2"
+* celery - TODO
+
 Using virtualenv for the project.
 ```
-python3 -m venv --without-pip rcstats
+virtualenv -p /usr/bin/python3 rcstats
 cd rcstats
 source bin/activate
 ```
-> Reference - I followed this for Ubuntu 10.04, hopefully the newer version doesn't have this problem.
+> ~~Reference - I followed this for Ubuntu 10.04, hopefully the newer version doesn't have this problem.
 http://askubuntu.com/questions/488529/pyvenv-3-4-error-returned-non-zero-exit-status-1
-http://askubuntu.com/questions/279959/how-to-create-a-virtualenv-with-python3-3-in-ubuntu
-
-> Additionally, you may also need to manually install setuptools and pip
-```
-source ./rcstats/bin/activate
-wget https://pypi.python.org/packages/source/s/setuptools/setuptools-3.4.4.tar.gz
-tar -vzxf setuptools-3.4.4.tar.gz
-cd setuptools-3.4.4
-python setup.py install
-cd ..
-wget https://pypi.python.org/packages/source/p/pip/pip-1.5.6.tar.gz
-tar -vzxf pip-1.5.6.tar.gz
-cd pip-1.5.6
-python setup.py install
-cd ..
-deactivate
-```
-
+http://askubuntu.com/questions/279959/how-to-create-a-virtualenv-with-python3-3-in-ubuntu~~
 
 Retrieve the project from git and install requirements.
 ```
-clone git@github.com:AnthonyHonstain/rcstatsV2.git
+git clone git@github.com:AnthonyHonstain/rcstatsV2.git
 cd rcstatsV2
 pip install -r reqs/dev.txt
 ```
 
+Configure your dev settings
+* "cp rcstatsV2/settings/settings_secret.py_TEMPLATE rcstatsV2/settings/settings_secret.py"
+* Add your local database and set a secret key (leave the email accounts null for now).
+
 Install initial SQL Data (sync db first)
 ```
+python manage.py syncdb
 python manage.py loaddata core/fixture/ClassNames.json
+// Create a starter track so you can see the landing page
+python manage.py loaddata core/fixture/TrackName.json
+
 // FOR HEROKU
 heroku run python manage.py loaddata core/fixture/ClassNames.json
+
+// Should pass tests at this stage
+python manage.py test
 ```
 
+Create an admin user so we can get the site running locally
+* "python manage.py createsuperuser"
+* "python manage.py runserver 0.0.0.0:8000"
+* Login to http://localhost:8000/admin/
+ * Home -> Sites -> Sites -> Add site
+  * Domain name: 127.0.0.1:8000
+  * Display name: rc-stats.com
+ * Delete the example site 
+* Connect and load a race using the web uploader - http://localhost:8000/upload/easyupload_track/
+ * Sample races are included in the repository - rcstatsV2/samplerace/
+* Now that you have a race in the system - navigate to http://localhost:8000/
+ * Navigate around - http://localhost:8000/results/singleracedetail/1/ 
 
 Dev Cheat Sheet
 -------------
-Run the unit test suite.
+Run the unit test suite - AUTOMATED tests should cover a large portion of the backend functionality.
 ```
 python manage.py test
 ```
+
 Basic dev tasks.
 ```
 // Run the dev env so it can be accessed while developing in VM.
