@@ -1,0 +1,16 @@
+[
+  {
+    "pk": 1,
+    "model": "core.trackname",
+    "fields": {
+      "trackname": "Tacoma RC Raceway"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "core.supportedtrackname",
+    "fields": {
+      "trackkey": 1
+    }
+  }
+]
