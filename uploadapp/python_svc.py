@@ -1,8 +1,7 @@
 r'''
-Requirements - Python3, Python for Windows extensions http://sourceforge.net/projects/pywin32/
-Windows logging - http://stackoverflow.com/questions/1067531/are-there-any-log-file-about-windows-services-status
+SCRIPT FOR AUTOMATICALLY UPLOADING RACE RESULTS
 
-Usage : C:\Python34\python.exe aservice.py install (or / then start, stop, remove, update)
+Usage : C:\Python34\python.exe python_svc.py install (or / then start, stop, remove, update)
 
 Tail the logs in powershell
     Get-Content -Path .\rcstats_upload.log -Wait
@@ -20,9 +19,16 @@ Records are stored in a sqlite database DB_CONN
     SUCCESS ON FINAL TRY
         "7" "C:\Users\Anthony\Desktop\testfolder\race_2_15\Round4.txt" "1" "0" "3"
 
-
 Helpful tools:
     * http://sqlitebrowser.org/ to check status of database.
+
+    * Windows logging - http://stackoverflow.com/questions/1067531/are-there-any-log-file-about-windows-services-status
+    * PowerShell: Get-Content -Wait .\rcstats_upload.log
+
+DEPENDENCIES:
+    * Python3
+    * Python for Windows extensions http://sourceforge.net/projects/pywin32/
+    * https://pypi.python.org/pypi/psutil#downloads
 '''
 
 import win32service
@@ -32,6 +38,9 @@ import win32con
 import win32event
 import win32evtlogutil
 import os, sys, string, time
+
+# psutil is needed for checking if the file is open by another process
+#import psutil
 
 import pathlib
 import sqlite3
@@ -45,22 +54,27 @@ import traceback
 import re
 import logging
 
-logging.basicConfig(level=logging.NOTSET)
-
-logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s')
-handler = logging.FileHandler('rcstats_upload.log')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
 #UPLOAD_URL = 'http://192.168.110.129:8000/upload/single_race_upload/'
 UPLOAD_URL = 'http://nameless-ridge-5720.herokuapp.com/upload/single_race_upload/'
+
+BASE_PATH = r'C:\Users\Anthony\Desktop\\'
+
+MINUTES_TO_WAIT_BEFORE_UPLOAD = 15
+
 REGEX_ROUND_FILE = re.compile('Round.\.txt$')
 TEST_DIRECTORY = r'C:\Users\Anthony\Desktop\testfolder'
 MAX_ALLOWED_RETRY = 3
 RETRY_WAIT_TIME_SECONDS = 3600
-DB_FILENAME = 'rcstats_upload.db'
+DB_FILENAME = BASE_PATH + 'rcstats_upload.db'
 DB_CONN = sqlite3.connect(DB_FILENAME)
+
+logging.basicConfig(level=logging.NOTSET)
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s')
+handler = logging.FileHandler(BASE_PATH + 'rcstats_upload.log')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 Upload = namedtuple('Upload', ['filename', 'success', 'retry', 'attemptcount', 'created', 'lastattempt'])
 
@@ -252,6 +266,10 @@ def find_and_process_race_files():
                 #logger.info('Skip: %s', file_name)
                 pass
         else:
+            logger.info('Considering file: %s', file_name)
+            if file_already_open(file_name):
+                continue
+
             logger.info('New: %s', file_name)
             # We are going to insert the race prior to attempting the upload
             # so we have an acurate record of attempts if it totally falls down.
@@ -264,6 +282,39 @@ def find_and_process_race_files():
             new_upload_count += 1
 
     logger.info('Finished processing - new uploads:%d retry attempts:%d', new_upload_count, retry_count)
+
+def file_already_open(file_name):
+    '''
+    Giving up on checking if the file is already open by another process, we are just
+    going to check if it has been some period since it was last modified.
+    '''
+    already_open = False
+    mod_time = os.path.getmtime(file_name)
+    minutes_since_modify = (time.time() - mod_time) / 60
+    #logger.info('%s Minutes: %d', file_name, minutes_since_modify)
+    if minutes_since_modify < MINUTES_TO_WAIT_BEFORE_UPLOAD:
+        already_open = True
+        logger.info('Skipping, file already open %d min %s', minutes_since_modify, file_name)
+        
+##    for proc in psutil.process_iter():
+##        logger.error('Checking process: %s', proc.name())
+##        try:
+##            flist = proc.open_files()
+##            if flist:
+##                logger.info('File List: %s', flist)
+##                for nt in flist:
+##                    logger.info('Compare %s == %s', nt.path, file_name)
+##                    if nt.path == file_name:
+##                        already_open = True
+##                        break
+##            if already_open:
+##                break
+##           
+##        except psutil.AccessDenied as err:
+##            logger.error('AccessDenied %s', err)
+##        except psutil.NoSuchProcess as err:
+##            logger.error("NoSuchProcess" ,err)
+    return already_open
 
 class aservice(win32serviceutil.ServiceFramework):
     '''
@@ -286,9 +337,9 @@ class aservice(win32serviceutil.ServiceFramework):
         import servicemanager
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        self.timeout = 640000  # 640 seconds / 10 minutes (value is in milliseconds)
+        #self.timeout = 640000  # 640 seconds / 10 minutes (value is in milliseconds)
         #self.timeout = 120000  # 120 seconds / 2 minutes
-        #self.timeout = 12000
+        self.timeout = 12000
         # This is how long the service will wait to run / refresh itself (see script below)
         logger.info('RaceUplaoder - STARTING')
         while 1:
