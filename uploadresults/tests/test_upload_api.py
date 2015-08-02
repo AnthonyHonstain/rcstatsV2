@@ -123,5 +123,5 @@ Echo, Jon            #1          1           35.952         35.952
     def test_endpoint_to_get_tracknames(self):
         response = self.client.get("/upload/TrackNameList/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data['results']), 1, 'Should only be one track in the system')
-        self.assertEqual(response.data['results'][0]['trackname'], "TACOMA R/C RACEWAY")
+        self.assertEqual(len(response.data), 1, 'Should only be one track in the system')
+        self.assertEqual(response.data[0]['trackname'], "TACOMA R/C RACEWAY")
