@@ -36,7 +36,7 @@ class SingleRaceDetails(models.Model):
     # roundnumber and racenumber do not exist in older formats
     roundnumber = models.IntegerField(null=True)
     racenumber = models.IntegerField(null=True)
-    racedate = models.DateTimeField('Date of the race')
+    racedate = models.DateTimeField('Date of the race', db_index=True)
     uploaddate = models.DateTimeField('Date the race was uploaded')
     racelength = models.IntegerField('Number of minutes for the race')
     winninglapcount = models.IntegerField('Number of laps that won the race')
