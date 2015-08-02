@@ -59,9 +59,10 @@ class SingleRaceDetailsSlimList(viewsets.ReadOnlyModelViewSet):
     '''
     Streamlined/basic version of the SingleRaceDetailsByTrack with no additional objects.
     '''
-    # TODO - I am going to need to address this here and on front end.
+    # Using limit offset pagination now
     # http://www.django-rest-framework.org/api-guide/pagination/
-    paginate_by = None
+    max_limit = 10
+
     permission_classes = (AllowAny,)
     queryset = SingleRaceDetails.objects.all()
     serializer_class = SingleRaceDetailsSlimSerializer
@@ -76,6 +77,7 @@ class LapTimesList(viewsets.ReadOnlyModelViewSet):
     Display the lap times for a track+singleracedetails, this is mainly for the flot graph
     '''
     paginate_by = None
+    page_size = 10
     permission_classes = (AllowAny,)
     queryset = LapTimes.objects.all()
     serializer_class = LapTimesSerializer
