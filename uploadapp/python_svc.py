@@ -54,8 +54,8 @@ import traceback
 import re
 import logging
 
-#UPLOAD_URL = 'http://192.168.110.129:8000/upload/single_race_upload/'
-UPLOAD_URL = 'http://nameless-ridge-5720.herokuapp.com/upload/single_race_upload/'
+UPLOAD_URL = 'http://192.168.110.128:8000/upload/single_race_upload/'
+#UPLOAD_URL = 'http://nameless-ridge-5720.herokuapp.com/upload/single_race_upload/'
 
 BASE_PATH = r'C:\Users\Anthony\Desktop\\'
 
@@ -144,7 +144,7 @@ def update_fail(upload_record):
 
 def update_retry(upload_record):
     # We must prevent the system from retrying for ever.
-    if current_upload_record.attemptcount >= MAX_ALLOWED_RETRY - 1:
+    if upload_record.attemptcount >= MAX_ALLOWED_RETRY - 1:
         return update_fail(upload_record)
 
     DB_CONN.execute('UPDATE upload SET success = 0, retry = ?, attemptcount = ?, lastattempt = ? WHERE filename=?',
