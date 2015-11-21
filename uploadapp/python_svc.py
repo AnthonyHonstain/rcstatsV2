@@ -54,17 +54,22 @@ import traceback
 import re
 import logging
 
+# The location we upload races to.
 UPLOAD_URL = 'http://192.168.110.128:8000/upload/single_race_upload/'
 #UPLOAD_URL = 'http://nameless-ridge-5720.herokuapp.com/upload/single_race_upload/'
 
-BASE_PATH = r'C:\Users\Anthony\Desktop\\'
+REGEX_ROUND_FILE = re.compile('Round.\.txt$') # The regex to match race files to upload.
+TEST_DIRECTORY = r'C:\Users\Anthony\Desktop\RC_uploader\testfolder' # This is where we look for races.
 
-MINUTES_TO_WAIT_BEFORE_UPLOAD = 15
+MINUTES_TO_WAIT_BEFORE_UPLOAD = 2 # The time we wait (from the last modified date on the race) before we attempt.
+MAX_ALLOWED_RETRY = 3 # The max attempts we will retry a single race file.
+RETRY_WAIT_TIME_SECONDS = 3600 # The time before we re-attempt a file that previously failed.
+# milliseconds 640000  # 640 seconds / 10 minutes (value is in milliseconds)
+# milliseconds 120000  # 120 seconds / 2 minutes
+PROCESS_TIMER_MILLISECONDS = 5000 # The amount of time between iterations of this script.
 
-REGEX_ROUND_FILE = re.compile('Round.\.txt$')
-TEST_DIRECTORY = r'C:\Users\Anthony\Desktop\testfolder'
-MAX_ALLOWED_RETRY = 3
-RETRY_WAIT_TIME_SECONDS = 3600
+BASE_PATH = r'C:\Users\Anthony\Desktop\RC_uploader\\' # This is where the log file and db files go.
+
 DB_FILENAME = BASE_PATH + 'rcstats_upload.db'
 DB_CONN = sqlite3.connect(DB_FILENAME)
 
@@ -188,8 +193,8 @@ def upload_to_api(filename, race_txt):
     headers = {}
     headers['Content-Type'] = 'application/json;charset=UTF-8'
 
-# TODO - come up with a better scheme for setting creds.
-headers['Authorization'] = FIX ME
+    # TODO - come up with a better scheme for setting creds.
+    headers['Authorization'] = FIX ME
 
     # now do the request for a url
     req = request.Request(UPLOAD_URL, post_data, headers=headers)
@@ -246,12 +251,12 @@ def find_and_process_race_files():
     # If the file is not in the db we want to attempt upload and persist it.
     files_to_upload = {}
     for file_name in possible_files:
-        if file_name in file_records:
+        if file_name in file_records:            
             if not file_records[file_name].success:
                 logger.info('Retry: %s', file_name)
                 current_upload_record =  file_records[file_name]
 
-                # We only retry once an hour to try and give the server a chance to recover
+                # We will only attempt a retry after a given amount of time, so the server can hopefully recover.
                 diff = datetime.utcnow() - current_upload_record.lastattempt
 
                 if (current_upload_record.retry and diff.seconds >= RETRY_WAIT_TIME_SECONDS):
@@ -294,7 +299,7 @@ def file_already_open(file_name):
     #logger.info('%s Minutes: %d', file_name, minutes_since_modify)
     if minutes_since_modify < MINUTES_TO_WAIT_BEFORE_UPLOAD:
         already_open = True
-        logger.info('Skipping, file already open %d min %s', minutes_since_modify, file_name)
+        logger.info('Skipping, file already open %d/%d min %s', minutes_since_modify, MINUTES_TO_WAIT_BEFORE_UPLOAD, file_name)
         
 ##    for proc in psutil.process_iter():
 ##        logger.error('Checking process: %s', proc.name())
@@ -329,6 +334,9 @@ class aservice(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
 
+        # This is how long the service will wait to run / refresh itself
+        self.timeout = PROCESS_TIMER_MILLISECONDS
+
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
@@ -337,10 +345,6 @@ class aservice(win32serviceutil.ServiceFramework):
         import servicemanager
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,servicemanager.PYS_SERVICE_STARTED,(self._svc_name_, ''))
 
-        #self.timeout = 640000  # 640 seconds / 10 minutes (value is in milliseconds)
-        #self.timeout = 120000  # 120 seconds / 2 minutes
-        self.timeout = 12000
-        # This is how long the service will wait to run / refresh itself (see script below)
         logger.info('RaceUplaoder - STARTING')
         while 1:
             # Wait for service stop signal, if I timeout, loop again
