@@ -579,6 +579,7 @@ def _final_validation_and_upload(result_page):
             log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
             if single_race_details.racedata == 'Mod Buggy':
                 log.info('metric=Email single_race_details=%s', single_race_details.id)
+                # Celery task to queue up an outgoing email.
                 mail_single_race.delay(single_race_details.id)
             # ----------------------------------------------------
 
