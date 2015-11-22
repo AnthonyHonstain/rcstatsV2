@@ -72,6 +72,8 @@ def _mail_single_race(user, single_race_detail):
     # We want to be able to toggle this functionality from the configs
     if settings.ENABLE_RACEUPDATE_EMAIL_KILLSWITCH:
         msg.send(fail_silently=False)
+    else:
+        print('Outgoing email disabled')
     return
 
 
@@ -81,6 +83,7 @@ def _mail_all_users(single_race_details_id):
     single_race_details = SingleRaceDetails.objects.get(pk=single_race_details_id)
     users = User.objects.filter(email__isnull=False, is_active=True).exclude(email__exact='')
 
+    print('Found {0} many users to email.'.format(len(users)))
     for user in users:
         # TODO - replace with real logging
         print('Mailing user {0} {1}'.format(user.id, user.username))
@@ -95,9 +98,9 @@ def debug_task(self):
 
 
 @app.task(bind=True)
-def mail_single_race(self, sinlge_race_details_id):
-    print('Request: {0!r}'.format(self.request))
+def mail_single_race(self, single_race_details_id):
+    print('Request: {0!r}'.format(self.request.task))
 
-    _mail_all_users(sinlge_race_details_id)
+    _mail_all_users(single_race_details_id)
     sys.stdout.flush()  # TODO - Remove after testing
     return
