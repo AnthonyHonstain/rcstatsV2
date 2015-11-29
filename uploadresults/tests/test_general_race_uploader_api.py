@@ -31,6 +31,10 @@ class RaceUploadRecord():
 
 
 class GeneralRaceUploaderAPI(TestCase):
+    '''
+    A base test to assist in integration tests, capable to uploading an abritrary number of races
+    into the database.
+    '''
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 
@@ -179,11 +183,19 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # Validate Upload Records
         # ====================================================
         # because each file got uploaded separately, each will have its own primary record.
-        for race_to_upload in self.racelist_to_upload:
+        #for race_to_upload in self.racelist_to_upload:
 
-            single_race_details = core_models.SingleRaceDetails.objects.get(
-                pk=race_to_upload.single_race_details_pk)
+        single_race_details_file1 = core_models.SingleRaceDetails.objects.get(
+            pk=self.racelist_to_upload[0].single_race_details_pk)
 
+        self.assertEquals(single_race_details_file1.racedata, 'MODIFIED BUGGY')
+        self.assertEquals(single_race_details_file1.racenumber, 2)
+
+        single_race_details_file2 = core_models.SingleRaceDetails.objects.get(
+            pk=self.racelist_to_upload[1].single_race_details_pk)
+
+        self.assertEquals(single_race_details_file2.racedata, 'MODIFIED BUGGY')
+        self.assertEquals(single_race_details_file2.racenumber, 1)
 #             self.assertEqual(primary_record.filecount, 1)
 #             self.assertEqual(primary_rord.filecountsucceed, 0)
 #             # TODO - enable after refactor starts
@@ -271,5 +283,4 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 #                                       raceid=raceobj2,
 #                                       carnum=6,
 #                                       lapcount=17)
-
-
+    

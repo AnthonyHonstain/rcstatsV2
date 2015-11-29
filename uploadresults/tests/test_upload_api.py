@@ -6,7 +6,10 @@ Created on Feb 2015
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from core.models import SupportedTrackName, TrackName
+import mock
+
+import uploadresults.models as models
+import core.models as core_models
 
 
 class RaceUploadRecord():
@@ -20,6 +23,7 @@ class UploadApi(TestCase):
     '''
     A set of basic tests to verify the basic functionality of the endpoint to upload races.
 
+    Some basic tests of the API uploader and testing API behavior.
     '''
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
@@ -79,11 +83,11 @@ Echo, Jon            #1          1           35.952         35.952
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
-        trackname_obj = TrackName(trackname="TACOMA R/C RACEWAY")
+        trackname_obj = core_models.TrackName(trackname="TACOMA R/C RACEWAY")
         trackname_obj.save()
         self.trackname_obj = trackname_obj
 
-        sup_trackname_obj = SupportedTrackName(trackkey=trackname_obj)
+        sup_trackname_obj = core_models.SupportedTrackName(trackkey=trackname_obj)
         sup_trackname_obj.save()
         self.supported_trackname_obj = sup_trackname_obj
 
@@ -125,3 +129,48 @@ Echo, Jon            #1          1           35.952         35.952
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1, 'Should only be one track in the system')
         self.assertEqual(response.data[0]['trackname'], "TACOMA R/C RACEWAY")
+
+
+    def test_outgoing_email_triggered_by_upload(self):
+        '''
+        Verify that we call mail_single_race.delay with the single_race_details.id when uploading a race.
+        '''
+        with mock.patch('uploadresults.views.mail_single_race.delay') as mock_mail_single_race_delay:
+
+            # Process each race/file from the list to upload separately.
+            for race_to_upload in self.racelist_to_upload:
+                upload_data = {
+                    "trackname": self.trackname_obj.id,
+                    "filename": race_to_upload.filename,
+                    "data": race_to_upload.filecontent}
+                response = self.client.post('/upload/single_race_upload/', upload_data)
+                # response.data {
+                #     'uploadrecord': 2, 'id': 2, 'data': '.........raw-data....'
+                #     'owner': 'temporary', 'ip': '127.0.0.1', 'primaryrecord': 2,
+                #     'trackname': 1, 'filename': 'upload2'}
+
+                single_race_data_pk = response.data['id']
+                uploadrecord_pk = response.data['uploadrecord']
+                self.assertEqual(response.status_code, 201)
+
+                # Now that we have the new SingleRaceData record created we can sanity check the get endpoint
+                response = self.client.get("/upload/single_race_upload_detail/" + str(single_race_data_pk) + "/")
+                self.assertEqual(response.status_code, 200)
+
+                # We are going to retrieve the single_race_details records for this upload.
+                # There is no use case beyond testing for the upload API to expose this, so we will
+                # get it from the model.
+                easy_uploaded_races = models.EasyUploadedRaces.objects.filter(upload__exact=uploadrecord_pk)
+
+                # TODO - WARNING - if we start including multiple races in a single upload (more realistic)
+                # we will need to address this.
+                self.assertEquals(len(easy_uploaded_races), 1, 'Test infastructure only supports single race event per upload')
+
+                # We are going to pull the single race details out of this and store it in our
+                # RaceUploadRecord so the different tests can use it.
+                race_to_upload.single_race_details_pk = easy_uploaded_races[0].racedetails.id
+
+            single_race_details_file1 = core_models.SingleRaceDetails.objects.get(
+                pk=self.racelist_to_upload[0].single_race_details_pk)
+
+            mock_mail_single_race_delay.assert_called_with(single_race_details_file1.id)

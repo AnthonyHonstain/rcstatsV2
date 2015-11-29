@@ -81,6 +81,14 @@ def _mail_all_users(single_race_details_id):
     # TODO - filter down to just OPT IN users
     # Get all the users
     single_race_details = SingleRaceDetails.objects.get(pk=single_race_details_id)
+
+    log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
+    if single_race_details.racedata == 'Mod Buggy':
+        log.info('metric=Email single_race_details=%s', single_race_details.id)
+    else:
+        # TODO - improve this, going to just jump out (I am just starting the rewrite)
+        return
+
     users = User.objects.filter(email__isnull=False, is_active=True).exclude(email__exact='')
 
     print('Found {0} many users to email.'.format(len(users)))

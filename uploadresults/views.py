@@ -573,15 +573,11 @@ def _final_validation_and_upload(result_page):
             result_page.uploaded_race_list.append((single_race.raceClass, single_race_details.id))
             result_page.uploaded_raceid_list.append(single_race_details.id)
 
-            # ----------------------------------------------------
-            # TODO - generalize this so it is manageable.
-            # Go ahead an queue an outgoing email if this is a mod buggy race.
-            log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
-            if single_race_details.racedata == 'Mod Buggy':
-                log.info('metric=Email single_race_details=%s', single_race_details.id)
-                # Celery task to queue up an outgoing email.
-                mail_single_race.delay(single_race_details.id)
-            # ----------------------------------------------------
+            # Celery task to queue up an outgoing email.
+            mail_single_race.delay(single_race_details.id)
+
+            # This is where we are going to queue up additional celery work, like if
+            # we want to calculating ranking.
 
         except FileAlreadyUploadedError:
             log.error('metric=UploadError type=DuplicateUpload filename=%s', result_page.upload_record.filename)
