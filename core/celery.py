@@ -70,7 +70,7 @@ def _mail_single_race(user, single_race_detail):
 
     # TODO - clean this up so its more clear what is going on
     # We want to be able to toggle this functionality from the configs
-    if settings.ENABLE_RACEUPDATE_EMAIL_KILLSWITCH:
+    if settings.ENABLE_OUTGOING_EMAIL:
         msg.send(fail_silently=False)
     else:
         print('Outgoing email disabled')
