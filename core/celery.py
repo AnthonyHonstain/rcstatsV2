@@ -30,6 +30,9 @@ app = Celery('proj')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
+import logging
+log = logging.getLogger('defaultlogger')
+
 import sys  # TODO - Remove after testing
 import random
 
@@ -107,7 +110,7 @@ def debug_task(self):
 
 @app.task(bind=True)
 def mail_single_race(self, single_race_details_id):
-    print('Request: {0!r}'.format(self.request.task))
+    print('Request: {0!r} {1}'.format(self.request.task, single_race_details_id))
 
     _mail_all_users(single_race_details_id)
     sys.stdout.flush()  # TODO - Remove after testing

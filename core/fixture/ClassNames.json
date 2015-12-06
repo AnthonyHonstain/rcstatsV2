@@ -347,5 +347,13 @@
       "officialclass": 8,
       "raceclass": "4WD MODIFIED BUGGY"
     }
-  }
+  },
+  {
+    "pk": 35,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 2,
+      "raceclass": "2WD MODIFIED BUGGY"
+    }
+  }  
 ]
