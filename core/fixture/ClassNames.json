@@ -77,6 +77,20 @@
     }
   },
   {
+    "pk": 12,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Pro Stock Buggy"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "core.officialclassnames",
+    "fields": {
+      "raceclass": "Mod Stadium Truck"
+    }
+  },
+  {
     "pk": 1,
     "model": "core.aliasclassnames",
     "fields": {
@@ -355,5 +369,29 @@
       "officialclass": 2,
       "raceclass": "2WD MODIFIED BUGGY"
     }
-  }  
+  },
+  {
+    "pk": 36,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 3,
+      "raceclass": "2WD STOCK 13.5 SHORT COURSE"
+    }
+  },
+  {
+    "pk": 37,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 12,
+      "raceclass": "PRO STOCK BUGGY"
+    }
+  },
+  {
+    "pk": 38,
+    "model": "core.aliasclassnames",
+    "fields": {
+      "officialclass": 13,
+      "raceclass": "RACING TRUCK MODIFIED"
+    }
+  }
 ]
