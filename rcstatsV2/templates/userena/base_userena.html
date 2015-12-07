@@ -6,10 +6,12 @@
 <div class="container">
   <div id="body">
     {% block body %}
-      <div class="content_title">
-        {% block userena_content_title %}{% endblock %}
+      <div class="container">
+        <div class="content_title">
+          {% block userena_content_title %}{% endblock %}
+        </div>
       </div>
-      <div class="content">
+      <div class="content container">
         {% block userena_content %}{% endblock %}
       </div>
     {% endblock %}
