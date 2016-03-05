@@ -12,6 +12,8 @@ Dependencies (installed with Synaptic on ubuntu 15.04
  * Adjust auth method for dev db (add one for your new user) and restart - http://stackoverflow.com/questions/18664074/getting-error-peer-authentication-failed-for-user-postgres-when-trying-to-ge
  * Add the rcstats DB "createdb -U pgadmin -W rcstatsV2"
 * celery - TODO
+* redis - defined in the configs, but its going to expect localhost:6379
+ * Great guide - http://redis.io/topics/quickstart
 
 Using virtualenv for the project.
 ```
