@@ -1,4 +1,4 @@
-from core.models import SingleRaceDetails, RacerId, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames
+from core.models import SingleRaceDetails, RacerId, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames, ClassEmailSubscription
 
 from django.contrib import admin
 
@@ -40,6 +40,8 @@ class OfficialClassNamesAdmin(admin.ModelAdmin):
 class AliasClassNamesAdmin(admin.ModelAdmin):
     list_display = ('raceclass', 'officialclass')
 
+class ClassEmailSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('raceclass', 'user', 'active', 'modified_date')
 
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
 # admin.site.register(LapTimes, LapTimesAdmin)
@@ -48,3 +50,4 @@ admin.site.register(TrackName, TrackNameAdmin)
 admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)
 admin.site.register(OfficialClassNames, OfficialClassNamesAdmin)
 admin.site.register(AliasClassNames, AliasClassNamesAdmin)
+admin.site.register(ClassEmailSubscription, ClassEmailSubscriptionAdmin)

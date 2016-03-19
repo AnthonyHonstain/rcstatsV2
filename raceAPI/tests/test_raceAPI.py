@@ -75,8 +75,7 @@ Echo, Jon            #1          1           35.952         35.952
         response = self.client.get(laptime_url)
         self.assertEqual(response.status_code, 200, laptime_url)
 
-        for row in response.data:
-            print(row)
+        #for row in response.data:
+        #    print(row)
         # Verify that all the laps are in here, each should get 28 laps 28*5=140
         self.assertEqual(len(response.data), 140)
-

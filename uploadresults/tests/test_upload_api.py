@@ -134,6 +134,9 @@ Echo, Jon            #1          1           35.952         35.952
     def test_outgoing_email_triggered_by_upload(self):
         '''
         Verify that we call mail_single_race.delay with the single_race_details.id when uploading a race.
+
+        This is NOT a test of the entire outgoing email system, just testing with a mock
+        to see that we would make the call to enque work.
         '''
         with mock.patch('uploadresults.views.mail_single_race.delay') as mock_mail_single_race_delay:
 

@@ -1,0 +1,49 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+Email
+{% endblock %}
+
+{% block description %}
+Email Race Results
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <div class="container">
+    <img class="img-responsive" src="/static/img/logo.png"/>
+    <h3>Email Race Results</h3>
+  </div>
+</div>
+
+<div class="container well">
+  <!-- The race results table -->
+  <h2>THIS IS WHERE THE LIST WILL BE</h2>
+  
+  <form action="{% url 'race-emails' %}" method="post">
+    {% csrf_token %}
+
+
+    {{ form.non_field_errors }}
+    {% for field in form %}
+
+    {% comment %} Displaying checkboxes differently {% endcomment %}
+    <p class="checkbox">
+    <label for="id_{{ field.name }}">{{ field }} {{ field.label }}</label>
+    {{ field.errors }}
+    </p>
+
+    {% endfor %}
+
+
+    <input type="submit" value="Submit" />
+  </form>
+  
+  </br>
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}

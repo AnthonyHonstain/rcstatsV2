@@ -96,7 +96,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = SECRET_DEFAULT_FROM_EMAIL
 
 # Leaving it off by default in dev.
-ENABLE_OUTGOING_EMAIL = True
+ENABLE_OUTGOING_EMAIL = False
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------

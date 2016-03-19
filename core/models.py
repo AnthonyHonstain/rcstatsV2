@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.contrib.auth.models import User
+
 
 class TrackName(models.Model):
     '''
@@ -90,3 +92,11 @@ class OfficialClassNames(models.Model):
 class AliasClassNames(models.Model):
     raceclass = models.CharField(max_length=200)
     officialclass = models.ForeignKey(OfficialClassNames)
+
+
+class ClassEmailSubscription(models.Model):
+    raceclass = models.ForeignKey(OfficialClassNames)
+    user = models.ForeignKey(User)
+    active = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)

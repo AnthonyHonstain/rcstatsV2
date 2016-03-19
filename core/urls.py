@@ -6,4 +6,5 @@ urlpatterns = patterns(
     '',
     url(r'^$', views.index, name='index'),
     url(r'singleracedetail/(?P<single_race_detail_id>\d+)/$', views.single_race_details, name='results-singleracedetail'),
+    url(r'race-emails/$', views.race_emails, name='race-emails'),
 )
