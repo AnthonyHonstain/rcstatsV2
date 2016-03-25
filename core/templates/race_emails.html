@@ -8,8 +8,12 @@ Email
 Email Race Results
 {% endblock %}
 
-{% block content %}
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
 
+
+{% block content %}
 <div class="jumbotron">
   <div class="container">
     <img class="img-responsive" src="/static/img/logo.png"/>
@@ -19,8 +23,9 @@ Email Race Results
 
 <div class="container well">
   <!-- The race results table -->
-  <h2>THIS IS WHERE THE LIST WILL BE</h2>
-  
+  <h2>Subscription Status</h2>
+  <p>Sub and get race results emailed directly to you!</p>
+
   <form action="{% url 'race-emails' %}" method="post">
     {% csrf_token %}
 
@@ -29,15 +34,17 @@ Email Race Results
     {% for field in form %}
 
     {% comment %} Displaying checkboxes differently {% endcomment %}
-    <p class="checkbox">
-    <label for="id_{{ field.name }}">{{ field }} {{ field.label }}</label>
+
+    {{ field }}
+    <label for="id_{{ field.name }}"> {{ field.label }}</label>
+    <p>
     {{ field.errors }}
     </p>
 
     {% endfor %}
 
 
-    <input type="submit" value="Submit" />
+    <input type="submit" class="btn btn-lg btn-success" value="Submit" />
   </form>
   
   </br>
@@ -46,4 +53,11 @@ Email Race Results
 {% endblock %}
 
 {% block script %}
+<script src="/static/js/bootstrap-switch.min.js"></script>
+
+<script>
+{% for field in form %}
+$("[name='{{ field.name }}']").bootstrapSwitch();
+{% endfor %}
+</script>
 {% endblock %}
