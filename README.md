@@ -15,6 +15,11 @@ Dependencies (installed with Synaptic on ubuntu 15.04
 * redis - defined in the configs, but its going to expect localhost:6379
  * Great guide - http://redis.io/topics/quickstart
 
+Notable Third Party Dependencies
+* http://getbootstrap.com/getting-started/
+* http://bootstrap-table.wenzhixin.net.cn/getting-started/
+* http://www.bootstrap-switch.org/
+
 Using virtualenv for the project.
 ```
 virtualenv -p /usr/bin/python3 rcstats
@@ -117,6 +122,7 @@ javascript and css
 * jquery (required for bootstrap)
 * bootstrap http://getbootstrap.com/getting-started/
 * bootstrap-table http://bootstrap-table.wenzhixin.net.cn/getting-started/
+* boostrap-swtich http://www.bootstrap-switch.org/
 * underscore http://underscorejs.org/
 * moment http://momentjs.com/docs/
 
