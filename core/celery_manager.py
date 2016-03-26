@@ -5,7 +5,10 @@ from django.template.loader import get_template
 from django.template import Context
 from core.models import SingleRaceDetails
 from core.models import SingleRaceResults
-# Using Site to get the link for them the click through.
+from core.models import ClassEmailSubscription
+from core.models import OfficialClassNames
+
+# Using Site to get the link for them the click through in the outgoing email
 # http://stackoverflow.com/questions/892997/how-do-i-get-the-server-name-in-django-for-a-complete-url
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -18,24 +21,32 @@ log = logging.getLogger('defaultlogger')
 
 
 def mail_all_users(single_race_details_id):
-    # TODO - filter down to just OPT IN users
-    # Get all the users
     single_race_details = SingleRaceDetails.objects.get(pk=single_race_details_id)
 
     log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
-    if single_race_details.racedata == 'Mod Buggy':
-        log.info('metric=Email single_race_details=%s', single_race_details.id)
-    else:
-        # TODO - improve this, going to just jump out (I am just starting the rewrite)
+
+    official_class = OfficialClassNames.objects.filter(raceclass=single_race_details.racedata)
+    if (official_class == None):
+        log.debug('metric=EmailCheckUnknownClass racedata=%s', single_race_details.racedata)
         return
 
-    users = User.objects.filter(email__isnull=False, is_active=True).exclude(email__exact='')
+    # Open question - do we want to check the User table AND the subscription table?
+    #       Should I join them, or just trust the sub scription table?
+    subscriptions = ClassEmailSubscription.objects.filter(
+        raceclass=official_class, active=True).select_related('user')
 
-    print('Found {0} many users to email.'.format(len(users)))
-    for user in users:
-        # TODO - replace with real logging
-        print('Mailing user {0} {1}'.format(user.id, user.username))
-        _mail_single_race(user, single_race_details)
+    active_subscribers = []
+    for sub in subscriptions:
+        if (sub.user.email != None and sub.user.is_active == True):
+            active_subscribers.append(sub)
+
+    log.debug('metric=ActiveSubscribers active_subs=%d total_subs=%d',
+        len(active_subscribers), len(subscriptions))
+
+    for active_sub in active_subscribers:
+        log.debug('metric=MailUser user_id=%d raceclass=%s subscription=%d',
+            active_sub.user.id, active_sub.raceclass.raceclass, active_sub.id)
+        _mail_single_race(active_sub.user, single_race_details)
 
 
 def _mail_single_race(user, single_race_detail):

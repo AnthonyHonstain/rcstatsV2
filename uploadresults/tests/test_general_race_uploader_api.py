@@ -131,7 +131,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
     def setUp(self):
         self.racelist_to_upload = self.get_race_records_to_upload()
 
-        User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
