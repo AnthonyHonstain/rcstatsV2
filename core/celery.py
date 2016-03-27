@@ -6,6 +6,7 @@ import os
 
 from celery import Celery
 
+from django.conf import settings
 from core.celery_manager import mail_all_users
 
 # set the default Django settings module for the 'celery' program.
