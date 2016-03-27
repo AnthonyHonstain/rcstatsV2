@@ -1,4 +1,4 @@
-{% extends 'userena/base_userena.html' %}
+    {% extends 'userena/base_userena.html' %}
 {% load i18n %}
 
 {% block title %}{% trans "Signup" %}{% endblock %}
@@ -10,7 +10,6 @@
     <legend>{% trans "Signup" %}</legend>
     {{ form.non_field_errors }}
     {% for field in form %}
-    {{ field.errors }}
     {% comment %} Displaying checkboxes differently {% endcomment %}
     {% if field.name == 'tos' %}
     <p class="checkbox">
@@ -22,8 +21,14 @@
     {{ field }}
     </p>
     {% endif %}
+    {{ field.errors }}
     {% endfor %}
   </fieldset>
-  <input type="submit" value="{% trans "Signup"%}" />
+  <input type="submit" class="btn btn-primary" value="{% trans "Signup"%}" />
 </form>
+
+</br>
+<div class="alert alert-success" role="alert">
+  <p>Your email is needed so that you can receive race results.</p>
+</div>
 {% endblock %}
