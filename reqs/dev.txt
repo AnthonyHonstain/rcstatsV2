@@ -8,3 +8,7 @@ django-extensions==1.5.2
 # Needing for mocking in tests.
 mock==1.3.0
 pbr==1.8.1
+
+# Django toolbar
+django-debug-toolbar==1.4
+sqlparse==0.1.19

@@ -43,6 +43,7 @@ DATABASES = {
 
 THIRD_PARTY_APPS += (
     'django_extensions',
+    'debug_toolbar',
 )
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
