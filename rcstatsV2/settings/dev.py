@@ -72,7 +72,7 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'core', 'templates'),
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = 'smtp.mandrillapp.com'
+EMAIL_HOST = 'smtp.sparkpostmail.com'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
 EMAIL_HOST_PASSWORD = SECRET_EMAIL_HOST_PASSWORD
@@ -95,6 +95,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = SECRET_DEFAULT_FROM_EMAIL
 
+# Special kill switch so I can stop outgoing race emails if it starts flooding
 # Leaving it off by default in dev.
 ENABLE_OUTGOING_EMAIL = False
 # ---------------------------------------------------------------------------

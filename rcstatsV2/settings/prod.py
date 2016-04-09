@@ -74,6 +74,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 # Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', None)
 
+# Special kill switch so I can stop outgoing race emails if it starts flooding
 ENABLE_OUTGOING_EMAIL = True if os.environ.get('ENABLE_OUTGOING_EMAIL', None) == '1' else False
 # ---------------------------------------------------------------------------
 
