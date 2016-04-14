@@ -93,7 +93,7 @@ EMAIL_USE_TLS = True
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = EMAIL_HOST_USER
 
-# Adding this so madril smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
+# Adding this so smtp has a 'from_email' field. https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_FROM_EMAIL
 DEFAULT_FROM_EMAIL = SECRET_DEFAULT_FROM_EMAIL
 
 # Special kill switch so I can stop outgoing race emails if it starts flooding
