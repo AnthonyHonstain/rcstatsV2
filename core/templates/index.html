@@ -13,7 +13,7 @@ RC-Stats is a racing community to track and share your RC race results.
 <div class="jumbotron">
   <div class="container">
     <img class="img-responsive" src="/static/img/logo.png"/>
-    <p>RC Racing Community.</p>
+    <p>TRCR Race Results</p>
   </div>
 </div>
 
@@ -23,7 +23,7 @@ RC-Stats is a racing community to track and share your RC race results.
       <h2>NEW RC-Stats</h2>
       <a type="button" href="{% url 'userena_signup' %}" class="btn btn-success">Signup for rc-stats</a>
       <p>
-        <b>Mobile friendly and email updates</b>. This is a complete re-write of the original rc-stats site.
+        <b>Mobile friendly and race results mailed right to you.</b> This is a complete re-write of the original rc-stats site.
         <br/>
         New functionality:
       </p>
@@ -37,17 +37,22 @@ RC-Stats is a racing community to track and share your RC race results.
   </div>
   <div class="row">
     {% if singleracedetail != null %}
-    <div class="col-md-6 well">
-      <h2>Newest Race</h2>
+    <div class="col-md-12 well">
+      <h2><a href={% url 'results-singleracedetail' singleracedetail.id %}>Newest Race</a></h2>
+      <a type="button" class="btn btn-info" href={% url 'results-singleracedetail' singleracedetail.id %}>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed }}</a>
+
       <div id="span-new-race-{{ singleracedetail.id }}"></div>
       <table id="table-new-race-{{ singleracedetail.id }}"></table>
     </div>
     {% endif %}
-
-
-    <div class="col-md-6 well">
+  </div>
+  <div class="row">
+    <div class="col-md-12 well">
       <h2>Recent Races</h2>
       <h3>{{ trackname.trackname }}</h3>
+      <div class="alert alert-info" role="alert">
+        <p>Select a row to navigate to that race</p>
+      </div>
       <table id="table-all-races-{{ trackname.id }}"></table>
     </div>
   </div>
@@ -69,6 +74,7 @@ $(document).ready(function(){
 $("#table-all-races-" + {{ trackname.id }}).bootstrapTable({
   //data: raceData,
   pagination: "true",
+  pageSize: 25,
   url: "{% url 'singleracedetailslim-list' trackname=trackname.id %}",
   sidePagination: "server",
   responseHandler: function(rawRaceData) {
@@ -101,8 +107,14 @@ $("#table-all-races-" + {{ trackname.id }}).bootstrapTable({
       field: "racedata",
       title: "Class"
   }, {
+      field: "maineventparsed",
+      title: "Event"
+  }, {
       field: "roundnumber",
       title: "Rnd"
+  }, {
+      field: "racenumber",
+      title: "Num",
   }, {
       field: "racedate",
       title: "Date"

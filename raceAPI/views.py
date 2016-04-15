@@ -69,7 +69,14 @@ class SingleRaceDetailsSlimList(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         trackkey = self.kwargs['trackname']
-        return SingleRaceDetails.objects.filter(trackkey__exact=trackkey).order_by('-racedate')
+        # Note - this doesn't have good test coverage, I just hacked it together to make TRCR in PT timezone
+        # return nice results, the race computer does insane things with time so I am trying to cobble them together.
+        # postgres - http://www.postgresql.org/docs/9.1/static/datatype-datetime.html#DATATYPE-TIMEZONES
+        #   http://www.postgresql.org/docs/9.1/static/functions-datetime.html
+        # orm - http://stackoverflow.com/questions/4236226/ordering-a-django-queryset-by-a-datetimes-month-day
+        return SingleRaceDetails.objects.filter(trackkey__exact=trackkey)\
+            .extra(select={'raceday':'date_trunc(\'day\', racedate AT TIME ZONE \'america/los_angeles\')'})\
+            .order_by('-raceday', '-roundnumber', '-racenumber')
 
 
 class LapTimesList(viewsets.ReadOnlyModelViewSet):
