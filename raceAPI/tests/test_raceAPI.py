@@ -8,11 +8,11 @@ import pytz
 
 from core.models import SingleRaceDetails, RacerId
 
-from uploadresults.tests.test_general_race_uploader_api import GeneralRaceUploaderAPI
-from uploadresults.tests.test_general_race_uploader_api import RaceUploadRecord
+from uploadresults.tests.test_general_race_uploader_api_base import GeneralRaceUploaderAPIBase
+from uploadresults.tests.test_general_race_uploader_api_base import RaceUploadRecord
 
 
-class MainEventByRacedayLookup(GeneralRaceUploaderAPI):
+class MainEventByRacedayLookup(GeneralRaceUploaderAPIBase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/1/2012
 

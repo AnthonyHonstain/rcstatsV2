@@ -16,6 +16,8 @@ from core.models import (
     OfficialClassNames,
     AliasClassNames)
 
+import logging
+log = logging.getLogger('defaultlogger')
 
 class _ProcessRacerId():
     '''
@@ -235,11 +237,13 @@ def collapse_alias_classnames(queryset):
                 # This is an official class, we just need to check if case is good.
                 if (official_classnames[raceclass.lower()] != raceclass):
                     # The class is named correctly, but we are going to fix the case.
+                    log.debug('metric=CollapseClassNames original=%s new=%s', raceclass, official_classnames[raceclass.lower()])
                     racedetail.racedata = official_classnames[raceclass.lower()]
                     # print "CASE FIXED:", racedetail.racedata
                     racedetail.save()
             else:
                 # We need to UPDATE the race to use the official class name.
+                log.debug('metric=CollapseClassNames original=%s new=%s', raceclass, lookup[raceclass.lower()])
                 racedetail.racedata = lookup[raceclass.lower()]
                 # print "ALIAS FIXED:", racedetail.racedata
                 racedetail.save()

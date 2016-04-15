@@ -30,7 +30,7 @@ class RaceUploadRecord():
         self.single_race_details_pk = None
 
 
-class GeneralRaceUploaderAPI(TestCase):
+class GeneralRaceUploaderAPIBase(TestCase):
     '''
     A base test to assist in integration tests, capable to uploading an abritrary number of races
     into the database.
@@ -125,8 +125,8 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 
     def get_race_records_to_upload(self):
         return [
-            RaceUploadRecord('upload1', GeneralRaceUploaderAPI.singlerace_testfile1),
-            RaceUploadRecord('upload2', GeneralRaceUploaderAPI.singlerace_testfile2)]
+            RaceUploadRecord('upload1', self.singlerace_testfile1),
+            RaceUploadRecord('upload2', self.singlerace_testfile2)]
 
     def setUp(self):
         self.racelist_to_upload = self.get_race_records_to_upload()
@@ -177,110 +177,3 @@ Golf, Jon            #7         17         6:16.439         18.222            13
             race_to_upload.single_race_details_pk = easy_uploaded_races[0].racedetails.id
 
         # All the races have now been uploaded into the system.
-
-    def test_multipleraces_upload_records(self):
-        # ====================================================
-        # Validate Upload Records
-        # ====================================================
-        # because each file got uploaded separately, each will have its own primary record.
-        #for race_to_upload in self.racelist_to_upload:
-
-        single_race_details_file1 = core_models.SingleRaceDetails.objects.get(
-            pk=self.racelist_to_upload[0].single_race_details_pk)
-
-        self.assertEquals(single_race_details_file1.racedata, 'MODIFIED BUGGY')
-        self.assertEquals(single_race_details_file1.racenumber, 2)
-
-        single_race_details_file2 = core_models.SingleRaceDetails.objects.get(
-            pk=self.racelist_to_upload[1].single_race_details_pk)
-
-        self.assertEquals(single_race_details_file2.racedata, 'MODIFIED BUGGY')
-        self.assertEquals(single_race_details_file2.racenumber, 1)
-#             self.assertEqual(primary_record.filecount, 1)
-#             self.assertEqual(primary_rord.filecountsucceed, 0)
-#             # TODO - enable after refactor starts
-# #             self.assert_(primary_record.uploadfinish)
-#
-#             records = models.EasyUploadRecord.objects.filter(uploadrecord=primary_record)
-#             self.assertEqual(len(records), 1, 'Should only be on EasyUploadRecord')
-#             for record in records:
-#                 pass
-#                 # TODO - enable after refactor starts
-#                 # self.assert_(record.processed, 'EasyUploadRecord shows upload incomplete/fail')
-
-#     def test_multipleraces_upload(self):
-
-        # ====================================================
-        # Validate Race Details
-        # ====================================================
-        # Validate the race details have been uploaded.
-
-        #
-        # WARNING - if this fails it means one of the uploads probably failed.
-        #
-        # TO DEBUG - just use this printline and see what comes out.
-        # all_races = SingleRaceDetails.objects.all()
-        # for race in all_races:
-        #     print race
-#         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
-#                                                  racedata="MODIFIED BUGGY",
-#                                                  racenumber=2,
-#                                                  roundnumber=3,
-#                                                  racelength=8,
-#                                                  winninglapcount=28,
-#                                                  mainevent=1)
-#         raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
-#                                                  racedata="MODIFIED BUGGY",
-#                                                  racenumber=1,
-#                                                  roundnumber=3,
-#                                                  racelength=6,
-#                                                  winninglapcount=19,
-#                                                  mainevent=1,
-#                                                  maineventroundnum=None)
-#
-#         # ====================================================
-#         # Validate Racers
-#         # ====================================================
-#         # The race should now be uploaded, we want to validate it is in the system.
-#         car1 = RacerId.objects.get(racerpreferredname="Alpha, Jon")
-#         car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
-#
-#         # ====================================================
-#         # Validate Race Laps
-#         # ====================================================
-#         # Validate the corner cases for the lap times and positions
-#         LapTimes.objects.get(raceid=raceobj1,
-#                              racerid=car1,
-#                              racelap=0,
-#                              raceposition=1,
-#                              racelaptime='26.24')
-#         LapTimes.objects.get(raceid=raceobj1,
-#                              racerid=car1,
-#                              racelap=27,
-#                              raceposition=1,
-#                              racelaptime='20.71')
-#
-#         LapTimes.objects.get(raceid=raceobj2,
-#                              racerid=car2,
-#                              racelap=0,
-#                              raceposition=7,
-#                              racelaptime='32.44')
-#         LapTimes.objects.get(raceid=raceobj2,
-#                              racerid=car2,
-#                              racelap=16,
-#                              raceposition=5,
-#                              racelaptime='20.83')
-#
-#         # ====================================================
-#         # Validate Race Results
-#         # ====================================================
-#         SingleRaceResults.objects.get(racerid=car1,
-#                                       raceid=raceobj1,
-#                                       carnum=2,
-#                                       lapcount=28)
-#
-#         SingleRaceResults.objects.get(racerid=car2,
-#                                       raceid=raceobj2,
-#                                       carnum=6,
-#                                       lapcount=17)
-    

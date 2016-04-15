@@ -299,6 +299,17 @@ class TestPoundCharInRacername(unittest.TestCase):
                           "Behind": "",
                           "Final Position": 1})
 
+class TestBrokenLapTimes(unittest.TestCase):
+
+    def setUp(self):
+        self.filename = "TestFile_SingleRace_BrokenLapTimes.txt"
+        with open(self.filename) as f:
+            content = f.readlines()
+        self.singe_test_race = RCScoringProTXTParser(self.filename, content)
+
+    def test_headerData(self):
+        self.assertEqual(self.singe_test_race.lapRowsTime[0], ['3.514'])
+
 
 if __name__ == '__main__':
     unittest.main()

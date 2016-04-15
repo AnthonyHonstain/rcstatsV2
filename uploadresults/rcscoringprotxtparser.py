@@ -132,29 +132,6 @@ class RCScoringProTXTParser(SingleRace):
 
         STAGE 1
         """
-
-        '''
-        # IMPORTANT EXPLANATION FOR RACES WITH PACE DATA.
-        # Some race results have the pace for the lap included in the results
-         ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
-         6/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18
-         10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3
-
-         6/20.12 5/22.57 4/20.81         1/19.34 3/22.50 2/22.56
-         13/15.1 13/00.3 14/06.5         15/09.8 14/03.7 14/02.1
-
-         6/19.56 5/20.44 4/21.30         1/20.43 3/20.52 2/19.76
-         14/00.6 15/19.3 15/08.3         16/12.0 15/02.3 16/21.3
-
-         6/24.54 4/21.61 3/19.91         1/19.21 2/19.79 5/28.67
-
-         # We want to check if laps 3,6,9 are all empty
-        EXAMPLE - print singleRaceLines
-         '/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18',
-         ' 10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3',
-         '',
-        '''
-
         pacedata_included = None  # If there is pace data, this will be used as a counter.
 
         lapData = False
@@ -172,16 +149,8 @@ class RCScoringProTXTParser(SingleRace):
 
                 # Check to see if pace data is mixed in - this is a strong indicator.
                 index = self._singleRaceLines.index(line)
-                #print "DEBUG TEST:"
-                #for line in self._singleRaceLines[index:]:
-                #    print line
 
-                if (self._singleRaceLines[index + 3].strip() == '' and
-                    self._singleRaceLines[index + 6].strip() == '' and
-                    self._singleRaceLines[index + 9].strip() == ''):
-
-                    #raise Exception("This file format not supported, cannot mix pace data in with lap times.")
-                    pacedata_included = 0
+                pacedata_included = self._check_for_pace_data(index)
 
             # Get the laps in row format
             elif lapData:
@@ -241,6 +210,53 @@ class RCScoringProTXTParser(SingleRace):
                         additional_lap_index += 1
                     pacedata_included += 1
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def _check_for_pace_data(self, index):
+        '''
+        IMPORTANT EXPLANATION FOR RACES WITH PACE DATA.
+        Some race results have the pace for the lap included in the results
+         ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+         6/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18
+         10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3
+
+         6/20.12 5/22.57 4/20.81         1/19.34 3/22.50 2/22.56
+         13/15.1 13/00.3 14/06.5         15/09.8 14/03.7 14/02.1
+
+         6/19.56 5/20.44 4/21.30         1/20.43 3/20.52 2/19.76
+         14/00.6 15/19.3 15/08.3         16/12.0 15/02.3 16/21.3
+
+         6/24.54 4/21.61 3/19.91         1/19.21 2/19.79 5/28.67
+
+        We want to check if laps 3,6,9 are all empty
+        EXAMPLE - print singleRaceLines
+         '/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18',
+         ' 10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3',
+         '',    
+
+        This is also going to catch crazy stuff like this
+         ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+         1/3.514 2/4.139 3/4.736 4/12.11 5/12.60                                        
+             N/A     N/A     N/A     N/A     N/A                                        
+         ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+              1/      1/      1/      1/      1/                                        
+             3.5     4.1     4.7    12.1    12.6 
+        '''
+        #print('DEBUG TEST:')
+        #for line in self._singleRaceLines[index:]:
+        #    print(line)
+
+        if ((self._singleRaceLines[index + 3].strip() == '' and
+             self._singleRaceLines[index + 6].strip() == '' and
+             self._singleRaceLines[index + 9].strip() == '') or 
+            ('N/A' in self._singleRaceLines[index + 2])):
+
+            # In the original version, we would just explode if there was pace data mixed in,
+            # now all the races have it.
+            #raise Exception("This file format not supported, cannot mix pace data in with lap times.")
+            pacedata_included = 0
+            return pacedata_included
+        else:
+            return None
 
     def _process_Raw_Lap_Rows(self):
         """

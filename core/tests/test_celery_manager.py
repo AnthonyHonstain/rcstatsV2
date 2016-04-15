@@ -11,13 +11,13 @@ from core import models
 
 from django.contrib.auth.models import User
 
-from uploadresults.tests.test_general_race_uploader_api import GeneralRaceUploaderAPI
-from uploadresults.tests.test_general_race_uploader_api import RaceUploadRecord
+from uploadresults.tests.test_general_race_uploader_api_base import GeneralRaceUploaderAPIBase
+from uploadresults.tests.test_general_race_uploader_api_base import RaceUploadRecord
 
 from core import celery_manager
 
 
-class TestCeleryManager(GeneralRaceUploaderAPI):
+class TestCeleryManager(GeneralRaceUploaderAPIBase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/1/2012
 
@@ -119,10 +119,6 @@ Echo, Jon            #1          1           35.952         35.952
             RaceUploadRecord('upload2', self.singlerace_testfile2),
             ]
 
-    def test_multipleraces_upload_records(self):
-        # TODO - NEED TO REFACTOR THIS SO THAT THE BASE CLASS DOESN'T FAIL
-        # IF YOU ADD DIFFERENT TYPES OF RACES.
-        pass
 
     def test_celery_manager_empty(self):
         race_pk = self.racelist_to_upload[0].single_race_details_pk

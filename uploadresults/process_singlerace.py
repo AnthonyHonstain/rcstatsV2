@@ -11,6 +11,9 @@ import datetime
 import pytz
 from django.utils import timezone
 
+import logging
+log = logging.getLogger('defaultlogger')
+
 # TODO - this is a short term fix, when I create the auto uploader it should
 # specific the timezone its being uploaded from.
 TIMEZONE_HACK = pytz.timezone('America/Los_Angeles')
@@ -92,6 +95,8 @@ def create_single_race_details(single_race):
     # ====================================================
     # Insert Race Details
     # ====================================================
+    log.debug('metric=UploadSingleRaceDetails trackName=%s racedata=%s racenumber=%s', 
+        track_obj.trackname, single_race.raceClass, single_race.raceNumber)
     details_obj = SingleRaceDetails(trackkey=track_obj,
                                     racedata=single_race.raceClass,
                                     roundnumber=single_race.roundNumber,
@@ -137,6 +142,8 @@ def create_single_race_details(single_race):
                                racelaptime=single_race.lapRowsTime[index][row])
             bulk_laptimes.append(lap_obj)
 
+    log.debug('metric=UploadSingleRaceLaps trackName=%s racedata=%s racenumber=%s totalLapCount=%d', 
+        track_obj.trackname, single_race.raceClass, single_race.raceNumber, len(bulk_laptimes))
     LapTimes.objects.bulk_create(bulk_laptimes)
 
     # ====================================================
