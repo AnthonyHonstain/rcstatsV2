@@ -1,6 +1,11 @@
 from core.models import SingleRaceDetails, RacerId, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames, ClassEmailSubscription
+from core.models import LapTimes
 
 from django.contrib import admin
+
+
+def delete_selected_fast(modeladmin, request, queryset):
+    queryset.delete()
 
 
 class SingleRaceDetailsAdmin(admin.ModelAdmin):
@@ -8,14 +13,12 @@ class SingleRaceDetailsAdmin(admin.ModelAdmin):
     list_display = ('racedata', 'trackkey', 'racedate', 'roundnumber', 'racenumber')
     list_filter = ['racedate', 'trackkey']
     # actions = [collapse_alias_classnames] # TODO - excluding from initial port
+    actions = (delete_selected_fast,)
 
 
-'''
-LapTimesAdmin is disabled for now, I think there is to much data here to
-expose it in a useful way in the admin (500k rows..)
-'''
-# class LapTimesAdmin(admin.ModelAdmin):
-#    fields = ['raceId', 'racerId', 'raceLap', 'raceLapTime']
+class LapTimesAdmin(admin.ModelAdmin):
+    list_display = ('raceid', 'racerid')
+    fields = ['raceid', 'racerid', 'racelap', 'raceposition', 'racelaptime']
 
 
 class RacerIdAdmin(admin.ModelAdmin):
@@ -40,11 +43,13 @@ class OfficialClassNamesAdmin(admin.ModelAdmin):
 class AliasClassNamesAdmin(admin.ModelAdmin):
     list_display = ('raceclass', 'officialclass')
 
+
 class ClassEmailSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('raceclass', 'user', 'active', 'modified_date')
 
+
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
-# admin.site.register(LapTimes, LapTimesAdmin)
+admin.site.register(LapTimes, LapTimesAdmin)
 admin.site.register(RacerId, RacerIdAdmin)
 admin.site.register(TrackName, TrackNameAdmin)
 admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)

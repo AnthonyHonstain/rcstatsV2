@@ -51,7 +51,8 @@ class SingleRaceDetails(models.Model):
     maineventparsed = models.CharField(max_length=200, null=True)
 
     def __str__(self):
-        return str(self.trackkey) + " | " +\
+        return str(self.id) + " | " +\
+            str(self.trackkey) + " | " +\
             str(self.racedata) + " | " +\
             str(self.racedate)
 
