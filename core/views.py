@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
+from core.models import RacerId
 from core.models import ClassEmailSubscription
 
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,7 @@ logger = logging.getLogger('defaultlogger')
 
 
 def index(request):
+    logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
     # Just grab the first valid Track (assumed to be TRCR).
     trackname = TrackName.objects.all().first()
@@ -21,7 +23,6 @@ def index(request):
 
 
 def single_race_details(request, single_race_detail_id):
-    # TODO - test logging to check integration with logentries app
     logger.debug('metric=singleracedetail single_race_detail_id=%s', single_race_detail_id)
 
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
@@ -33,6 +34,43 @@ def single_race_details(request, single_race_detail_id):
     trackname = single_race_detail.trackkey
     return render(request, 'single_race_detail.html',
                   {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})
+
+from django.db.models import Count
+
+def racer_list(request, track_id):
+    logger.debug('metric=racer_list track_id=%s', track_id)
+    trackname = get_object_or_404(TrackName, pk=track_id)
+
+    track_race_count = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
+        .count()
+    tracks_first_race = SingleRaceDetails.objects.filter(trackkey__exact=trackname.id)\
+        .order_by('racedate')[1]
+
+    racerid_and_counts = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
+      .select_related('racerid')\
+      .values('racerid', 'racerid__racerpreferredname')\
+      .annotate(racerid_count=Count('racerid'))\
+      .order_by('-racerid_count')
+
+    return render(request, 'racer_list.html', {
+        'trackname': trackname, 
+        'track_race_count': track_race_count,
+        'tracks_first_race':tracks_first_race, 
+        'racerid_and_counts':racerid_and_counts})
+
+def single_racer_race_list(request, track_id, racerid_id):
+    trackname = get_object_or_404(TrackName, pk=track_id)
+    racerid = get_object_or_404(RacerId, pk=racerid_id)
+
+    races = SingleRaceResults.objects.filter(
+        raceid__trackkey__exact=trackname.id,
+        racerid__exact=racerid.id
+        ).select_related('raceid').order_by('-raceid__racedate')
+
+    return render(request, 'single_racer_race_list.html', {
+        'trackname': trackname,
+        'racerid': racerid,
+        'races':races})
 
 
 from django import forms

@@ -1,0 +1,90 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+Racers
+{% endblock %}
+
+{% block description %}
+{{ trackname.trackname }} Racer List
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <img class="img-responsive" src="/static/img/logo.png"/>
+    <h3>Racer list for {{ trackname.trackname }}</h3>
+  </div>
+</div>
+
+<div class="container well">
+  
+  
+  <div class="alert alert-info" role="alert">
+    <button class="btn btn-primary disabled" type="button">
+      {{ racerid.racerpreferredname }} <span class="badge">{{ races | length }}</span>
+    </button>
+  </div>
+  
+  <div class="panel panel-default">
+
+    <!-- Table -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="hidden">id</th>
+          <th>Race</th>
+          <th>Stats</th>
+          <th>Laps</th>
+          <th>Time</th>
+          <th>Fast</th>
+          <th>Finish</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for race in races %}
+        <tr>
+        <th class="hidden">{{ race.id }}</th>
+        <td>
+          <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+          {{ race.raceid.racedata }} 
+          {% if race.raceid.maineventparsed %}{{race.raceid.maineventparsed}}{% endif %}
+          </a>
+        </td>
+        <td>
+          Rnd:{{ race.raceid.roundnumber }}
+          Race:{{ race.raceid.racenumber }}
+          Date:{{ race.raceid.racedate | date:'Y-m'}} 
+        </td>
+        <td>{{ race.lapcount }}</td>
+        <td>{{ race.racetime | date:"i:s"}}</td>
+        <td>{{ race.fastlap }}</td>
+        <td>
+        {% if race.finalpos == 1 %}
+          <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+          <span class="label label-success">{{ race.finalpos }}</span>
+          </a>
+        {% else %}
+          {{ race.finalpos }}
+        {% endif %}      
+        </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+ 
+
+  </br>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+</script>
+{% endblock %}

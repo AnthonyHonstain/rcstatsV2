@@ -1,0 +1,76 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+Racers
+{% endblock %}
+
+{% block description %}
+{{ trackname.trackname }} Racer List
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <img class="img-responsive" src="/static/img/logo.png"/>
+    <h3>Racer list for {{ trackname.trackname }}</h3>
+  </div>
+</div>
+
+<div class="container well">
+  
+  
+  <div class="alert alert-info" role="alert">
+    <h2>{{ trackname.trackname }}</h2>
+    <button class="btn btn-primary disabled" type="button">
+      First Race <span class="badge">{{ tracks_first_race.racedate | date:'Y-m' }}</span>
+     </button>
+    <button class="btn btn-primary disabled" type="button">
+      Races <span class="badge">{{ track_race_count }}</span>
+    </button>
+    <button class="btn btn-primary disabled" type="button">
+      Racers <span class="badge">{{ racerid_and_counts | length }}</span>
+    </button>
+  </div>
+  
+  <div class="panel panel-default">
+
+    <!-- Table -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="hidden">id</th>
+          <th>Name</th>
+          <th>RaceCount</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for racerid in racerid_and_counts %}
+        <tr>
+        <th class="hidden">{{ racerid.racerid }}</th>
+        <td>
+          <a href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=racerid.racerid %}">
+          {{ racerid.racerid__racerpreferredname }}
+          </a>
+        </td>
+        <td>{{ racerid.racerid_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+ 
+
+  </br>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+</script>
+{% endblock %}
