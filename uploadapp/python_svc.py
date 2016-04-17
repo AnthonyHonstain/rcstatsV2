@@ -61,7 +61,7 @@ UPLOAD_URL = 'http://192.168.110.128:8000/upload/single_race_upload/'
 REGEX_ROUND_FILE = re.compile('Round.\.txt$') # The regex to match race files to upload.
 TEST_DIRECTORY = r'C:\Users\Anthony\Desktop\RC_uploader\testfolder' # This is where we look for races.
 
-MINUTES_TO_WAIT_BEFORE_UPLOAD = 2 # The time we wait (from the last modified date on the race) before we attempt.
+MINUTES_TO_WAIT_BEFORE_UPLOAD = 20 # The time we wait (from the last modified date on the race) before we attempt.
 MAX_ALLOWED_RETRY = 3 # The max attempts we will retry a single race file.
 RETRY_WAIT_TIME_SECONDS = 3600 # The time before we re-attempt a file that previously failed.
 # milliseconds 640000  # 640 seconds / 10 minutes (value is in milliseconds)
