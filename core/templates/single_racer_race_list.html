@@ -33,10 +33,12 @@ Racers
   <div class="panel panel-default">
 
     <!-- Table -->
-    <table class="table">
+    <table data-show-toggle="false" 
+           data-mobile-responsive="true"
+           data-toggle="table">
       <thead>
         <tr>
-          <th class="hidden">id</th>
+          <!-- I was hiding the id column, but there appears to be a bug in bootstrap-table functionality around the data-card-view -->
           <th>Race</th>
           <th>Stats</th>
           <th>Laps</th>
@@ -46,9 +48,8 @@ Racers
         </tr>
       </thead>
       <tbody>
-      {% for race in races %}
+        {% for race in races %}
         <tr>
-        <th class="hidden">{{ race.id }}</th>
         <td>
           <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
           {{ race.raceid.racedata }} 
