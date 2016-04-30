@@ -85,6 +85,7 @@ class LapTimes(models.Model):
 
 class OfficialClassNames(models.Model):
     raceclass = models.CharField(max_length=200)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.raceclass

@@ -32,14 +32,14 @@ RC-Stats is a racing community to track and share your RC race results.
       <li>Mobile friendly, race results on any device.</li>
       <li>Email race results directly to your inbox.</li>
       </ul>
-      <a type="button" href="{% url 'race-emails' %}" class="btn btn-info">Choose just the classes you want to follow.</a>
+      <a type="button" href="{% url 'race-emails' %}" class="btn btn-success">Race results right to your inbox</a>
     </div>
   </div>
-  
+
   <div class="row">
     {% if trackname != null %}
     <div class="col-md-12 well">
-      <h2>NEW Feature</h2>
+      <h2>TRCR Racer List</h2>
       <p>View {{ trackname.trackname }} racers and all the events for a specific racer.</p>
       <a type="button" class="btn btn-info" href={% url 'racer-list-by-track' trackname.id %}>{{ trackname.trackname }} Racer List</a>
     </div>

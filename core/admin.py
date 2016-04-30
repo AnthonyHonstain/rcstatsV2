@@ -37,7 +37,7 @@ class SupportedTrackNameAdmin(admin.ModelAdmin):
 
 
 class OfficialClassNamesAdmin(admin.ModelAdmin):
-    list_display = ('raceclass',)
+    list_display = ('raceclass', 'active')
 
 
 class AliasClassNamesAdmin(admin.ModelAdmin):

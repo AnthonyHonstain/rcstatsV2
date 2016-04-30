@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
 from core.models import RacerId
 from core.models import ClassEmailSubscription
-
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
 import logging
@@ -35,7 +35,6 @@ def single_race_details(request, single_race_detail_id):
     return render(request, 'single_race_detail.html',
                   {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})
 
-from django.db.models import Count
 
 def racer_list(request, track_id):
     logger.debug('metric=racer_list track_id=%s', track_id)
@@ -57,6 +56,7 @@ def racer_list(request, track_id):
         'track_race_count': track_race_count,
         'tracks_first_race':tracks_first_race, 
         'racerid_and_counts':racerid_and_counts})
+
 
 def single_racer_race_list(request, track_id, racerid_id):
     trackname = get_object_or_404(TrackName, pk=track_id)
@@ -90,7 +90,7 @@ def race_emails(request):
     logger.debug('metric=race_emails user=%s method=%s', request.user, request.method);
 
     # get the users list
-    class_names_data = OfficialClassNames.objects.all()
+    class_names_data = OfficialClassNames.objects.filter(active=True)
     class_names_dict = {x.raceclass:False for x in class_names_data}
     class_names_lookup = {x.raceclass:x for x in class_names_data}
 
