@@ -4,5 +4,6 @@ from accounts import views
 
 urlpatterns = patterns(
     '',
-    (r'^', include('userena.urls')),
+    url(r'signin/$', views.rcstats_signin, name='userena_signin'),
+    url(r'^', include('userena.urls')),
 )
