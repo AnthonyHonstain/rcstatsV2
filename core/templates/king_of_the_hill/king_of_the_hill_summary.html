@@ -17,7 +17,7 @@ King of the Hill
 <div class="jumbotron">
   <div class="container">
     <img class="img-responsive" src="/static/img/logo.png"/>
-    <h3>King of the Hill Summary for {{ trackname.trackname }}</h3>
+    <h3>King of the Hill {{ trackname.trackname }}</h3>
   </div>
 </div>
 
@@ -26,7 +26,9 @@ King of the Hill
   <div class="row">
     <div class="col-md-12 well">
       <h4>King of the Hill</h4>
-      <p>Only considering races since {{ start_time | date:'Y-m-d' }}</p>
+      <p>A running score for the last few weeks, updated after every race!
+      <br/>
+      Only considering races since {{ start_time | date:'Y-m-d' }}</p>
       <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
         <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Explain</button>
       <br/><br/>
