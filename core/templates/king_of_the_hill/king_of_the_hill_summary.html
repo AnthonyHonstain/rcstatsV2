@@ -5,7 +5,7 @@ King of the Hill
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} King of the Hill
+King of the Hill
 {% endblock %}
 
 {% block stylesheet %}
@@ -25,7 +25,7 @@ King of the Hill
 <div class="container">
   <div class="row">
     <div class="col-md-12 well">
-      <h4>King of the Hill</h4>
+      <h4>King of the Hill {{ trackname.trackname }}</h4>
       <p>A running score for the last few weeks, updated after every race!
       <br/>
       Only considering races since {{ start_time | date:'Y-m-d' }}</p>
@@ -36,7 +36,6 @@ King of the Hill
       <div class="alert alert-info" role="alert">
         <h4>Where do these numbers come from?</h4>
         <p>Every single race counts for the same amount of points.
-        <br/>
         Qualifiers and main events count exactly the same here.
         <br/>
         Each individual race is worth at most 20 points: 
@@ -48,7 +47,6 @@ King of the Hill
         </ul>
         <br/>
         Then we sum up all your points for the last two weeks.
-        <br/>
         Is this the most "fair" way to rank? No... but it is simple and rewards frequenly racing.
         </p>
       </div>
