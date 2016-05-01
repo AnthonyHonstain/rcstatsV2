@@ -6,6 +6,7 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
 from django.utils import timezone
+import datetime
 from collections import defaultdict
 
 import logging
@@ -99,6 +100,7 @@ class KoHSummary():
             self.score)
 
 
+@login_required()
 def king_of_the_hill_summary(request, track_id):
     trackname = get_object_or_404(TrackName, pk=track_id)
 
