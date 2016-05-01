@@ -1,0 +1,95 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+King of the Hill
+{% endblock %}
+
+{% block description %}
+{{ trackname.trackname }} King of the Hill
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <img class="img-responsive" src="/static/img/logo.png"/>
+    <h3>King of the Hill Summary for {{ trackname.trackname }}</h3>
+  </div>
+</div>
+
+    
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 well">
+      <h4>King of the Hill</h4>
+      <p>Only considering races since {{ start_time | date:'Y-m-d' }}</p>
+      <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Explain</button>
+      <br/><br/>
+      <div id="demo" class="collapse">
+      <div class="alert alert-info" role="alert">
+        <h4>Where do these numbers come from?</h4>
+        <p>Every single race counts for the same amount of points.
+        <br/>
+        Qualifiers and main events count exactly the same here.
+        <br/>
+        Each individual race is worth at most 20 points: 
+        <ul>
+          <li>1st place gets 20 points</li>
+          <li>2nd gets 19 points</li>
+          <li>3rd gets 18 points</li>
+          <li>4rd gets 17 points</li>
+        </ul>
+        <br/>
+        Then we sum up all your points for the last two weeks.
+        <br/>
+        Is this the most "fair" way to rank? No... but it is simple and rewards frequenly racing.
+        </p>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for key,value in race_summary.items %}
+    <div class="col-md-12 well">
+      <h4>{{ key.raceclass }}</h4>
+
+      <div class="panel panel-default">
+      <table data-mobile-responsive="true" data-toggle="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for koh_summary in value %}
+          <tr>
+          <td>
+            <a href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=koh_summary.racerid.id %}">
+            {{ koh_summary.racerid.racerpreferredname }}
+            </a>
+          </td>
+          <td>{{ koh_summary.score }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+</script>
+{% endblock %}

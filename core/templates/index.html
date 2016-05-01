@@ -20,8 +20,10 @@ RC-Stats is a racing community to track and share your RC race results.
 <div class="container">
   <div class="row">
     <div class="col-md-12 well">
-      <h2>Updated RC-Stats</h2>
+      <h3>NEW RC-Stats</h3>
       <a type="button" href="{% url 'userena_signup' %}" class="btn btn-success">Signup for rc-stats</a>
+      <br/>
+      <br/>
       <p>
         <b>Mobile friendly and race results mailed right to you.</b> This is a complete re-write of the original rc-stats site.
         <br/>
@@ -36,10 +38,30 @@ RC-Stats is a racing community to track and share your RC race results.
     </div>
   </div>
 
+  <!--
   <div class="row">
     {% if trackname != null %}
     <div class="col-md-12 well">
-      <h2>TRCR Racer List</h2>
+      <h3>
+        <a href={% url 'koh-summary' trackname.id %}>
+          <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> King Of the Hill
+        </a>
+      </h3>
+      <p>Where do you stand in the rankings?</p>
+      <a type="button" class="btn btn-info" href={% url 'koh-summary' trackname.id %}>{{ trackname.trackname }} Racer List</a>
+    </div>
+    {% endif %}
+  </div>
+  -->
+
+  <div class="row">
+    {% if trackname != null %}
+    <div class="col-md-12 well">
+      <h3>
+        <a href={% url 'racer-list-by-track' trackname.id %}>
+          <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Racer List
+        </a>
+      </h3>
       <p>View {{ trackname.trackname }} racers and all the events for a specific racer.</p>
       <a type="button" class="btn btn-info" href={% url 'racer-list-by-track' trackname.id %}>{{ trackname.trackname }} Racer List</a>
     </div>
