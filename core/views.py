@@ -120,7 +120,7 @@ def king_of_the_hill_summary(request, track_id):
     now = timezone.now()
     #utcnow = datetime.datetime.utcnow()
     #utcnow.replace(tzinfo=pytz.utc)
-    two_weeks_ago = now - datetime.timedelta(days=1400)
+    two_weeks_ago = now - datetime.timedelta(days=14)
 
     # So for this track, and these classes, we want to show the top performers.
     race_summary = {}
@@ -149,42 +149,6 @@ def king_of_the_hill_summary(request, track_id):
             race_summary[class_name].append(summary)
 
         race_summary[class_name].sort(key=lambda x: (x.official_class_name.raceclass, x.score), reverse=True)
-
-    # ------------------------------------------------------
-    # Cache Experiment
-    # ------------------------------------------------------
-    # Lets just put some of the object into a json string.
-    def from_KoHSummaryList(obj):
-        if isinstance(obj, KoHSummary):
-            return obj.__dict__
-        return obj
-
-
-    cache_test = {}
-
-    for race_class in race_summary.keys():
-
-        cached_data = cache.get(race_class.raceclass)
-        if (cached_data):
-            print('CACHE GET', race_class.raceclass, cached_data)
-        else:
-            final_race_summary[race_class] = []
-
-            for koh_summary in race_summary[race_class]:
-
-                foo = KoHSummary(
-                    koh_summary.official_class_name.id,
-                    koh_summary.official_class_name.raceclass,
-                    koh_summary.racerid.id,
-                    koh_summary.racerid.racerpreferredname,
-                    koh_summary.score)
-                final_race_summary[race_class].append(foo)
-                #print("TEST: ", json.dumps(foo.__dict__))
-            print('CACHE SET: ', json.dumps(final_race_summary[race_class], default=from_KoHSummaryList))
-            cache.set(race_class.raceclass, json.dumps(final_race_summary[race_class], default=from_KoHSummaryList), 60*15)
-
-    # ------------------------------------------------------
-    # ------------------------------------------------------
 
     #pprint.pprint(race_summary)
     return render(request, 'king_of_the_hill/king_of_the_hill_summary.html', {

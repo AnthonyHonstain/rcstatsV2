@@ -180,6 +180,7 @@ Stock Five           #1          1           35.952         35.952
 
             mail_single_race.assert_called_with(user_with_sub, mod_race_detail)
 
+
     def test_pre_compute_king_of_the_hill(self):
         mod_class = models.OfficialClassNames(raceclass='Mod Buggy', active=True)
         mod_class.save()
@@ -198,8 +199,7 @@ Stock Five           #1          1           35.952         35.952
         with mock.patch('core.celery_manager._compute_king_of_the_hill') as compute:
             celery_manager.pre_compute_king_of_the_hill(self.trackname_obj.id)
 
-            # TODO - how to avoid caring about the datetime now? Do I need to mock that also?
-            compute.assert_any_call()
+            self.assertTrue(compute.called)
 
 
     def test_pre_compute_KoH(self):
