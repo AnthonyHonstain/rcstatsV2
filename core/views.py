@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger('defaultlogger')
 
 
-#@cache_page(60 * 15)
+@cache_page(60 * 15)
 def index(request):
     logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
@@ -50,6 +50,7 @@ def single_race_details(request, single_race_detail_id):
                   {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})
 
 
+@cache_page(60 * 15)
 def racer_list(request, track_id):
     '''
     Lists all the racers for a given track, along with a count of races.
