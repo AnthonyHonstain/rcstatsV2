@@ -8,6 +8,7 @@ from celery import Celery
 
 from django.conf import settings
 from core.celery_manager import mail_all_users
+from core.celery_manager import pre_compute_king_of_the_hill
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rcstatsV2.settings.dev')
@@ -42,8 +43,10 @@ def debug_task(self):
 
 @app.task(bind=True)
 def mail_single_race(self, single_race_details_id):
-    print('Request: {0!r} {1}'.format(self.request.task, single_race_details_id))
-
     mail_all_users(single_race_details_id)
-    sys.stdout.flush()  # TODO - Remove after testing
     return
+
+
+@app.task(bind=True)
+def pre_compute_koh(self, trackname_id):
+    return pre_compute_king_of_the_hill(trackname_id)

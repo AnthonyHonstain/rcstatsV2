@@ -2,8 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
 from core.models import RacerId
 from core.models import ClassEmailSubscription
+from core.sharedmodels.king_of_the_hill_summary import KoHSummary
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+
+import json
+
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 from django.utils import timezone
 import datetime
@@ -13,6 +19,7 @@ import logging
 logger = logging.getLogger('defaultlogger')
 
 
+#@cache_page(60 * 15)
 def index(request):
     logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
@@ -88,7 +95,7 @@ def single_racer_race_list(request, track_id, racerid_id):
         'races':races})
 
 
-class KoHSummary():
+class KoHSummaryDemo():
     def __init__(self, official_class_name, racerid, score):
         self.official_class_name = official_class_name
         self.racerid = racerid
@@ -99,28 +106,8 @@ class KoHSummary():
             self.racerid.racerpreferredname,
             self.score)
 
-import json
 
-class KoHSummaryLite():
-    def __init__(
-        self, 
-        official_class_id, 
-        official_class_name, 
-        racerid__id, 
-        racerid__racerpreferredname,
-        score):
 
-        self.official_class_id = official_class_id
-        self.official_class_name = official_class_name
-        self.racerid__id = racerid__id
-        self.racerid__racerpreferredname = racerid__racerpreferredname
-        self.score = score
-
-    def __repr__(self):
-        return '{} {} {}'.format(
-            self.official_class_name,
-            self.racerid__racerpreferredname,
-            self.score)
 
 
 @login_required()
@@ -157,35 +144,47 @@ def king_of_the_hill_summary(request, track_id):
             #print('    ', racer_temp_dict[result.racerid])
 
         for key in racer_temp_dict.keys():
-            summary = KoHSummary(class_name, key, racer_temp_dict[key])
+            summary = KoHSummaryDemo(class_name, key, racer_temp_dict[key])
             #pprint.pprint(summary)
             race_summary[class_name].append(summary)
 
         race_summary[class_name].sort(key=lambda x: (x.official_class_name.raceclass, x.score), reverse=True)
 
     # ------------------------------------------------------
+    # Cache Experiment
     # ------------------------------------------------------
     # Lets just put some of the object into a json string.
     def from_KoHSummaryList(obj):
-        if isinstance(obj, KoHSummaryLite):
+        if isinstance(obj, KoHSummary):
             return obj.__dict__
         return obj
 
 
+    cache_test = {}
+
     for race_class in race_summary.keys():
-        final_race_summary[race_class] = []
 
-        for koh_summary in race_summary[race_class]:
+        cached_data = cache.get(race_class.raceclass)
+        if (cached_data):
+            print('CACHE GET', race_class.raceclass, cached_data)
+        else:
+            final_race_summary[race_class] = []
 
-            foo = KoHSummaryLite(
-                koh_summary.official_class_name.id,
-                koh_summary.official_class_name.raceclass,
-                koh_summary.racerid.id,
-                koh_summary.racerid.racerpreferredname,
-                koh_summary.score)
-            final_race_summary[race_class].append(foo)
-            #print("TEST: ", json.dumps(foo.__dict__))
-        print("TEST: ", json.dumps(final_race_summary[race_class], default=from_KoHSummaryList))
+            for koh_summary in race_summary[race_class]:
+
+                foo = KoHSummary(
+                    koh_summary.official_class_name.id,
+                    koh_summary.official_class_name.raceclass,
+                    koh_summary.racerid.id,
+                    koh_summary.racerid.racerpreferredname,
+                    koh_summary.score)
+                final_race_summary[race_class].append(foo)
+                #print("TEST: ", json.dumps(foo.__dict__))
+            print('CACHE SET: ', json.dumps(final_race_summary[race_class], default=from_KoHSummaryList))
+            cache.set(race_class.raceclass, json.dumps(final_race_summary[race_class], default=from_KoHSummaryList), 60*15)
+
+    # ------------------------------------------------------
+    # ------------------------------------------------------
 
     #pprint.pprint(race_summary)
     return render(request, 'king_of_the_hill/king_of_the_hill_summary.html', {
