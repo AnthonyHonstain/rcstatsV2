@@ -17,7 +17,9 @@ from __future__ import absolute_import
 # SECURITY WARNING: keep the secret key used in production secret!
 # See settings_secret.py_TEMPLATE
 
+from datetime import timedelta
 import os
+
 redis_url = os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0')
 
 # ---------------------------------------------------------------------------
@@ -38,7 +40,21 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 # You need the CELERYBEAT_SCHEDULER if you want to configures period tasks through the admin page.
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
+CELERYBEAT_SCHEDULE = {
+    # I am hard coding this to a single track right now
+    # TODO - make this generic to run for all tracks.
+    'pre_compute_koh_trcr': {
+        'task': 'core.celery.pre_compute_koh',
+        'schedule': timedelta(minutes=1),
+        'args': (1,)
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
+
+# ---------------------------------------------------------------------------
 # Application definition
+# ---------------------------------------------------------------------------
 
 DJANGO_APPS = (
     'django.contrib.admin',
@@ -151,4 +167,15 @@ LOGGING_LOGGERS = {
         'handlers': ['console'],
         'level': 'DEBUG',
     }
+}
+
+# ---------------------------------------------------------------------------
+# Django Redis Cache - https://github.com/sebleier/django-redis-cache
+#  http://michal.karzynski.pl/blog/2013/07/14/using-redis-as-django-session-store-and-cache-backend/
+# ---------------------------------------------------------------------------
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0'),
+    },
 }

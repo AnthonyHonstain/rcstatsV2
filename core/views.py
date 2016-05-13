@@ -2,8 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
 from core.models import RacerId
 from core.models import ClassEmailSubscription
+from core.sharedmodels.king_of_the_hill_summary import KoHSummary
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+
+import json
+
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 from django.utils import timezone
 import datetime
@@ -13,6 +19,7 @@ import logging
 logger = logging.getLogger('defaultlogger')
 
 
+#@cache_page(60 * 15)
 def index(request):
     logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
@@ -88,7 +95,7 @@ def single_racer_race_list(request, track_id, racerid_id):
         'races':races})
 
 
-class KoHSummary():
+class KoHSummaryDemo():
     def __init__(self, official_class_name, racerid, score):
         self.official_class_name = official_class_name
         self.racerid = racerid
@@ -98,6 +105,9 @@ class KoHSummary():
             self.official_class_name.raceclass,
             self.racerid.racerpreferredname,
             self.score)
+
+
+
 
 
 @login_required()
@@ -114,6 +124,7 @@ def king_of_the_hill_summary(request, track_id):
 
     # So for this track, and these classes, we want to show the top performers.
     race_summary = {}
+    final_race_summary = {}
 
     # DANGER ZONE - slowness ahead
     for class_name in class_names_data:
@@ -133,7 +144,7 @@ def king_of_the_hill_summary(request, track_id):
             #print('    ', racer_temp_dict[result.racerid])
 
         for key in racer_temp_dict.keys():
-            summary = KoHSummary(class_name, key, racer_temp_dict[key])
+            summary = KoHSummaryDemo(class_name, key, racer_temp_dict[key])
             #pprint.pprint(summary)
             race_summary[class_name].append(summary)
 

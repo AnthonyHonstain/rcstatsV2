@@ -1,18 +1,26 @@
-
-# Experimenting with outgoing email tasks
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
+
 from core.models import SingleRaceDetails
 from core.models import SingleRaceResults
 from core.models import ClassEmailSubscription
 from core.models import OfficialClassNames
+from core.models import TrackName
+
+from core.sharedmodels.king_of_the_hill_summary import KoHSummary
 
 # Using Site to get the link for them the click through in the outgoing email
 # http://stackoverflow.com/questions/892997/how-do-i-get-the-server-name-in-django-for-a-complete-url
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+
+import json
 import pytz
+from django.utils import timezone
+import datetime
+from collections import defaultdict
 
 from django.conf import settings
 
@@ -94,3 +102,90 @@ def _mail_single_race(user, single_race_detail):
         print(context)
         print('='*20)
     return
+
+
+KING_OF_THE_HILL_DAYS = 1400
+MAX_SCORE = 21
+KoHCacheTTL = 60*15 
+
+
+def _collect_koh_data(trackname_id, official_class_name, koh_timeframe):
+    single_race_results = SingleRaceResults.objects.filter(
+        raceid__trackkey__exact=trackname_id,
+        raceid__racedata__exact=official_class_name.raceclass,
+        raceid__racedate__gt=koh_timeframe)\
+      .select_related('racerid').order_by('racerid')
+
+    return single_race_results
+
+
+def _compute_koh_scores(official_class_name, single_race_results):
+    '''
+    Calculate the KoH scores for a single class.
+    '''
+    computed_result = []
+
+    # We are going to start everyone off with a score of 0, then
+    # just work our way through all the results.
+    racer_temp_dict = defaultdict(int)
+    for result in single_race_results:
+        #print('for racer', result.racerid.id, ' finished:', result.finalpos, ' score:', MAX_SCORE - result.finalpos)
+        racer_temp_dict[result.racerid] += MAX_SCORE - result.finalpos
+        #print('    ', racer_temp_dict[result.racerid])
+
+    # Now that we know all the racers and their scores, lets build
+    # the final object.
+    for key in racer_temp_dict.keys():
+        koh_summary = KoHSummary(
+            official_class_name.id,
+            official_class_name.raceclass,
+            key.id,
+            key.racerpreferredname,
+            racer_temp_dict[key]) 
+        computed_result.append(koh_summary)
+
+    computed_result.sort(key=lambda x: x.score, reverse=True)
+
+    log.debug('metric=KoH_user_count class=%d count=%d', official_class_name.id, len(computed_result))
+    return computed_result
+
+
+def _cache_results(trackname, official_class_name, computed_scores):
+    def from_KoHSummary(obj):
+        if isinstance(obj, KoHSummary):
+            return obj.__dict__
+        return obj
+
+    cache.set(
+        '{}_{}'.format(trackname.trackname, official_class_name.raceclass), 
+        json.dumps(computed_scores, default=from_KoHSummary), 
+        KoHCacheTTL)
+
+
+def _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe):
+    log.debug('metric=Compute_the_KoH  track=%d class=%d duration="%s"', trackname.id, official_class_name.id, koh_timeframe)
+    single_race_results = _collect_koh_data(trackname.id, official_class_name, koh_timeframe)
+
+    computed_scores = _compute_koh_scores(official_class_name, single_race_results)
+
+    _cache_results(trackname, official_class_name, computed_scores)
+
+
+def pre_compute_king_of_the_hill(track_id):
+    '''
+    For the given track, we are going to compute the KoH scores for all
+    the active classes.
+    '''
+    trackname = TrackName.objects.get(pk=track_id)
+    official_class_names = OfficialClassNames.objects.filter(active=True)
+
+    # TODO - have I picked the right time here, now that I am computing it offline,
+    # and in now way related to the user, I have to make a choice about tz.
+
+    now = timezone.now()
+    #utcnow = datetime.datetime.utcnow()
+    #utcnow.replace(tzinfo=pytz.utc)
+    koh_timeframe = now - datetime.timedelta(days=KING_OF_THE_HILL_DAYS)
+
+    for official_class_name in official_class_names:
+        _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)
