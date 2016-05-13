@@ -178,7 +178,7 @@ CACHES = {
         'BACKEND': 'redis_cache.RedisCache',
         'LOCATION': os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0'),
         'OPTIONS': {
-            'DB': 1,
+            'DB': 0,
         },
     },
 }
