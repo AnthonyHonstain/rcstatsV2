@@ -79,8 +79,9 @@ Basic dev tasks.
 ```
 // Run the dev env so it can be accessed while developing in VM.
 python manage.py runserver 0.0.0.0:8000
-// Start Celery running - best to use a seperate terminal.
-python manage.py celeryd -E -B --loglevel=INFO
+// Start Celery running - best to use a seperate terminal. 
+//    Even with concurrency 1, you will still see three processes for celery.
+python manage.py celeryd -E -B --loglevel=INFO --concurrency 1
 // Can use IPython notebook to run commands.
 python manage.py shell_plus --notebook
 
@@ -132,6 +133,7 @@ Deployment
 Deployed and hosted using Heroku
 
 Currently (4/18) set to use a single heroku web dyno (even though we have both a web client and a celery worker).
+* Watch out for celery concurrency which can create to many workers and take all the memory on the dyno.
 * Honcho to start additional process http://www.radekdostal.com/content/heroku-running-multiple-python-processes-single-dyno-using-honcho
 
 Monitoring
