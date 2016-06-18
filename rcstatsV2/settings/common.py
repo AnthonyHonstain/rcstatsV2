@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
+
 from __future__ import absolute_import
 # ^^^ The above is required if you want to import from the celery
 # library.  If you don't have this then `from celery.schedules import`
@@ -56,7 +57,7 @@ CELERY_TIMEZONE = 'UTC'
 # Application definition
 # ---------------------------------------------------------------------------
 
-DJANGO_APPS = (
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,24 +65,24 @@ DJANGO_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-)
+]
 
-THIRD_PARTY_APPS = (
-    # django-userena - account management app
+THIRD_PARTY_APPS = [
     'userena',
     'guardian',
     'easy_thumbnails',
     'rest_framework',
     'djcelery',
-    'kombu.transport.django.KombuAppConfig',
-)
+    #'kombu.transport.django.KombuAppConfig',
+    #'vine',
+]
 
-LOCAL_APPS = (
+LOCAL_APPS = [
     'core',
     'accounts',
     'uploadresults',
     'raceAPI',
-)
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

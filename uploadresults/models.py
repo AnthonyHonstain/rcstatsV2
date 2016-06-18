@@ -9,7 +9,7 @@ class EasyUploaderPrimaryRecord(models.Model):
     that were uploaded (:model:`uploadresults.EasyUploadRecord`)and some basic information about the transaction.
     """
     user = models.ForeignKey(User)
-    ip = models.IPAddressField()
+    ip = models.GenericIPAddressField()
     filecount = models.IntegerField()
     filecountsucceed = models.IntegerField()
     uploadstart = models.DateTimeField('Datetime upload was started.')
@@ -27,7 +27,7 @@ class EasyUploadRecord(models.Model):
     origfilename = models.CharField(max_length=200)
     filename = models.CharField(max_length=200, null=True)
     user = models.ForeignKey(User)
-    ip = models.IPAddressField()
+    ip = models.GenericIPAddressField()
     filesize = models.BigIntegerField()
     filemd5 = models.CharField(max_length=200, null=True)
     uploadstart = models.DateTimeField('Date the file was uploaded.', null=True)
@@ -51,7 +51,7 @@ class SingleRaceData(models.Model):
     primaryrecord = models.ForeignKey(EasyUploaderPrimaryRecord)
     uploadrecord = models.ForeignKey(EasyUploadRecord)
     owner = models.ForeignKey('auth.User')
-    ip = models.IPAddressField()
+    ip = models.GenericIPAddressField()
     trackname = models.ForeignKey(TrackName, null=False)
     filename = models.CharField(max_length=200, null=False)
     data = models.TextField('The contents of the race file.', null=False)

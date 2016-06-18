@@ -5,8 +5,6 @@ from rcstatsV2.settings.common import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get('DJANGO_DEBUG', None) == '1' else False
 
-TEMPLATE_DEBUG = True if os.environ.get('DJANGO_DEBUG', None) == '1' else False
-
 # ---------------------------------------------------------------------------
 # Following the heroku instructions - https://devcenter.heroku.com/articles/getting-started-with-django
 
@@ -41,8 +39,35 @@ ADMINS = [os.environ.get('ADMINS', 'your_email@example.com'), ]
 #     https://devcenter.heroku.com/articles/buildpack-api
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'rcstatsV2', 'templates')]
+
+# ---------------------------------------------------------------------------
+# Templates
+#   https://docs.djangoproject.com/en/1.9/ref/templates/upgrading/
+# ---------------------------------------------------------------------------
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
+            os.path.join(BASE_DIR, 'rcstatsV2', 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': True if os.environ.get('DJANGO_DEBUG', None) == '1' else False,
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 # ---------------------------------------------------------------------------
 # Email Back-End

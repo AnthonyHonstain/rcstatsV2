@@ -23,8 +23,6 @@ warnings.filterwarnings(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = ['*',]
 
 # Database
@@ -41,10 +39,10 @@ DATABASES = {
     }
 }
 
-THIRD_PARTY_APPS += (
+THIRD_PARTY_APPS += [
     'django_extensions',
     'debug_toolbar',
-)
+]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 
@@ -61,10 +59,37 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-# Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'core', 'templates'),
-                 os.path.join(BASE_DIR, 'accounts', 'templates'),
-                 os.path.join(BASE_DIR, 'rcstatsV2', 'templates')]
+# ---------------------------------------------------------------------------
+# Templates
+#   https://docs.djangoproject.com/en/1.9/ref/templates/upgrading/
+# ---------------------------------------------------------------------------
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # Customize the admin template - https://docs.djangoproject.com/en/1.7/intro/tutorial02/
+            os.path.join(BASE_DIR, 'core', 'templates'),
+            os.path.join(BASE_DIR, 'accounts', 'templates'),
+            os.path.join(BASE_DIR, 'rcstatsV2', 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug':True,
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 
 # ---------------------------------------------------------------------------
 # Email Back-End
