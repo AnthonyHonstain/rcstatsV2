@@ -21,15 +21,7 @@ djangorestframework==3.3.3
 
 # -----------------
 # Celery - I am going to try just pulling in the celery dependencies automatically
-celery==3.1.17
-# anyjson>=0.3.3
-# http://kombu.readthedocs.org/en/latest/
-#kombu>=3.0.24,<3.1
-#billiard>=3.3.0.19,<3.4
-#amqp>=2.0,<3.0
-#vine==1.1.0
-
-django-celery==3.1.17
+celery==3.1.23
 
 # Redis
 redis==2.10.5

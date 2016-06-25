@@ -5,7 +5,7 @@ log = logging.getLogger('defaultlogger')
 import sys  # TODO - Remove after testing
 import random
 
-from celery import task
+from celery import shared_task
 
 from core.celery_manager import mail_all_users
 from core.celery_manager import pre_compute_king_of_the_hill
@@ -18,19 +18,19 @@ So we can work and test the outgoing email logic without having to think very mu
 about the celery job and the external dependencies that make the whole system dance.
 '''
 
-@task(bind=True)
+@shared_task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
     sys.stdout.flush()  # TODO - Remove after testing
     return random.randint(0, 100)
 
 
-@task(bind=True)
+@shared_task(bind=True)
 def mail_single_race(self, single_race_details_id):
     mail_all_users(single_race_details_id)
     return
 
 
-@task(bind=True)
+@shared_task(bind=True)
 def pre_compute_koh(self, trackname_id):
     return pre_compute_king_of_the_hill(trackname_id)

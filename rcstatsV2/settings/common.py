@@ -37,18 +37,22 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+# NOTE - based on the new celery docs and lack of work on djcelery
+# I am trying to cut it out of my project. I liked the database management
+# but I want to try and go forward without it.
+
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 # You need the CELERYBEAT_SCHEDULER if you want to configures period tasks through the admin page.
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+#CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 CELERYBEAT_SCHEDULE = {
     # I am hard coding this to a single track right now
     # TODO - make this generic to run for all tracks.
-    'pre_compute_koh_trcr': {
-        'task': 'core.celery.pre_compute_koh',
-        'schedule': timedelta(minutes=1),
-        'args': (1,)
-    },
+    #'pre_compute_koh_trcr': {
+    #    'task': 'core.tasks.pre_compute_koh',
+    #    'schedule': timedelta(minutes=10),
+    #    'args': (1,)
+    #},
 }
 
 CELERY_TIMEZONE = 'UTC'
@@ -72,7 +76,9 @@ THIRD_PARTY_APPS = [
     'guardian',
     'easy_thumbnails',
     'rest_framework',
-    'djcelery',
+
+    # NOTE - I am going to try and avoid djcelery for the time being
+    #'djcelery',
     #'kombu.transport.django.KombuAppConfig',
     #'vine',
 ]
