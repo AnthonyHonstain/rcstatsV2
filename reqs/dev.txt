@@ -1,13 +1,13 @@
 -r common.txt
 
 # Django extensions https://github.com/django-extensions/django-extensions
-django-extensions==1.5.2
+django-extensions==1.6.7
 # Just install this one manually: pip install ipython[all]
 # ipython[all]==3.1.0
 
 # Needing for mocking in tests.
-mock==1.3.0
-pbr==1.8.1
+mock==2.0.0
+pbr==1.10.0
 
 # Django toolbar
 django-debug-toolbar==1.4

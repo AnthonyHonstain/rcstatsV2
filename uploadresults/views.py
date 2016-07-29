@@ -60,7 +60,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
 
-from core.celery import mail_single_race
+from core.tasks import mail_single_race
 
 import logging
 log = logging.getLogger('defaultlogger')

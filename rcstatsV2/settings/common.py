@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
+
 from __future__ import absolute_import
 # ^^^ The above is required if you want to import from the celery
 # library.  If you don't have this then `from celery.schedules import`
@@ -20,7 +21,7 @@ from __future__ import absolute_import
 from datetime import timedelta
 import os
 
-redis_url = os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0')
+redis_url = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
 
 # ---------------------------------------------------------------------------
 # Celery
@@ -36,18 +37,22 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+# NOTE - based on the new celery docs and lack of work on djcelery
+# I am trying to cut it out of my project. I liked the database management
+# but I want to try and go forward without it.
+
+#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 # You need the CELERYBEAT_SCHEDULER if you want to configures period tasks through the admin page.
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+#CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 CELERYBEAT_SCHEDULE = {
     # I am hard coding this to a single track right now
     # TODO - make this generic to run for all tracks.
-    'pre_compute_koh_trcr': {
-        'task': 'core.celery.pre_compute_koh',
-        'schedule': timedelta(minutes=1),
-        'args': (1,)
-    },
+    #'pre_compute_koh_trcr': {
+    #    'task': 'core.tasks.pre_compute_koh',
+    #    'schedule': timedelta(minutes=10),
+    #    'args': (1,)
+    #},
 }
 
 CELERY_TIMEZONE = 'UTC'
@@ -56,7 +61,7 @@ CELERY_TIMEZONE = 'UTC'
 # Application definition
 # ---------------------------------------------------------------------------
 
-DJANGO_APPS = (
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,24 +69,26 @@ DJANGO_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-)
+]
 
-THIRD_PARTY_APPS = (
-    # django-userena - account management app
+THIRD_PARTY_APPS = [
     'userena',
     'guardian',
     'easy_thumbnails',
     'rest_framework',
-    'djcelery',
-    'kombu.transport.django.KombuAppConfig',
-)
 
-LOCAL_APPS = (
+    # NOTE - I am going to try and avoid djcelery for the time being
+    #'djcelery',
+    #'kombu.transport.django.KombuAppConfig',
+    #'vine',
+]
+
+LOCAL_APPS = [
     'core',
     'accounts',
     'uploadresults',
     'raceAPI',
-)
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

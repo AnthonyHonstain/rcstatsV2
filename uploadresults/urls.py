@@ -9,11 +9,10 @@ router.register(r'EasyUploadRecord', views.EasyUploadRecordViewSet)
 router.register(r'TrackNameList', views.TrackNameList)
 
 
-urlpatterns = patterns(
-    '',
-    url(r'^easyupload_track/$', 'uploadresults.views.easyupload_track', name="easyupload_track"),
-    url(r'^easyupload_fileselect/(?P<track_id>\d+)/$', 'uploadresults.views.easyupload_fileselect', name="easyupload_fileselect"),
-    url(r'^easyupload_results/(?P<upload_id>\d+)/$', 'uploadresults.views.easyupload_results', name="easyupload_results"),
+urlpatterns = [
+    url(r'^easyupload_track/$', views.easyupload_track, name="easyupload_track"),
+    url(r'^easyupload_fileselect/(?P<track_id>\d+)/$', views.easyupload_fileselect, name="easyupload_fileselect"),
+    url(r'^easyupload_results/(?P<upload_id>\d+)/$', views.easyupload_results, name="easyupload_results"),
 
 
     url(r'^single_race_upload/$', views.SingleRaceDataCreate.as_view()),
@@ -21,4 +20,4 @@ urlpatterns = patterns(
     url(r'^', include(router.urls)),
 
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]

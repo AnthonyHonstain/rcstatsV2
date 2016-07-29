@@ -26,7 +26,6 @@ router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails/(?P<singleracede
                 base_name='laptimes')
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^', include(router.urls)),
-)
+]
