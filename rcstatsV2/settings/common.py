@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from datetime import timedelta
 import os
 
-redis_url = os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0')
+redis_url = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
 
 # ---------------------------------------------------------------------------
 # Celery
