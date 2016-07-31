@@ -14,16 +14,7 @@ Racers
 
 
 {% block content %}
-<div class="jumbotron">
-  <div class="container">
-    <img class="img-responsive" src="/static/img/logo.png"/>
-    <h3>Racer list for {{ trackname.trackname }}</h3>
-  </div>
-</div>
-
 <div class="container well">
-  
-  
   <div class="alert alert-info" role="alert">
     <button class="btn btn-primary disabled" type="button">
       {{ racerid.racerpreferredname }} <span class="badge">{{ races | length }}</span>

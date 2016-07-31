@@ -9,17 +9,10 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 {% endblock %}
 
 {% block content %}
-
-<div class="jumbotron">
-  <div class="container">
-    <img class="img-responsive" src="/static/img/logo.png"/>
-    <h3>{{ trackname.trackname }}</h3>
-  </div>
-</div>
-
 <div class="container well">
   <!-- The race results table -->
   <h2>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h2>
+  <h3>{{ trackname.trackname }}</h3>
   <div id="span-new-race-{{ singleracedetail.id }}"></div>
   <table id="table-new-race-{{ singleracedetail.id }}"></table>
   </br>

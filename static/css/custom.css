@@ -1,5 +1,18 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
-  padding-bottom: 20px;
+  padding-top: 60px;
+}
+
+/* Shrinking the margin around the headers */
+h1 {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+h2 {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+h3 {
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
