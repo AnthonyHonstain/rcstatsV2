@@ -53,9 +53,6 @@ var populateSingleRaceFromRestEndpoint = function(restURL, singleRaceDetailID) {
       data: raceresults,
       sortName: 'finalpos',
       columns: [{
-          field: 'finalpos',
-          title: ''
-      }, {
           field: 'racerid',
           title: 'Name'
       }, {
