@@ -104,8 +104,9 @@ $(document).ready(function(){
       //    This pushes all the work to the client to iterate all the laps many times.
       button.addClass('btn-success');
 
-      var goodlaps = _.filter(completeData, function(laptime) { return laptime.racerid == racerid; });
-      newFlotLaps.data = _.map(goodlaps, function(laptime) { return [laptime.racelap, laptime.racelaptime] });
+      var goodlaps = _.filter(completeData, function(laptime) { return laptime.racerid == racerid && laptime.racelap > 0; });
+
+      newFlotLaps.data = _.map(goodlaps, function(laptime) { return [laptime.racelap + 1, laptime.racelaptime] });
 
       alreadyFetched[racerid] = newFlotLaps;
       data.push(newFlotLaps);
