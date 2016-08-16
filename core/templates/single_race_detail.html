@@ -15,25 +15,40 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
   <h3>{{ trackname.trackname }}</h3>
   <div id="span-new-race-{{ singleracedetail.id }}"></div>
   <table id="table-new-race-{{ singleracedetail.id }}"></table>
-  </br>
+</div>
+
+<div class="container well">
+  <!-- The lap times table -->
+  <h2>Lap Times</h2>
+
+  <div class="btn-group" role="group" aria-label="Racer list by final position">
+    {% for result in raceresults %}
+    <button type="button" id="{{ result.racerid.id }}" class="fetchlapTimeSeries btn btn-secondary">
+      {{ forloop.counter }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <div class="page-header">
+    <h3>
+      <div class="label label-default" id="span-racer-desc-{{ singleracedetail.id }}"></div>
+    </h3>
+  </div>
+
+  <table id="table-race-laps-{{ singleracedetail.id }}"></table>
 </div>
 
 <div class="container well">
   <!-- The flot laptime graph -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Graph Laptimes</h3>
-    </div>
-    <div class="panel-body ">
-      {% for result in raceresults %}
-      <button id="{{ result.racerid.id }}" class="fetchSeries btn btn-block">
-        {{ result.racerid.racerpreferredname }}
-      </button>
-      {% endfor %}
-    </div>
-  </div>
-
+  <h2>Graph Laptimes</h2>
   <div id="laptimegraph_placeholder" style="height:300px;"></div>
+
+  <br/>
+  {% for result in raceresults %}
+  <button id="{{ result.racerid.id }}" class="fetchSeries btn btn-block">
+    {{ result.racerid.racerpreferredname }}
+  </button>
+  {% endfor %}
 </div>
 
 {% endblock %}
@@ -54,7 +69,10 @@ $(document).ready(function(){
     populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
 });
 
+// ************************************************************************
+// Construct the flot graph to show lap times by racer.
 // TODO - refactor this once it starts working
+// ************************************************************************
 $(document).ready(function(){
 
   var options = {
@@ -75,8 +93,6 @@ $(document).ready(function(){
   $("button.fetchSeries").click(function () {
     // TODO - it would be nice to record how often users click these buttons
     var button = $(this);
-
-    // Find the URL in the link right next to us, then fetch the data
     var racerid = parseInt(button.attr("id"));
     var newFlotLaps = {
       label: '', // We are going to hide the labels and use the buttons to tell which active.
@@ -99,7 +115,7 @@ $(document).ready(function(){
       button.removeClass('btn-success');
 
       delete alreadyFetched[racerid];
-      console.log("REMOVE LAPDATA");
+      console.log("remove lap data for ", racerid);
 
       data = [];
       _.each(alreadyFetched, function(fetched) {
@@ -133,5 +149,98 @@ $(document).ready(function(){
   //$.plot("#laptimegraph_placeholder", data, options);
 
 });
+
+
+// ************************************************************************
+// Javascript for showing a table of a single racer's laptimes
+// ************************************************************************
+$(document).ready(function() {
+
+  /* This is the object that I have to deal with
+  {
+    "id": 107953,
+    "raceid": 865,
+    "racerid": 74,
+    "racelap": 0,
+    "raceposition": 9,
+    "racelaptime": "12.060"
+  },
+  */
+
+  var lapByRacerId = {};
+  // I don't have a better plan right now than to drop this in via the template
+  var raceridToName = {
+    {% for result in raceresults %}{{ result.racerid.id }}:"{{ result.racerid.racerpreferredname }}",
+    {% endfor %}
+  };
+
+  $("button.fetchlapTimeSeries").click(function () {
+    var button = $(this);
+    var racerid = parseInt(button.attr("id"));
+
+    //console.log(lapByRacerId[racerid]);
+
+    var racerpreferredname = raceridToName[racerid];
+
+    // I have the full result object, so I could display more stuff here, I
+    // just don't have a good plan on how to format/organize it all and it
+    // is just extra sugar for the feature at this stage.
+    var header = racerpreferredname;
+    $("#span-racer-desc-" + {{ singleracedetail.id }}).html(header);
+    $("#table-race-laps-" + {{ singleracedetail.id }}).bootstrapTable("load", lapByRacerId[racerid]);
+  });
+
+  function retrieveLapTimeDataHack() {
+    function onDataReceivedHack(series) {
+      buildLapByRacerId(series);
+    };
+
+    $.ajax({
+      //'http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/865/LapTimes/',
+      url: "{% url 'laptimes-list' trackname=trackname.id singleracedetails=singleracedetail.id  %}",
+      contentType:"application/json; charset=utf-8",
+      type: "GET",
+      dataType: "json",
+      success: onDataReceivedHack
+    });
+  };
+
+  function buildLapByRacerId(completeLapTimeData) {
+    //console.log(completeLapTimeData);
+
+    _.each(completeLapTimeData, function(rawLapTime) {
+      rawLapTime.racelap = rawLapTime.racelap + 1;
+      if (lapByRacerId[rawLapTime.racerid] == null) {
+        lapByRacerId[rawLapTime.racerid] = [rawLapTime];
+      }
+      else {
+        lapByRacerId[rawLapTime.racerid].push(rawLapTime);
+      }
+    });
+    // WARNING - going to click the first racer to set some starting values
+    $("button.fetchlapTimeSeries:first").click();
+  };
+
+  function buildLapTable() {
+    $("#table-race-laps-" + {{ singleracedetail.id }}).bootstrapTable({
+      data: [],
+      sortName: 'racelap',
+      columns: [{
+          field: 'racelap',
+          title: 'Lap'
+      }, {
+          field: 'racelaptime',
+          title: 'Time'
+      }, {
+          field: 'raceposition',
+          title: 'Position'
+      }]
+    });
+  };
+
+  retrieveLapTimeDataHack();
+  buildLapTable();
+});
+
 </script>
 {% endblock %}
