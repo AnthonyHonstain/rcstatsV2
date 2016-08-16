@@ -105,6 +105,10 @@
     <script src="/static/js/bootstrap-table-mobile.min.js"></script>-
     <script src="/static/js/underscore-min.js"></script>
     <script src="/static/js/moment.min.js"></script>
+
+    {% if debug %}
+    <!-- Disabled Google Analytics -->
+    {% else %}
     <!-- Google Analytics -->
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -116,6 +120,8 @@
     ga('send', 'pageview');
     </script>
     <!-- End Google Analytics -->
+    {% endif %}
+
     {% block script %} {% endblock %}
 
 </body>
