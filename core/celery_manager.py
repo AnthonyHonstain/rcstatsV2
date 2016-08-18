@@ -104,11 +104,6 @@ def _mail_single_race(user, single_race_detail):
     return
 
 
-KING_OF_THE_HILL_DAYS = 1400
-MAX_SCORE = 21
-KoHCacheTTL = 60*15 
-
-
 def _collect_koh_data(trackname_id, official_class_name, koh_timeframe):
     single_race_results = SingleRaceResults.objects.filter(
         raceid__trackkey__exact=trackname_id,
@@ -124,13 +119,14 @@ def _compute_koh_scores(official_class_name, single_race_results):
     Calculate the KoH scores for a single class.
     '''
     computed_result = []
+    starting_score = 21 # Remeber the racer's final standing is not zero based indexing.
 
     # We are going to start everyone off with a score of 0, then
     # just work our way through all the results.
     racer_temp_dict = defaultdict(int)
     for result in single_race_results:
-        #print('for racer', result.racerid.id, ' finished:', result.finalpos, ' score:', MAX_SCORE - result.finalpos)
-        racer_temp_dict[result.racerid] += MAX_SCORE - result.finalpos
+        #print('for racer', result.racerid.id, ' finished:', result.finalpos, ' score:', starting_score - result.finalpos)
+        racer_temp_dict[result.racerid] += starting_score - result.finalpos
         #print('    ', racer_temp_dict[result.racerid])
 
     # Now that we know all the racers and their scores, lets build
@@ -151,6 +147,10 @@ def _compute_koh_scores(official_class_name, single_race_results):
 
 
 def _cache_results(trackname, official_class_name, computed_scores):
+    '''
+    I am not sure if this should cache to redis or if I should just toss it in DB.
+    In the past I have had availability issues with redis in heroku (still on free stack).
+    '''
     def from_KoHSummary(obj):
         if isinstance(obj, KoHSummary):
             return obj.__dict__
@@ -159,7 +159,7 @@ def _cache_results(trackname, official_class_name, computed_scores):
     cache.set(
         '{}_{}'.format(trackname.trackname, official_class_name.raceclass), 
         json.dumps(computed_scores, default=from_KoHSummary), 
-        KoHCacheTTL)
+        settings.KING_OF_THE_HILL_CACHE_TTL)
 
 
 def _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe):
@@ -171,21 +171,33 @@ def _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe):
     _cache_results(trackname, official_class_name, computed_scores)
 
 
-def pre_compute_king_of_the_hill(track_id):
+def find_king_of_the_hill_classes():
     '''
-    For the given track, we are going to compute the KoH scores for all
-    the active classes.
+    Look up all of the track and race classes being considered for King of the Hill
     '''
-    trackname = TrackName.objects.get(pk=track_id)
+    tracknames = TrackName.objects.all()
     official_class_names = OfficialClassNames.objects.filter(active=True)
 
+    track_and_class_list = []
+    for trackname in tracknames:
+        for official_class_name in official_class_names:
+            track_and_class_list.append((trackname.id, official_class_name.id))
+    return track_and_class_list
+
+
+def compute_koh_by_track_class(trackname_id, official_class_name_id):
+    '''
+    Compute the KoH score for a specific track and class.
+    '''
+    trackname = TrackName.objects.get(pk=trackname_id)
+    official_class_name = OfficialClassNames.objects.get(pk=official_class_name_id)
+
     # TODO - have I picked the right time here, now that I am computing it offline,
-    # and in now way related to the user, I have to make a choice about tz.
+    # and in no way related to the user, I have to make a choice about tz.
 
     now = timezone.now()
     #utcnow = datetime.datetime.utcnow()
     #utcnow.replace(tzinfo=pytz.utc)
-    koh_timeframe = now - datetime.timedelta(days=KING_OF_THE_HILL_DAYS)
+    koh_timeframe = now - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
 
-    for official_class_name in official_class_names:
-        _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)
+    _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)

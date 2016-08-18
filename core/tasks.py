@@ -8,7 +8,8 @@ import random
 from celery import shared_task
 
 from core.celery_manager import mail_all_users
-from core.celery_manager import pre_compute_king_of_the_hill
+from core.celery_manager import find_king_of_the_hill_classes
+from core.celery_manager import compute_koh_by_track_class
 
 '''
 The general architecture here is that the tasks defined and managed here, but all the
@@ -32,5 +33,19 @@ def mail_single_race(self, single_race_details_id):
 
 
 @shared_task(bind=True)
-def pre_compute_koh(self, trackname_id):
-    return pre_compute_king_of_the_hill(trackname_id)
+def pre_compute_koh(self):
+	# We want a list of all tracks and classe (tuple) to consider
+    track_and_class_list = find_king_of_the_hill_classes()
+
+    # Spawn new tasks, alternatively we could organize this into
+    # a celery Group http://docs.celeryproject.org/en/master/userguide/canvas.html#groups
+    # but I am not convinced of the value (other than possibly doing
+    # away with this gross list of tuples)
+    for trackname_id, official_class_name_id in track_and_class_list:
+        koh_track_class_task.delay(trackname_id, official_class_name_id)
+        return
+
+
+@shared_task(bind=True)
+def koh_track_class_task(self, trackname_id, official_class_name_id):
+    return compute_koh_by_track_class(trackname_id, official_class_name_id)

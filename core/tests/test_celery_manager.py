@@ -181,25 +181,30 @@ Stock Five           #1          1           35.952         35.952
             mail_single_race.assert_called_with(user_with_sub, mod_race_detail)
 
 
-    def test_pre_compute_king_of_the_hill(self):
+    def test_find_king_of_the_hill_classes(self):
         mod_class = models.OfficialClassNames(raceclass='Mod Buggy', active=True)
         mod_class.save()
 
         stock_class = models.OfficialClassNames(raceclass='Stock Buggy', active=True)
         stock_class.save()
 
-        # We assume there are only a few races in the system, so we grab one and pick
-        # is the current time.
-        single_race = models.SingleRaceDetails.objects.get(pk=self.racelist_to_upload[0].single_race_details_pk)
-        now = single_race.racedate
-        #utcnow = datetime.datetime.utcnow()
-        #utcnow.replace(tzinfo=pytz.utc)
-        koh_timeframe = now - datetime.timedelta(days=15)
+        track_and_class_list = celery_manager.find_king_of_the_hill_classes()
 
-        with mock.patch('core.celery_manager._compute_king_of_the_hill') as compute:
-            celery_manager.pre_compute_king_of_the_hill(self.trackname_obj.id)
+        self.assertEqual(track_and_class_list, [
+            (self.trackname_obj.id, mod_class.id),
+            (self.trackname_obj.id, stock_class.id),
+            ])
 
-            self.assertTrue(compute.called)
+
+    def test_compute_koh_by_track_class(self):
+        # TODO - need to add a task for the other main function in the celery_manager
+        mod_class = models.OfficialClassNames(raceclass='Mod Buggy', active=True)
+        mod_class.save()
+
+        with mock.patch('core.celery_manager._compute_king_of_the_hill') as compute_patch:
+            celery_manager.compute_koh_by_track_class(self.trackname_obj.id, mod_class.id)
+
+            compute_patch.assert_called_once_with(self.trackname_obj, mod_class, mock.ANY)
 
 
     def test_pre_compute_KoH(self):

@@ -2,10 +2,10 @@
 Django settings for rcstatsV2 project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
+https://docs.djangoproject.com/en/1.9/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
+https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 from __future__ import absolute_import
@@ -23,6 +23,14 @@ import os
 
 redis_url = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
 
+
+# ---------------------------------------------------------------------------
+# Celery
+# ---------------------------------------------------------------------------
+KING_OF_THE_HILL_DAYS = 14
+KING_OF_THE_HILL_CACHE_TTL = 60*60*6 # <sec>*<min>*<hour>
+KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES = 5
+
 # ---------------------------------------------------------------------------
 # Celery
 # ---------------------------------------------------------------------------
@@ -37,22 +45,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-# NOTE - based on the new celery docs and lack of work on djcelery
-# I am trying to cut it out of my project. I liked the database management
-# but I want to try and go forward without it.
-
-#CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-# You need the CELERYBEAT_SCHEDULER if you want to configures period tasks through the admin page.
-#CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
 CELERYBEAT_SCHEDULE = {
-    # I am hard coding this to a single track right now
-    # TODO - make this generic to run for all tracks.
-    #'pre_compute_koh_trcr': {
-    #    'task': 'core.tasks.pre_compute_koh',
-    #    'schedule': timedelta(minutes=10),
-    #    'args': (1,)
-    #},
+    'pre_compute_koh_trcr': {
+        'task': 'core.tasks.pre_compute_koh',
+        'schedule': timedelta(minutes=KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES),
+        'args': ()
+    },
 }
 
 CELERY_TIMEZONE = 'UTC'
