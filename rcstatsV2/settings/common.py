@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from datetime import timedelta
 import os
 
-redis_url = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
+REDIS_URL = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
 
 
 # ---------------------------------------------------------------------------
@@ -37,7 +37,7 @@ KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES = 5
 # http://celery.readthedocs.org/en/latest/django/first-steps-with-django.html
 
 # Celery settings
-BROKER_URL = redis_url  # 'amqp://guest:guest@localhost//'
+BROKER_URL = REDIS_URL  # 'amqp://guest:guest@localhost//'
 
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
@@ -187,7 +187,7 @@ LOGGING_LOGGERS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': os.environ.get('REDISTOGO_URL', 'redis://localhost:6379/0'),
+        'LOCATION': REDIS_URL,
         'OPTIONS': {
             'DB': 0,
         },
