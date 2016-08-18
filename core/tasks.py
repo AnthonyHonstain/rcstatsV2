@@ -43,7 +43,7 @@ def pre_compute_koh(self):
     # away with this gross list of tuples)
     for trackname_id, official_class_name_id in track_and_class_list:
         koh_track_class_task.delay(trackname_id, official_class_name_id)
-        return
+    return
 
 
 @shared_task(bind=True)
