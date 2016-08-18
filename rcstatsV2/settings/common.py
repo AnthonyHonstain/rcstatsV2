@@ -173,7 +173,13 @@ LOGGING_LOGGERS = {
     'defaultlogger': {
         'handlers': ['console'],
         'level': 'DEBUG',
-    }
+        'propagate': False,
+    },
+    'celery': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
 }
 
 # ---------------------------------------------------------------------------
