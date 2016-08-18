@@ -3,6 +3,7 @@ from core.models import TrackName, SingleRaceDetails, SingleRaceResults, Officia
 from core.models import RacerId
 from core.models import ClassEmailSubscription
 from core.sharedmodels.king_of_the_hill_summary import KoHSummary
+from django.views.decorators.cache import cache_page
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
@@ -16,6 +17,7 @@ import logging
 logger = logging.getLogger('defaultlogger')
 
 
+#@cache_page(60*15) # TODO - cache doesn't work with unit tests.
 def index(request):
     logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
@@ -46,6 +48,7 @@ def single_race_details(request, single_race_detail_id):
                   {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})
 
 
+@cache_page(60*60*6) # Doing an extra long cache on this since its expensive but relatively unchanged.
 def racer_list(request, track_id):
     '''
     Lists all the racers for a given track, along with a count of races.
