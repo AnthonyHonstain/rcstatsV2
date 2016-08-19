@@ -1,11 +1,11 @@
 {% extends "rcstats_base.html" %}
 
 {% block title %}
-Racers
+{{ racerid.racerpreferredname }}
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Racer List
+{{ trackname.trackname }} Results for {{ racerid.racerpreferredname }}
 {% endblock %}
 
 {% block stylesheet %}
@@ -15,10 +15,15 @@ Racers
 
 {% block content %}
 <div class="container well">
+  <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
+    <h3>{{ trackname.trackname }}</h3>
+  </a>
+
   <div class="alert alert-info" role="alert">
     <button class="btn btn-primary disabled" type="button">
       {{ racerid.racerpreferredname }} <span class="badge">{{ races | length }}</span>
     </button>
+    <p>Currently tracking {{ races | length }} races for {{ racerid.racerpreferredname }}</p>
   </div>
   
   <div class="panel panel-default">

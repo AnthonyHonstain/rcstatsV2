@@ -1,11 +1,11 @@
 {% extends "rcstats_base.html" %}
 
 {% block title %}
-King of the Hill
+{{ official_class_name.raceclass }}
 {% endblock %}
 
 {% block description %}
-King of the Hill
+King of the Hill for {{ official_class_name.raceclass }}
 {% endblock %}
 
 {% block stylesheet %}
@@ -16,7 +16,9 @@ King of the Hill
 <div class="container">
   <div class="row">
     <div class="col-md-12 well">
-      <h4>King of the Hill {{ trackname.trackname }}</h4>
+      <a href="{% url 'koh-summary' track_id=trackname.id %}">
+        <h3>King of the Hill {{ trackname.trackname }}</h3>
+      </a>
       <p>Updated after every race!
       <br/>
       Only considering races since {{ start_time | date:'Y-m-d' }}</p>
@@ -42,14 +44,12 @@ King of the Hill
         </p>
       </div>
       </div>
-
-      <a type="button" class="btn btn-info" href="{% url 'koh-summary' track_id=trackname.id %}">Summary of results for {{ trackname.trackname }}</a>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12 well">
-      <h4>{{ official_class_name.raceclass }}</h4>
+      <h3>{{ official_class_name.raceclass }}</h3>
       <p>Currently tracking {{ koh_summarys|length }} racers.</p>
       <div class="panel panel-default">
       <table data-toggle="table">
