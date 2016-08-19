@@ -42,17 +42,15 @@ King of the Hill
         </p>
       </div>
       </div>
+
+      <a type="button" class="btn btn-info" href="{% url 'koh-summary' track_id=trackname.id %}">Summary of results for {{ trackname.trackname }}</a>
     </div>
   </div>
 
   <div class="row">
-    {% for official_class,koh_summarys in koh_summary_by_class.items %}
     <div class="col-md-12 well">
-      <a href="{% url 'koh-summary-class' track_id=trackname.id official_class_name_id=official_class.id %}">
-      <h4>{{ official_class.raceclass }}</h4>
-      </a>
-      <a type="button" class="btn btn-info" href="{% url 'koh-summary-class' track_id=trackname.id official_class_name_id=official_class.id %}">Complete List for {{ official_class.raceclass }}</a>
-
+      <h4>{{ official_class_name.raceclass }}</h4>
+      <p>Currently tracking {{ koh_summarys|length }} racers.</p>
       <div class="panel panel-default">
       <table data-toggle="table">
         <thead>
@@ -77,7 +75,6 @@ King of the Hill
       </div>
 
     </div>
-    {% endfor %}
   </div>
 </div>
 

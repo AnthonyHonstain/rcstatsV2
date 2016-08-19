@@ -3,9 +3,13 @@ from core.models import TrackName, SingleRaceDetails, SingleRaceResults, Officia
 from core.models import RacerId
 from core.models import ClassEmailSubscription
 from core.sharedmodels.king_of_the_hill_summary import KoHSummary
+from core.celery_manager import compute_koh_by_track_class
+
 from django.views.decorators.cache import cache_page
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
+from django.conf import settings
 
 import json
 
@@ -106,56 +110,76 @@ class KoHSummaryDemo():
             self.score)
 
 
-
-
-
 @login_required()
 def king_of_the_hill_summary(request, track_id):
     trackname = get_object_or_404(TrackName, pk=track_id)
 
     # We want a summary for the active classes.
-    class_names_data = OfficialClassNames.objects.filter(active=True)
+    official_class_names = OfficialClassNames.objects.filter(active=True)
 
-    now = timezone.now()
-    #utcnow = datetime.datetime.utcnow()
-    #utcnow.replace(tzinfo=pytz.utc)
-    two_weeks_ago = now - datetime.timedelta(days=14)
+    two_weeks_ago = timezone.now() - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
 
     # So for this track, and these classes, we want to show the top performers.
-    race_summary = {}
-    final_race_summary = {}
+    koh_summary_by_class = {}
 
-    # DANGER ZONE - slowness ahead
-    for class_name in class_names_data:
-        race_summary[class_name] = []
-        # What does that mean, just the racer with wins? Win count? Do I ignore second place?
-        race_results = SingleRaceResults.objects.filter(
-            raceid__trackkey__exact=trackname.id,
-            raceid__racedata__exact=class_name.raceclass,
-            raceid__racedate__gt=two_weeks_ago)\
-          .select_related('racerid').order_by('racerid')
+    for class_name in official_class_names:
+        koh_summary_by_class[class_name] = get_koh_data(trackname, class_name, 3)
 
-        MAX_SCORE = 21
-        racer_temp_dict = defaultdict(int)
-        for result in race_results:
-            #print('for racer', result.racerid.id, ' finished:', result.finalpos, ' score:', MAX_SCORE - result.finalpos)
-            racer_temp_dict[result.racerid] += MAX_SCORE - result.finalpos
-            #print('    ', racer_temp_dict[result.racerid])
-
-        for key in racer_temp_dict.keys():
-            summary = KoHSummaryDemo(class_name, key, racer_temp_dict[key])
-            #pprint.pprint(summary)
-            race_summary[class_name].append(summary)
-
-        race_summary[class_name].sort(key=lambda x: (x.official_class_name.raceclass, x.score), reverse=True)
-
+    #import pprint
     #pprint.pprint(race_summary)
+
     return render(request, 'king_of_the_hill/king_of_the_hill_summary.html', {
         'trackname': trackname,
         'start_time': two_weeks_ago,
-        'race_summary': race_summary,
+        'koh_summary_by_class': koh_summary_by_class,
         })
 
+
+@login_required()
+def king_of_the_hill_class(request, track_id, official_class_name_id):
+    trackname = get_object_or_404(TrackName, pk=track_id)
+    official_class_name = get_object_or_404(OfficialClassNames, pk=official_class_name_id)
+
+    two_weeks_ago = timezone.now() - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
+
+    koh_summarys = get_koh_data(trackname, official_class_name)
+
+    return render(request, 'king_of_the_hill/king_of_the_hill_class.html', {
+        'trackname': trackname,
+        'official_class_name': official_class_name,
+        'start_time': two_weeks_ago,
+        'koh_summarys': koh_summarys,
+        })
+
+
+def get_koh_data(trackname, offical_class_name, count=None):
+    '''
+    I probably want to pull this to a special KoH module.
+
+    Parameters
+    ----------
+    count : int
+        Count of the first n results to turn (sorted by score)
+    '''
+    koh_summarys = []
+
+    result = cache.get('{}_{}'.format(trackname.trackname, offical_class_name.raceclass))
+
+    if result:
+        json_dicts = json.loads(result)
+        for json_dict in json_dicts[0:count]:
+            #print(json_dict)
+            koh_summarys.append(KoHSummary(**json_dict))
+            #koh_summarys.append(json_dict)
+
+        return koh_summarys
+    else:
+        logger.error('metric=koh_cache_fail trackname=%d official_class_name=%d',
+            trackname.id, offical_class_name.id)
+
+        # TODO - need to robustify this and add more test coverage.
+        complete_results = compute_koh_by_track_class(trackname.id, offical_class_name.id)
+        return complete_results[0:count]
 
 
 from django import forms

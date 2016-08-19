@@ -9,6 +9,14 @@ from rcstatsV2.settings.settings_secret import *
 # END SECRET CONFIGURATION
 # ---------------------------------------------------------------------------
 
+# Dev environment overrides for working on the KoH features
+KING_OF_THE_HILL_DAYS = 50
+KING_OF_THE_HILL_CACHE_TTL = 60*2 # <sec>*<min>*<hour>
+KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES = 1
+
+CELERYBEAT_SCHEDULE['pre_compute_koh_trcr']['schedule'] = timedelta(minutes=KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES)
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 

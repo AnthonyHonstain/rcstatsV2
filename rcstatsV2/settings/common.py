@@ -25,7 +25,7 @@ REDIS_URL = os.environ.get('OPENREDIS_URL', 'redis://localhost:6379/0')
 
 
 # ---------------------------------------------------------------------------
-# Celery
+# King of the Hill logic - time consuming offline calculation
 # ---------------------------------------------------------------------------
 KING_OF_THE_HILL_DAYS = 14
 KING_OF_THE_HILL_CACHE_TTL = 60*60*6 # <sec>*<min>*<hour>

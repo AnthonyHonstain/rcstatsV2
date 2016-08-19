@@ -104,6 +104,13 @@ def _mail_single_race(user, single_race_detail):
     return
 
 
+# -----------------------------------------------------------------------
+# TODO - refactor the KoH logic out to its own module, I wasn't sure how
+# this would all turn out scheudling tasks in via celery, but I am sure
+# that I will need to re-organize once I see the dust setle.
+# -----------------------------------------------------------------------
+
+
 def _collect_koh_data(trackname_id, official_class_name, koh_timeframe):
     single_race_results = SingleRaceResults.objects.filter(
         raceid__trackkey__exact=trackname_id,
@@ -157,18 +164,20 @@ def _cache_results(trackname, official_class_name, computed_scores):
         return obj
 
     cache.set(
-        '{}_{}'.format(trackname.trackname, official_class_name.raceclass), 
+        '{}_{}'.format(trackname.trackname, official_class_name.raceclass),
         json.dumps(computed_scores, default=from_KoHSummary), 
         settings.KING_OF_THE_HILL_CACHE_TTL)
 
 
 def _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe):
-    log.debug('metric=Compute_the_KoH  track=%d class=%d duration="%s"', trackname.id, official_class_name.id, koh_timeframe)
+    log.debug('metric=Compute_the_KoH  track=%d class=%d koh_timeframe="%s"', trackname.id, official_class_name.id, koh_timeframe)
     single_race_results = _collect_koh_data(trackname.id, official_class_name, koh_timeframe)
 
     computed_scores = _compute_koh_scores(official_class_name, single_race_results)
 
     _cache_results(trackname, official_class_name, computed_scores)
+
+    return computed_scores
 
 
 def find_king_of_the_hill_classes():
@@ -200,4 +209,4 @@ def compute_koh_by_track_class(trackname_id, official_class_name_id):
     #utcnow.replace(tzinfo=pytz.utc)
     koh_timeframe = now - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
 
-    _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)
+    return _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)
