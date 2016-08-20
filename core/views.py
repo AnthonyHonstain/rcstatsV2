@@ -32,7 +32,22 @@ def index(request):
         trackkey__exact=trackname.id,
         mainevent__isnull=False).order_by('-racedate').first()
 
-    return render(request, 'index.html', {'trackname': trackname, 'singleracedetail': singleracedetail})
+    # We will use the most recent race to use for the KoH stats.
+    koh_summarys = []
+    if singleracedetail:
+        official_class_name = OfficialClassNames.objects.filter(
+            raceclass__exact=singleracedetail.racedata).first()
+        if official_class_name:
+            koh_summarys = get_koh_data(trackname, official_class_name, count=3, database_fallback=False)
+
+    racer_count = RacerId.objects.all().count()
+
+    return render(request, 'index.html', {
+        'trackname': trackname,
+        'singleracedetail': singleracedetail,
+        'koh_summarys': koh_summarys,
+        'racer_count': racer_count,
+        })
 
 
 def single_race_details(request, single_race_detail_id):
@@ -152,7 +167,7 @@ def king_of_the_hill_class(request, track_id, official_class_name_id):
         })
 
 
-def get_koh_data(trackname, offical_class_name, count=None):
+def get_koh_data(trackname, offical_class_name, count=None, database_fallback=True):
     '''
     I probably want to pull this to a special KoH module.
 
@@ -160,6 +175,8 @@ def get_koh_data(trackname, offical_class_name, count=None):
     ----------
     count : int
         Count of the first n results to turn (sorted by score)
+    database_fallback : boolean
+        If the cache hit fails, attempt to recompute the data from the database.
     '''
     koh_summarys = []
 
@@ -173,13 +190,17 @@ def get_koh_data(trackname, offical_class_name, count=None):
             #koh_summarys.append(json_dict)
 
         return koh_summarys
-    else:
+    elif database_fallback:
         logger.error('metric=koh_cache_fail trackname=%d official_class_name=%d',
             trackname.id, offical_class_name.id)
 
         # TODO - need to robustify this and add more test coverage.
         complete_results = compute_koh_by_track_class(trackname.id, offical_class_name.id)
         return complete_results[0:count]
+    else:
+        logger.error('metric=koh_cache_fail trackname=%d official_class_name=%d',
+            trackname.id, offical_class_name.id)
+        return koh_summarys
 
 
 from django import forms
