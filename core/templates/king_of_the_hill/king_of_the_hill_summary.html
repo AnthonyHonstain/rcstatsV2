@@ -9,7 +9,6 @@ King of the Hill
 {% endblock %}
 
 {% block stylesheet %}
-<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -52,10 +51,12 @@ King of the Hill
       <h3>{{ official_class.raceclass }}</h3>
       </a>
 
-      <div class="panel panel-default">
-      <table data-toggle="table">
+      {% if koh_summarys %}
+      <a class="btn btn-info btn-sm" href="{% url 'koh-summary-class' track_id=trackname.id official_class_name_id=official_class.id %}">Complete Results for {{ official_class.raceclass }}</a>
+      <table class="table table-bordered">
         <thead>
           <tr>
+            <th>Rank</th>
             <th>Name</th>
             <th>Score</th>
           </tr>
@@ -63,6 +64,7 @@ King of the Hill
         <tbody>
         {% for koh_summary in koh_summarys %}
           <tr>
+          <td>{{ forloop.counter }}</td>
           <td>
             <a href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=koh_summary.racerid__id %}">
             {{ koh_summary.racerid__racerpreferredname }}
@@ -73,7 +75,9 @@ King of the Hill
         {% endfor %}
         </tbody>
       </table>
-      </div>
+      {% else %}
+      <p>No King of Hill data for this class</p>
+      {% endif %}
 
     </div>
     {% endfor %}
