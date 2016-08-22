@@ -85,6 +85,7 @@ RC-Stats is a racing community to track and share your RC race results.
         </a>
       </h3>
       <p>View ALL the race results for {{ trackname.trackname }}</p>
+      <a type="button" class="btn btn-info" href={% url 'race-results-by-track' trackname.id %}>{{ trackname.trackname }} Race Resuts</a>
     </div>
     {% endif %}
   </div>
@@ -106,7 +107,7 @@ RC-Stats is a racing community to track and share your RC race results.
   <div class="row">
     {% if singleracedetail != null %}
     <div class="col-md-12 well">
-      <h2><a href={% url 'results-singleracedetail' singleracedetail.id %}>Newest Main Event</a></h2>
+      <h3><a href={% url 'results-singleracedetail' singleracedetail.id %}>Newest Main Event</a></h3>
       <a type="button" class="btn btn-info" href={% url 'results-singleracedetail' singleracedetail.id %}>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed }}</a>
 
       <div id="span-new-race-{{ singleracedetail.id }}"></div>
