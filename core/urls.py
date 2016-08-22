@@ -5,6 +5,7 @@ from core import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'singleracedetail/(?P<single_race_detail_id>\d+)/$', views.single_race_details, name='results-singleracedetail'),
+    url(r'race-results/(?P<track_id>\d+)/$', views.race_results, name='race-results-by-track'),
     url(r'racer-list/(?P<track_id>\d+)/$', views.racer_list, name='racer-list-by-track'),
     url(r'racer-list/(?P<track_id>\d+)/racerid/(?P<racerid_id>\d+)/$', views.single_racer_race_list, name='single_racer_race_list'),
     url(r'race-emails/$', views.race_emails, name='race-emails'),

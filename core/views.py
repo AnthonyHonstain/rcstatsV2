@@ -50,6 +50,16 @@ def index(request):
         })
 
 
+@login_required()
+def race_results(request, track_id):
+    logger.debug('metric=race_results track_id=%s', track_id)
+    trackname = get_object_or_404(TrackName, pk=track_id)
+
+    return render(request, 'race_results.html', {
+        'trackname': trackname,
+        })
+
+
 def single_race_details(request, single_race_detail_id):
     '''
     Show the details for a single race.
@@ -111,18 +121,6 @@ def single_racer_race_list(request, track_id, racerid_id):
         'trackname': trackname,
         'racerid': racerid,
         'races':races})
-
-
-class KoHSummaryDemo():
-    def __init__(self, official_class_name, racerid, score):
-        self.official_class_name = official_class_name
-        self.racerid = racerid
-        self.score = score
-    def __repr__(self):
-        return '{} {} {}'.format(
-            self.official_class_name.raceclass,
-            self.racerid.racerpreferredname,
-            self.score)
 
 
 @login_required()

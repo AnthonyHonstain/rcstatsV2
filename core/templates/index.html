@@ -32,7 +32,7 @@ RC-Stats is a racing community to track and share your RC race results.
       <li>Mobile friendly, race results on any device.</li>
       <li>Email race results directly to your inbox.</li>
       </ul>
-      <a type="button" href="{% url 'race-emails' %}" class="btn btn-success">Race results right to your inbox</a>
+      <a type="button" href={% url 'race-emails' %} class="btn btn-success">Race results right to your inbox</a>
     </div>
   </div>
   {% endif %}
@@ -80,6 +80,19 @@ RC-Stats is a racing community to track and share your RC race results.
     {% if trackname != null %}
     <div class="col-md-12 well">
       <h3>
+        <a href={% url 'race-results-by-track' trackname.id %}>
+          <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Race Results
+        </a>
+      </h3>
+      <p>View ALL the race results for {{ trackname.trackname }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row">
+    {% if trackname != null %}
+    <div class="col-md-12 well">
+      <h3>
         <a href={% url 'racer-list-by-track' trackname.id %}>
           <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Racer List
         </a>
@@ -93,23 +106,13 @@ RC-Stats is a racing community to track and share your RC race results.
   <div class="row">
     {% if singleracedetail != null %}
     <div class="col-md-12 well">
-      <h2><a href={% url 'results-singleracedetail' singleracedetail.id %}>Newest Race</a></h2>
+      <h2><a href={% url 'results-singleracedetail' singleracedetail.id %}>Newest Main Event</a></h2>
       <a type="button" class="btn btn-info" href={% url 'results-singleracedetail' singleracedetail.id %}>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed }}</a>
 
       <div id="span-new-race-{{ singleracedetail.id }}"></div>
       <table id="table-new-race-{{ singleracedetail.id }}"></table>
     </div>
     {% endif %}
-  </div>
-  <div class="row">
-    <div class="col-md-12 well">
-      <h2>Recent Races</h2>
-      <h3>{{ trackname.trackname }}</h3>
-      <div class="alert alert-info" role="alert">
-        <p>Select a row to navigate to that race</p>
-      </div>
-      <table id="table-all-races-{{ trackname.id }}"></table>
-    </div>
   </div>
 </div>
 
@@ -123,57 +126,6 @@ RC-Stats is a racing community to track and share your RC race results.
 
 $(document).ready(function(){
   populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
-});
-
-//console.log("Data for the graph:", raceData);
-$("#table-all-races-" + {{ trackname.id }}).bootstrapTable({
-  //data: raceData,
-  pagination: "true",
-  pageSize: 25,
-  url: "{% url 'singleracedetailslim-list' trackname=trackname.id %}",
-  sidePagination: "server",
-  responseHandler: function(rawRaceData) {
-    // TODO - this is gross/hacky - FIX ME
-   raceData = rawRaceData.results;
-
-   var raceDataFormated = _.map(raceData, function(race) {
-     var racedate = moment(race.racedate);
-     var formatedRace = "";
-     racedate.local();
-     // Reference - http://momentjs.com/docs/#/displaying/
-     formatedDate = racedate.format("MMM/D dddd h:mm");
-     race.racedate = formatedDate;
-     return race;
-   });
-
-   rawRaceData.total = rawRaceData.count;
-   rawRaceData.rows = raceDataFormated;
-    return rawRaceData;
-  },
-  onClickRow: function (row) {
-      console.log('Event: onClickRow, data: ' + JSON.stringify(row));
-      window.location.href = "{% url 'results-singleracedetail' '1111111' %}".replace("1111111", row.id)
-  },
-  columns: [{
-      field: "id",
-      title: "",
-      visible: false
-  }, {
-      field: "racedata",
-      title: "Class"
-  }, {
-      field: "maineventparsed",
-      title: "Event"
-  }, {
-      field: "roundnumber",
-      title: "Rnd"
-  }, {
-      field: "racenumber",
-      title: "Num",
-  }, {
-      field: "racedate",
-      title: "Date"
-  }]
 });
 
 </script>
