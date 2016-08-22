@@ -1,7 +1,7 @@
 '''
 Created on May 12, 2013
 
-@author: asymptote
+@author: Anthony Honstain
 '''
 from dateutil.relativedelta import relativedelta
 import json
