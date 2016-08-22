@@ -1,5 +1,5 @@
 '''
-Create 2016-08-21 to validate the race results pages.
+Create 2016-08-21 to validate the racer list pages.
 
 @author: Anthony Honstain
 '''
@@ -11,9 +11,9 @@ from django.test.client import Client
 import core.models as models
 
 
-class RaceResultsTests(TestCase):
+class RacerListTests(TestCase):
     '''
-    Validate the pages that display all the race events for a track.
+    Validate the pages that list all of a tracks racers and pages that drill in on a specific racer.
     '''
     def setUp(self):
         models.TrackName.objects.create(id=1, trackname='Test_Track_0')
@@ -24,21 +24,19 @@ class RaceResultsTests(TestCase):
     def tearDown(self):
         pass
 
-    def test_race_results_login_redirect(self):
+    def test_racer_list_login_redirect(self):
         '''
         Verify that the accessing the page without auth redirects us.
         '''
-        client = Client()
-        response = client.get('/results/race-results/1/')
-        self.assertRedirects(response, '/accounts/signin/?next=/results/race-results/1/')
+        pass # TODO - havent decided if I want this stuff behind the reg wall yet.
+        #client = Client()
+        #response = client.get('/results/racer-list/1/')
+        #self.assertRedirects(response, '/accounts/signin/?next=/results/racer-list/1/')
 
-    def test_basic_results_page(self):
+    def test_basic_racer_list_page(self):
         '''
         Sanity check the page loads
         '''
-        response = self.client.get('/results/race-results/1/')
+        response = self.client.get('/results/racer-list/1/')
 
         self.assertEqual(response.status_code, 200, 'Check the page response code')
-
-    # TODO - not much to test here yet because the page is just light wrapper for 
-    # a javascript table that can page through all the past races using the API.

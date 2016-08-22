@@ -88,7 +88,7 @@ def racer_list(request, track_id):
     track_race_count = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
         .count()
     tracks_first_race = SingleRaceDetails.objects.filter(trackkey__exact=trackname.id)\
-        .order_by('racedate')[1]
+        .order_by('racedate').first()
 
     racerid_and_counts = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
       .select_related('racerid')\
