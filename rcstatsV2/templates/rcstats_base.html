@@ -82,11 +82,10 @@
             <input type="hidden" id="id_remember_me" value="checked">
 
             <button type="submit" class="btn btn-success">Sign in</button>
+            <a class="btn btn-warning" href="{% url 'userena_signup' %}">Register</a>
           </form>
         </div>
-        <div class="navbar-form navbar-right">
-          <a class="btn btn-warning" href="{% url 'userena_signup' %}">Register</a>
-        </div>
+
         {% endif %}
 
         </div><!--/.navbar-collapse -->
