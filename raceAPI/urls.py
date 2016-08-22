@@ -19,8 +19,9 @@ router.register(r'RacerId',
 router.register(r'SingleRaceDetails',
                 views.SingleRaceDetailsList,
                 base_name='singleracedetails')
-# TODO - starting with the laptimes, if this structure is cleaner than I should fix the
-# race details and the slim.
+# TODO - starting with the laptimes, if this url structure is cleaner/more-organize
+# than I should fix the race SingleRaceDetails and the SingleRaceDetailsSlim so
+# that everything is more consistent.
 router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails/(?P<singleracedetails>.+)/LapTimes',
                 views.LapTimesList,
                 base_name='laptimes')

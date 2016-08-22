@@ -63,9 +63,10 @@ Echo, Jon            #1          1           35.952         35.952
 
     def get_race_records_to_upload(self):
         return [
-            RaceUploadRecord('upload1', self.singlerace_testfile1)]
+            RaceUploadRecord('upload1', self.singlerace_testfile1),
+            ]
 
-    def test_multipleraces_upload_records(self):
+    def test_LapTimesList(self):
         self.assertEqual(len(self.racelist_to_upload), 1)
         single_race_detals_pk = self.racelist_to_upload[0].single_race_details_pk
 
@@ -77,5 +78,12 @@ Echo, Jon            #1          1           35.952         35.952
 
         #for row in response.data:
         #    print(row)
-        # Verify that all the laps are in here, each should get 28 laps 28*5=140
+        self.assertEqual(response.data[0]['racerid'], 1)
+        self.assertEqual(response.data[0]['racelaptime'], '26.240')
+
+        self.assertEqual(response.data[-1]['racerid'], 5)
+        self.assertEqual(response.data[-1]['racelaptime'], None)
+
+        # Check that the total laps expected got returned, each racer
+        # should get 28 laps 28*5=140
         self.assertEqual(len(response.data), 140)
