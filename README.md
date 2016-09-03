@@ -4,16 +4,18 @@ RC-STATS V2
 
 Fresh Install
 -------------
-Dependencies (installed with Synaptic on ubuntu 15.04
+Dependencies (installed with Synaptic on ubuntu 16.04
 * python3 (already installed)
 * virtualenv and python3-virtualenv
 * postgresql
  * Create a new postgresql user (I called it pgadmin) - "sudo -i -u postgres" and "createuser -P -s -e pgadmin"
  * Adjust auth method for dev db (add one for your new user) and restart - http://stackoverflow.com/questions/18664074/getting-error-peer-authentication-failed-for-user-postgres-when-trying-to-ge
  * Add the rcstats DB "createdb -U pgadmin -W rcstatsV2"
-* celery - TODO
+* celery - http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html
+ * For much of the site functionality, you should be able to work without celery running in the background. It is most important for outgoing email and pre-computing some of the difficult stuff like king of hill data.
 * redis - defined in the configs, but its going to expect localhost:6379
  * Great guide - http://redis.io/topics/quickstart
+ * We use it for some memcache behavior and storing results for computationally intensive tasks.
 
 Notable Third Party Dependencies
 * http://getbootstrap.com/getting-started/
@@ -79,9 +81,13 @@ Basic dev tasks.
 ```
 // Run the dev env so it can be accessed while developing in VM.
 python manage.py runserver 0.0.0.0:8000
+
 // Start Celery running - best to use a seperate terminal. 
 //    Even with concurrency 1, you will still see three processes for celery.
-python manage.py celeryd -E -B --loglevel=INFO --concurrency 1
+//    No longer using this command (I stopped using celeryd)
+//      python manage.py celeryd -E -B --loglevel=INFO --concurrency 1
+celery -A core worker -E -B --concurrency 1
+
 // Can use IPython notebook to run commands.
 python manage.py shell_plus --notebook
 
@@ -149,5 +155,4 @@ heroku logs -t -s nameless-ridge-5720
 Architecture
 -------------
 * Static files
-** I am currently using gunicorn to host my statics directly on heroku, this not ideal. But it easy to understand and develop against (for a site with very low traffic) https://github.com/kennethreitz/dj-static https://github.com/rmohr/static3
-** In the future - this would be a better approach - https://devcenter.heroku.com/articles/s3
+ * I am currently using gunicorn to host my statics directly on heroku, this not ideal. But it easy to understand and develop against (for a site with very low traffic) https://github.com/kennethreitz/dj-static https://github.com/rmohr/static3
