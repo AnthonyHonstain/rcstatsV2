@@ -191,6 +191,10 @@ def collapse_racer_names():
             racerid_obj = RacerId.objects.get(pk=alias_id)
             racerid_obj.delete()
 
+            log.debug('metric=CollapseRacerNames primary="%s" primary_id=%d '\
+                'aliasToDelete="%s" alias_id=%d',
+                primary_name[1], primary_name[0], alias[1], alias[0])
+
 
 def collapse_alias_classnames(queryset):
     '''
