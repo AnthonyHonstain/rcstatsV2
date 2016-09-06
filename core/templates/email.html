@@ -4,7 +4,7 @@
 Here are new race results you requested {{ username }}
 </p>
 
-<h3>New Race Results - {{ single_race_detail.trackkey }}</h3>
+<h3>New Race Results - {{ single_race_detail.trackkey.trackname }}</h3>
 
 {% load tz %}
 <p> Race date {{ single_race_detail.racedate |timezone:"America/Los_Angeles"}} </p>
@@ -18,6 +18,7 @@ Round: {{ single_race_detail.roundnumber }}
 Race: {{ single_race_detail.racenumber }}
 </a>
 
+<!-- The main race results -->
 <table>
 <tr>
   <td>Pos</td>
@@ -30,7 +31,11 @@ Race: {{ single_race_detail.racenumber }}
 {% for result in single_race_results %}
 <tr>
 <td>{{ result.finalpos }}</td>
-<td>{{ result.racerid }}</td>
+<td>
+<a href="http://{{ host }}{% url 'single_racer' track_id=single_race_detail.trackkey_id racerid_id=result.racerid.id %}">
+{{ result.racerid.racerpreferredname }}
+</a>
+</td>
 <td>{{ result.lapcount }}</td>
 <td>{{ result.racetime|time:"i:s" }}</td>
 <td>{{ result.fastlap }}</td>
@@ -38,5 +43,19 @@ Race: {{ single_race_detail.racenumber }}
 {% endfor %}
 
 </table>
+
+<h2>New Updates to the Site!</h2>
+<!--  Special call to action -->
+<h3>
+	<a href="http://{{ host }}{% url 'racer-list-by-track' track_id=single_race_detail.trackkey_id %}">
+		Updated Individual Racer Stats
+	</a>
+</h3>
+<h3>
+	<a href="http://{{ host }}{% url 'koh-summary' track_id=single_race_detail.trackkey_id %}">
+		King of the Hill Rankings Updated for {{ single_race_detail.racedata }}
+	</a>
+</h3>
+
 </body>
 </html>

@@ -133,6 +133,31 @@ Stock Five           #1          1           35.952         35.952
             mail_single_race.assert_not_called()
 
 
+    def test_construct_mail_content(self):
+        '''
+        Basic sanity check that the email html/txt can be generated and some
+        of the expected data is rendered.
+        '''
+        host = 'localhost'
+        user_with_sub = User.objects.create_user('sub', 'sub@gmail.com', 'sub')
+        username = user_with_sub
+
+        race_pk = self.racelist_to_upload[0].single_race_details_pk
+        single_race_detail = models.SingleRaceDetails.objects.select_related('trackkey').get(pk=race_pk)
+
+        text_content, html_content = celery_manager._construct_mail_content(host, username, single_race_detail)
+
+        self.assertIn('http://localhost/results/singleracedetail/{}/'.format(single_race_detail.id), text_content)
+        self.assertIn('Mod One', text_content)
+
+        self.assertIn('http://localhost/results/singleracedetail/{}/'.format(single_race_detail.id), html_content)
+        self.assertIn('Mod One', html_content)
+        self.assertIn(self.trackname_obj.trackname, html_content)
+        self.assertIn(
+            'http://localhost/results/racer-list/{}/racerid/'.format(self.trackname_obj.id),
+            html_content)
+
+
     def test_single_subscriber(self):
         '''
         Pretty crud test right now, now sure if I want to make this much more extensible

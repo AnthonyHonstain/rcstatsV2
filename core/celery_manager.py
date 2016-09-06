@@ -29,7 +29,8 @@ log = logging.getLogger('defaultlogger')
 
 
 def mail_all_users(single_race_details_id):
-    single_race_details = SingleRaceDetails.objects.get(pk=single_race_details_id)
+    single_race_details = SingleRaceDetails.objects.select_related('trackkey')\
+        .get(pk=single_race_details_id)
 
     log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
 
@@ -70,24 +71,12 @@ def _mail_single_race(user, single_race_detail):
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = user.email
 
-    plaintext = get_template('email.txt')
-    htmly = get_template('email.html')
+    text_content, html_content = _construct_mail_content(
+        Site.objects.get_current(),
+        user.username,
+        single_race_detail,
+        )
 
-    single_race_results = SingleRaceResults.objects.filter(raceid=single_race_detail).order_by('finalpos')
-
-    context = Context({
-        'host': Site.objects.get_current(),
-        'username': user.username,
-        'single_race_detail': single_race_detail,
-        'single_race_results': single_race_results,
-    })
-
-    text_content = plaintext.render(context)
-    html_content = htmly.render(context)
-
-    #print('Subject ' + subject)
-    #print(html_content)
-    #print(text_content)
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
     msg.attach_alternative(html_content, "text/html")
 
@@ -99,9 +88,33 @@ def _mail_single_race(user, single_race_detail):
         print('='*20)
         print('Outgoing email disabled')
         print('='*20)
-        print(context)
+        print(html_content)
         print('='*20)
     return
+
+
+def _construct_mail_content(host, username, single_race_detail):
+    plaintext = get_template('email.txt')
+    htmly = get_template('email.html')
+
+    single_race_results = SingleRaceResults.objects.filter(raceid=single_race_detail)\
+        .select_related('racerid')\
+        .order_by('finalpos')
+
+    context = Context({
+        'host': host,
+        'username': username,
+        'single_race_detail': single_race_detail,
+        'single_race_results': single_race_results,
+    })
+
+    text_content = plaintext.render(context)
+    html_content = htmly.render(context)
+
+    #print('Subject ' + subject)
+    #print(html_content)
+    #print(text_content)
+    return text_content, html_content
 
 
 # -----------------------------------------------------------------------
