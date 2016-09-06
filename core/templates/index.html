@@ -62,7 +62,7 @@ RC-Stats is a racing community to track and share your RC race results.
           <tr>
           <td>{{ forloop.counter }}</td>
           <td>
-            <a href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=koh_summary.racerid__id %}">
+            <a href="{% url 'single_racer' track_id=trackname.id racerid_id=koh_summary.racerid__id %}">
             {{ koh_summary.racerid__racerpreferredname }}
             </a>
           </td>

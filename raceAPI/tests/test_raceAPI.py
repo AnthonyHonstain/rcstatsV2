@@ -12,7 +12,7 @@ from uploadresults.tests.test_general_race_uploader_api_base import GeneralRaceU
 from uploadresults.tests.test_general_race_uploader_api_base import RaceUploadRecord
 
 
-class MainEventByRacedayLookup(GeneralRaceUploaderAPIBase):
+class RaceAPI(GeneralRaceUploaderAPIBase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/1/2012
 
@@ -78,10 +78,12 @@ Echo, Jon            #1          1           35.952         35.952
 
         #for row in response.data:
         #    print(row)
-        self.assertEqual(response.data[0]['racerid'], 1)
+        race_winner = RacerId.objects.filter(racerpreferredname__exact='Anthony Honstain').first()
+        self.assertEqual(response.data[0]['racerid'], race_winner.id)
+        self.assertEqual(response.data[0]['raceposition'], 1)
         self.assertEqual(response.data[0]['racelaptime'], '26.240')
 
-        self.assertEqual(response.data[-1]['racerid'], 5)
+        self.assertEqual(response.data[-1]['raceposition'], None)
         self.assertEqual(response.data[-1]['racelaptime'], None)
 
         # Check that the total laps expected got returned, each racer

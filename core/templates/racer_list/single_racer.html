@@ -1,0 +1,199 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+{{ racerid.racerpreferredname }}
+{% endblock %}
+
+{% block description %}
+{{ trackname.trackname }} Results for {{ racerid.racerpreferredname }}
+{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+
+{% block content %}
+<div class="container well">
+  <h3>{{ racerid.racerpreferredname }}</h3>
+  <h4>
+    <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
+      {{ trackname.trackname }}
+    </a>
+  </h4>
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">Racer Stats</h3>
+    </div>
+    <div class="panel-body">
+      <h4>
+        <span class="label label-primary">{{ total_race_count }} races</span>
+        <span class="label label-primary">{{ racer_stats.lap_count }} laps</span>
+        <span class="label label-primary">{{ racer_stats.main_event_count }} main events</span>
+        <span class="label label-primary">{{ racer_stats.main_event_wins }} main event wins</span>
+      </h4>
+    </div>
+  </div>  
+
+  <a class="btn btn-primary" type="button" href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=racerid.id %}">
+    Complete Race History <span class="badge">{{ total_race_count }}</span>
+  </a>
+
+</div>
+
+<!-- Stats (historgram) of classes and finishing positon -->
+<div class="container well">
+
+  <!-- Tabs -->
+  <div> 
+    <!-- Nav tabs -->
+    <ul class="nav nav-pills" role="tablist">
+      <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Classes</a></li>
+      <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Main Events</a></li>
+      <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">All Races</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="home">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Count of all races by class</h3>
+          </div>
+          <div class="panel-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Class</th>
+                  <th>Race Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pos in racer_stats.class_counts %}
+                <tr>
+                  <td>{{ pos.0 }}</td>
+                  <td>{{ pos.1 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="profile">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Count by finishing position in main events.</h3>
+          </div>
+          <div class="panel-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Finish</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pos in racer_stats.mains_result_counts %}
+                <tr>
+                  <td>{{ pos.0 }}</td>
+                  <td>{{ pos.1 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">Count by finishing position in main events and qualifiers</h3>
+          </div>
+          <div class="panel-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Finish</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pos in racer_stats.result_counts %}
+                <tr>
+                  <td>{{ pos.0 }}</td>
+                  <td>{{ pos.1 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Recent Podium Finishes -->
+{% if podium_finish_races %}
+<div class="container well">
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">Recent Podium Finishes</h3>
+    </div>
+    <div class="panel-body">  
+
+      <!-- Table -->
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Finish</th>
+            <th>Race</th>
+            <th>Stats</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for race in podium_finish_races %}
+          <tr>
+            <td>
+              <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+                <h3>
+                {% if race.finalpos == 1 %}
+                  <span class="label label-success">{{ race.finalpos }}</span>
+                {% elif race.finalpos == 2 %}
+                  <span class="label label-info">{{ race.finalpos }}</span>
+                {% else %}
+                  <span class="label label-warning">{{ race.finalpos }}</span>
+                {% endif %}
+                </h3>
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+              {{ race.raceid.racedata }} 
+              {% if race.raceid.maineventparsed %}{{race.raceid.maineventparsed}}{% endif %}
+              </a>
+            </td>
+            <td>
+              {{ race.raceid.racedate | date:'Y-m-d'}}<br/>
+              Laps:{{ race.lapcount }}<br/>
+              Time:{{ race.racetime | date:"i:s"}}<br/>
+              Fast:{{ race.fastlap }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+</script>
+{% endblock %}

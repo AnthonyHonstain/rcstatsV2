@@ -14,69 +14,63 @@
 
 {% block content %}
 <div class="container well">
-  <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
-    <h3>{{ trackname.trackname }}</h3>
-  </a>
-
-  <div class="alert alert-info" role="alert">
-    <button class="btn btn-primary disabled" type="button">
-      {{ racerid.racerpreferredname }} <span class="badge">{{ races | length }}</span>
-    </button>
-    <p>Currently tracking {{ races | length }} races for {{ racerid.racerpreferredname }}</p>
-  </div>
+  <h3>
+    <a href="{% url 'single_racer' track_id=trackname.id racerid_id=racerid.id %}">
+      {{ racerid.racerpreferredname }}
+    </a>
+  </h3>
+  <h4>
+    <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
+      {{ trackname.trackname }}
+    </a>
+  </h4>
   
-  <div class="panel panel-default">
+  <h3>Race Results</h3>
+  <div class="panel panel-info">
 
-    <!-- Table -->
-    <table data-show-toggle="false" 
-           data-mobile-responsive="true"
-           data-toggle="table"
-           data-pagination="true">
-      <thead>
-        <tr>
-          <!-- I was hiding the id column, but there appears to be a bug in bootstrap-table functionality around the data-card-view -->
-          <th>Race</th>
-          <th>Stats</th>
-          <th>Laps</th>
-          <th>Time</th>
-          <th>Fast</th>
-          <th>Finish</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for race in races %}
-        <tr>
-        <td>
-          <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
-          {{ race.raceid.racedata }} 
-          {% if race.raceid.maineventparsed %}{{race.raceid.maineventparsed}}{% endif %}
-          </a>
-        </td>
-        <td>
-          Rnd:{{ race.raceid.roundnumber }}
-          Race:{{ race.raceid.racenumber }}
-          Date:{{ race.raceid.racedate | date:'Y-m-d'}} 
-        </td>
-        <td>{{ race.lapcount }}</td>
-        <td>{{ race.racetime | date:"i:s"}}</td>
-        <td>{{ race.fastlap }}</td>
-        <td>
-        {% if race.finalpos == 1 %}
-          <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
-          <span class="label label-success">{{ race.finalpos }}</span>
-          </a>
-        {% else %}
-          {{ race.finalpos }}
-        {% endif %}      
-        </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
- 
+      <!-- Table -->
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Finish</th>
+            <th>Race</th>
+            <th>Stats</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for race in races %}
+          <tr>
+            <td>
+              <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+                <h3>
+                {% if race.finalpos == 1 %}
+                  <span class="label label-success">{{ race.finalpos }}</span>
+                {% elif race.finalpos == 2 %}
+                  <span class="label label-info">{{ race.finalpos }}</span>
+                {% else %}
+                  <span class="label label-warning">{{ race.finalpos }}</span>
+                {% endif %}
+                </h3>
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'results-singleracedetail' single_race_detail_id=race.raceid.id %}">
+              {{ race.raceid.racedata }} 
+              {% if race.raceid.maineventparsed %}{{race.raceid.maineventparsed}}{% endif %}
+              </a>
+            </td>
+            <td>
+              {{ race.raceid.racedate | date:'Y-m-d'}}<br/>
+              Laps:{{ race.lapcount }}<br/>
+              Time:{{ race.racetime | date:"i:s"}}<br/>
+              Fast:{{ race.fastlap }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-  </br>
 </div>
 
 {% endblock %}

@@ -16,6 +16,7 @@ import json
 from django.utils import timezone
 import datetime
 from collections import defaultdict
+import operator
 
 import logging
 logger = logging.getLogger('defaultlogger')
@@ -103,6 +104,74 @@ def racer_list(request, track_id):
         'racerid_and_counts':racerid_and_counts})
 
 
+class RacerStats():
+    '''
+    A basic collection of all the important statistics for a racer.
+    '''
+    def __init__(self, races):
+        result_counts = defaultdict(int)
+        mains_result_counts = defaultdict(int)
+        class_counts = defaultdict(int)
+        self.lap_count = 0
+        self.main_event_count = 0
+        self.main_event_wins = 0
+        
+        for race in races:
+            result_counts[race.finalpos] += 1
+            if (race.raceid.mainevent != None):
+                self.main_event_count += 1
+                mains_result_counts[race.finalpos] += 1
+            class_counts[race.raceid.racedata] += 1
+            self.lap_count += race.lapcount
+
+        if 1 in mains_result_counts:
+            self.main_event_wins = mains_result_counts[1]
+
+        self.result_counts = sorted(result_counts.items(), key=operator.itemgetter(1), reverse=True)
+        self.mains_result_counts = sorted(mains_result_counts.items(), key=operator.itemgetter(1), reverse=True)
+        self.class_counts = sorted(class_counts.items(), key=operator.itemgetter(1), reverse=True)
+
+
+def _get_podium_finishes(races, count):
+    podium_finish_races = []
+    for race in races:
+        if (race.raceid.mainevent != None) and (race.finalpos <= 3):
+            podium_finish_races.append(race)
+        if len(podium_finish_races) >= count:
+            break
+    return podium_finish_races
+
+
+def single_racer(request, track_id, racerid_id):
+    '''
+    For a track, list important stats about a racer.
+    '''
+    logger.debug('metric=single_racer track_id=%s racerid_id=%s', track_id, racerid_id)
+
+    trackname = get_object_or_404(TrackName, pk=track_id)
+    racerid = get_object_or_404(RacerId, pk=racerid_id)
+
+    races = SingleRaceResults.objects.filter(
+        raceid__trackkey__exact=trackname.id,
+        racerid__exact=racerid.id
+        ).select_related('raceid').order_by('-raceid__racedate')
+
+    podium_finish_races = _get_podium_finishes(races, 5)
+
+    total_race_count = len(races)
+
+    racer_stats = RacerStats(races)
+
+    return render(request, 'racer_list/single_racer.html', {
+        'trackname': trackname,
+        'racerid': racerid,
+        'total_race_count': total_race_count,
+        'racer_stats': racer_stats,
+        'podium_finish_races':podium_finish_races,
+        })
+
+
+@login_required
 def single_racer_race_list(request, track_id, racerid_id):
     '''
     For a track, list all of a single racer's results.

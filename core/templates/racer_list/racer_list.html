@@ -42,7 +42,7 @@ Racers
       <tr>
       <th class="hidden">{{ racerid.racerid }}</th>
       <td>
-        <a href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=racerid.racerid %}">
+        <a href="{% url 'single_racer' track_id=trackname.id racerid_id=racerid.racerid %}">
         {{ racerid.racerid__racerpreferredname }}
         </a>
       </td>
