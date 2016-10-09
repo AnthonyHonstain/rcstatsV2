@@ -1,0 +1,56 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+Follow
+{% endblock %}
+
+{% block description %}
+Follow a specific racer.
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="container well">
+  <!-- The race results table -->
+  <h3>Follow </h3>
+  <p>Follow this racer to get updated on main event results.</p>
+
+  <form action="{% url 'follow' trackname.id racerId.id %}" method="post">
+    {% csrf_token %}
+
+
+    {{ form.non_field_errors }}
+    {% for field in form %}
+
+    {% comment %} Displaying checkboxes differently {% endcomment %}
+
+    {{ field }}
+    <label for="id_{{ field.name }}"> {{ field.label }}</label>
+    <p>
+    {{ field.errors }}
+    </p>
+
+    {% endfor %}
+
+
+    <input type="submit" class="btn btn-lg btn-success" value="Submit" />
+  </form>
+  
+  </br>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/bootstrap-switch.min.js"></script>
+
+<script>
+{% for field in form %}
+$("[name='{{ field.name }}']").bootstrapSwitch();
+{% endfor %}
+</script>
+{% endblock %}

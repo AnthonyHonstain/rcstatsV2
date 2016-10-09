@@ -86,6 +86,7 @@ LOCAL_APPS = [
     'accounts',
     'uploadresults',
     'raceAPI',
+    'racer',
 ]
 
 MIDDLEWARE_CLASSES = (

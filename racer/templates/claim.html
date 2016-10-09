@@ -1,0 +1,56 @@
+{% extends "rcstats_base.html" %}
+
+{% block title %}
+Claim
+{% endblock %}
+
+{% block description %}
+Claim a specific racer.
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/css/bootstrap-switch.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="container well">
+  <!-- The race results table -->
+  <h3>Claim</h3>
+  <p>If this is the name you racer as at {{ trackname }}, claim it unlock special stats and race updates.</p>
+
+  <form action="{% url 'follow' %}" method="post">
+    {% csrf_token %}
+
+
+    {{ form.non_field_errors }}
+    {% for field in form %}
+
+    {% comment %} Displaying checkboxes differently {% endcomment %}
+
+    {{ field }}
+    <label for="id_{{ field.name }}"> {{ field.label }}</label>
+    <p>
+    {{ field.errors }}
+    </p>
+
+    {% endfor %}
+
+
+    <input type="submit" class="btn btn-lg btn-success" value="Submit" />
+  </form>
+  
+  </br>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/bootstrap-switch.min.js"></script>
+
+<script>
+{% for field in form %}
+$("[name='{{ field.name }}']").bootstrapSwitch();
+{% endfor %}
+</script>
+{% endblock %}
