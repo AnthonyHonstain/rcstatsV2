@@ -25,7 +25,7 @@ class SupportedTrackName(models.Model):
 
 
 # A single racer, their name (probably not going be be unique by default)
-class RacerId(models.Model):
+class Racer(models.Model):
     racerpreferredname = models.CharField(max_length=200)
 
     def __str__(self):
@@ -59,7 +59,7 @@ class SingleRaceDetails(models.Model):
 
 class SingleRaceResults(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)
-    racerid = models.ForeignKey(RacerId)
+    racer = models.ForeignKey(Racer)
     carnum = models.SmallIntegerField('Car number for this race')
     lapcount = models.SmallIntegerField('Number of laps they completed')
     racetime = models.TimeField(null=True)
@@ -70,14 +70,14 @@ class SingleRaceResults(models.Model):
 
 class LapTimes(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)
-    racerid = models.ForeignKey(RacerId)
+    racer = models.ForeignKey(Racer)
     racelap = models.SmallIntegerField()
     raceposition = models.SmallIntegerField(null=True)
     racelaptime = models.DecimalField(decimal_places=3, max_digits=6, null=True)
 
     def __str__(self):
         return str(self.raceid.id) + " | " +\
-            str(self.racerid) + " | " +\
+            str(self.racer) + " | " +\
             str(self.racelap) + " | " +\
             str(self.raceposition) + " | " +\
             str(self.racelaptime)

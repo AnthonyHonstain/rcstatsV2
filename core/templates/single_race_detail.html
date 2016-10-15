@@ -23,7 +23,7 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 
   <div class="btn-group" role="group" aria-label="Racer list by final position">
     {% for result in raceresults %}
-    <button type="button" id="{{ result.racerid.id }}" class="fetchlapTimeSeries btn btn-secondary">
+    <button type="button" id="{{ result.racer.id }}" class="fetchlapTimeSeries btn btn-secondary">
       {{ forloop.counter }}
     </button>
     {% endfor %}
@@ -45,8 +45,8 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 
   <br/>
   {% for result in raceresults %}
-  <button id="{{ result.racerid.id }}" class="fetchSeries btn btn-block">
-    {{ result.racerid.racerpreferredname }}
+  <button id="{{ result.racer.id }}" class="fetchSeries btn btn-block">
+    {{ result.racer.racerpreferredname }}
   </button>
   {% endfor %}
 </div>
@@ -93,30 +93,30 @@ $(document).ready(function(){
   $("button.fetchSeries").click(function () {
     // TODO - it would be nice to record how often users click these buttons
     var button = $(this);
-    var racerid = parseInt(button.attr("id"));
+    var racer = parseInt(button.attr("id"));
     var newFlotLaps = {
       label: '', // We are going to hide the labels and use the buttons to tell which active.
       data: []
     };
 
-    if (!alreadyFetched[racerid]) {
+    if (!alreadyFetched[racer]) {
       // TODO - this is widly ineficient, but it got the prototype running.
       //    This pushes all the work to the client to iterate all the laps many times.
       button.addClass('btn-success');
 
-      var goodlaps = _.filter(completeData, function(laptime) { return laptime.racerid == racerid && laptime.racelap > 0; });
+      var goodlaps = _.filter(completeData, function(laptime) { return laptime.racer == racer && laptime.racelap > 0; });
 
       newFlotLaps.data = _.map(goodlaps, function(laptime) { return [laptime.racelap + 1, laptime.racelaptime] });
 
-      alreadyFetched[racerid] = newFlotLaps;
+      alreadyFetched[racer] = newFlotLaps;
       data.push(newFlotLaps);
     }
     else {
       // De-select the racer when they toggle the button.
       button.removeClass('btn-success');
 
-      delete alreadyFetched[racerid];
-      console.log("remove lap data for ", racerid);
+      delete alreadyFetched[racer];
+      console.log("remove lap data for ", racer);
 
       data = [];
       _.each(alreadyFetched, function(fetched) {
@@ -161,39 +161,39 @@ $(document).ready(function() {
   {
     "id": 107953,
     "raceid": 865,
-    "racerid": 74,
+    "racer": 74,
     "racelap": 0,
     "raceposition": 9,
     "racelaptime": "12.060"
   },
   */
 
-  var lapByRacerId = {};
+  var lapByRacer = {};
   // I don't have a better plan right now than to drop this in via the template
-  var raceridToName = {
-    {% for result in raceresults %}{{ result.racerid.id }}:"{{ result.racerid.racerpreferredname }}",
+  var racerToName = {
+    {% for result in raceresults %}{{ result.racer.id }}:"{{ result.racer.racerpreferredname }}",
     {% endfor %}
   };
 
   $("button.fetchlapTimeSeries").click(function () {
     var button = $(this);
-    var racerid = parseInt(button.attr("id"));
+    var racer = parseInt(button.attr("id"));
 
-    //console.log(lapByRacerId[racerid]);
+    //console.log(lapByRacer[racer]);
 
-    var racerpreferredname = raceridToName[racerid];
+    var racerpreferredname = racerToName[racer];
 
     // I have the full result object, so I could display more stuff here, I
     // just don't have a good plan on how to format/organize it all and it
     // is just extra sugar for the feature at this stage.
     var header = racerpreferredname;
     $("#span-racer-desc-" + {{ singleracedetail.id }}).html(header);
-    $("#table-race-laps-" + {{ singleracedetail.id }}).bootstrapTable("load", lapByRacerId[racerid]);
+    $("#table-race-laps-" + {{ singleracedetail.id }}).bootstrapTable("load", lapByRacer[racer]);
   });
 
   function retrieveLapTimeDataHack() {
     function onDataReceivedHack(series) {
-      buildLapByRacerId(series);
+      buildLapByRacer(series);
     };
 
     $.ajax({
@@ -206,16 +206,16 @@ $(document).ready(function() {
     });
   };
 
-  function buildLapByRacerId(completeLapTimeData) {
+  function buildLapByRacer(completeLapTimeData) {
     //console.log(completeLapTimeData);
 
     _.each(completeLapTimeData, function(rawLapTime) {
       rawLapTime.racelap = rawLapTime.racelap + 1;
-      if (lapByRacerId[rawLapTime.racerid] == null) {
-        lapByRacerId[rawLapTime.racerid] = [rawLapTime];
+      if (lapByRacer[rawLapTime.racer] == null) {
+        lapByRacer[rawLapTime.racer] = [rawLapTime];
       }
       else {
-        lapByRacerId[rawLapTime.racerid].push(rawLapTime);
+        lapByRacer[rawLapTime.racer].push(rawLapTime);
       }
     });
     // WARNING - going to click the first racer to set some starting values

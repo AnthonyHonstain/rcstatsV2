@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
-from core.models import RacerId
+from core.models import Racer
 from core.models import ClassEmailSubscription
 from core.sharedmodels.king_of_the_hill_summary import KoHSummary
 from core.celery_manager import compute_koh_by_track_class
@@ -41,7 +41,7 @@ def index(request):
         if official_class_name:
             koh_summarys = get_koh_data(trackname, official_class_name, count=3, database_fallback=False)
 
-    racer_count = RacerId.objects.all().count()
+    racer_count = Racer.objects.all().count()
 
     return render(request, 'index.html', {
         'trackname': trackname,
@@ -69,7 +69,7 @@ def single_race_details(request, single_race_detail_id):
 
     single_race_detail = get_object_or_404(SingleRaceDetails, pk=single_race_detail_id)
     race_results = SingleRaceResults.objects.filter(raceid=single_race_detail.id)\
-        .order_by('finalpos').select_related('racerid')
+        .order_by('finalpos').select_related('racer')
 
     if single_race_detail.maineventparsed is None:
         single_race_detail.maineventparsed = ''
@@ -91,17 +91,17 @@ def racer_list(request, track_id):
     tracks_first_race = SingleRaceDetails.objects.filter(trackkey__exact=trackname.id)\
         .order_by('racedate').first()
 
-    racerid_and_counts = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
-      .select_related('racerid')\
-      .values('racerid', 'racerid__racerpreferredname')\
-      .annotate(racerid_count=Count('racerid'))\
-      .order_by('-racerid_count')
+    racer_and_counts = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
+      .select_related('racer')\
+      .values('racer', 'racer__racerpreferredname')\
+      .annotate(racer_count=Count('racer'))\
+      .order_by('-racer_count')
 
     return render(request, 'racer_list/racer_list.html', {
         'trackname': trackname, 
         'track_race_count': track_race_count,
         'tracks_first_race':tracks_first_race, 
-        'racerid_and_counts':racerid_and_counts})
+        'racer_and_counts':racer_and_counts})
 
 
 class RacerStats():
@@ -142,18 +142,18 @@ def _get_podium_finishes(races, count):
     return podium_finish_races
 
 
-def single_racer(request, track_id, racerid_id):
+def single_racer(request, track_id, racer_id):
     '''
     For a track, list important stats about a racer.
     '''
-    logger.debug('metric=single_racer track_id=%s racerid_id=%s', track_id, racerid_id)
+    logger.debug('metric=single_racer track_id=%s racer_id=%s', track_id, racer_id)
 
     trackname = get_object_or_404(TrackName, pk=track_id)
-    racerid = get_object_or_404(RacerId, pk=racerid_id)
+    racer = get_object_or_404(Racer, pk=racer_id)
 
     races = SingleRaceResults.objects.filter(
         raceid__trackkey__exact=trackname.id,
-        racerid__exact=racerid.id
+        racer__exact=racer.id
         ).select_related('raceid').order_by('-raceid__racedate')
 
     podium_finish_races = _get_podium_finishes(races, 5)
@@ -164,7 +164,7 @@ def single_racer(request, track_id, racerid_id):
 
     return render(request, 'racer_list/single_racer.html', {
         'trackname': trackname,
-        'racerid': racerid,
+        'racer': racer,
         'total_race_count': total_race_count,
         'racer_stats': racer_stats,
         'podium_finish_races':podium_finish_races,
@@ -172,23 +172,23 @@ def single_racer(request, track_id, racerid_id):
 
 
 @login_required
-def single_racer_race_list(request, track_id, racerid_id):
+def single_racer_race_list(request, track_id, racer_id):
     '''
     For a track, list all of a single racer's results.
     '''
-    logger.debug('metric=single_racer_race_list track_id=%s racerid_id=%s', track_id, racerid_id)
+    logger.debug('metric=single_racer_race_list track_id=%s racer_id=%s', track_id, racer_id)
 
     trackname = get_object_or_404(TrackName, pk=track_id)
-    racerid = get_object_or_404(RacerId, pk=racerid_id)
+    racer = get_object_or_404(Racer, pk=racer_id)
 
     races = SingleRaceResults.objects.filter(
         raceid__trackkey__exact=trackname.id,
-        racerid__exact=racerid.id
+        racer__exact=racer.id
         ).select_related('raceid').order_by('-raceid__racedate')
 
     return render(request, 'racer_list/single_racer_race_list.html', {
         'trackname': trackname,
-        'racerid': racerid,
+        'racer': racer,
         'races':races})
 
 

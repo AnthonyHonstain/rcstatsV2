@@ -57,7 +57,7 @@ var populateSingleRaceFromRestEndpoint = function(restURL, singleRaceDetailID) {
           title: '',
           visible: false
       }, {
-          field: 'racerid',
+          field: 'racer',
           title: 'Name'
       }, {
           field: 'lapcount',

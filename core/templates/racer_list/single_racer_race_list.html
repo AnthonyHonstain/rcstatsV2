@@ -1,11 +1,11 @@
 {% extends "rcstats_base.html" %}
 
 {% block title %}
-{{ racerid.racerpreferredname }}
+{{ racer.racerpreferredname }}
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Results for {{ racerid.racerpreferredname }}
+{{ trackname.trackname }} Results for {{ racer.racerpreferredname }}
 {% endblock %}
 
 {% block stylesheet %}
@@ -15,8 +15,8 @@
 {% block content %}
 <div class="container well">
   <h3>
-    <a href="{% url 'single_racer' track_id=trackname.id racerid_id=racerid.id %}">
-      {{ racerid.racerpreferredname }}
+    <a href="{% url 'single_racer' track_id=trackname.id racer_id=racer.id %}">
+      {{ racer.racerpreferredname }}
     </a>
   </h3>
   <h4>

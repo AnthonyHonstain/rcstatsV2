@@ -5,7 +5,7 @@ from core.models import (
     LapTimes,
     SingleRaceResults,
     SingleRaceDetails,
-    RacerId)
+    Racer)
 
 import datetime
 import pytz
@@ -87,9 +87,9 @@ def create_single_race_details(single_race):
     # ====================================================
     # Insert Racers
     # ====================================================
-    # We want to add a new racerid if one does not already exist.
+    # We want to add a new racer if one does not already exist.
     for racer in single_race.raceHeaderData:
-        racer_obj, _ = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
+        racer_obj, _ = Racer.objects.get_or_create(racerpreferredname=racer['Driver'])
         racer['racer_obj'] = racer_obj
 
     # ====================================================
@@ -136,7 +136,7 @@ def create_single_race_details(single_race):
                 single_race.lapRowsTime[index][row] = None
 
             lap_obj = LapTimes(raceid=details_obj,
-                               racerid=racer['racer_obj'],
+                               racer=racer['racer_obj'],
                                racelap=row,
                                raceposition=single_race.lapRowsPosition[index][row],
                                racelaptime=single_race.lapRowsTime[index][row])
@@ -175,7 +175,7 @@ def create_single_race_details(single_race):
             racer['Behind'] = None
 
         individual_result = SingleRaceResults(raceid=details_obj,
-                                              racerid=racer['racer_obj'],
+                                              racer=racer['racer_obj'],
                                               carnum=racer['Car#'],
                                               lapcount=racer['Laps'],
                                               racetime=racer['RaceTime'],

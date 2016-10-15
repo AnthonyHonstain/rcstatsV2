@@ -22,7 +22,7 @@ from core.models import (
     SingleRaceResults,
     SupportedTrackName,
     TrackName,
-    RacerId)
+    Racer)
 
 
 class RaceUploadRecord():

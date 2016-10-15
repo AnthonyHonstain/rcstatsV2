@@ -4,7 +4,7 @@ Created on May 2013
 @author: Anthony Honstain
 '''
 
-from core.models import SingleRaceDetails, RacerId
+from core.models import SingleRaceDetails, Racer
 
 import uploadresults.models as models
 from uploadresults.tests.test_general_race_uploader_easyupload import GeneralRaceUploader
@@ -393,11 +393,11 @@ Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
                                                    mainevent=None)
         self.assertEqual(len(raceobj), 1)
 
-        with self.assertRaises(RacerId.DoesNotExist):
+        with self.assertRaises(Racer.DoesNotExist):
             # ====================================================
             # Validate Racers
             # ====================================================
-            car1 = RacerId.objects.get(racerpreferredname="ShouldNOTExist, Jon")
+            car1 = Racer.objects.get(racerpreferredname="ShouldNOTExist, Jon")
 
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload7')
         self.assert_(records[0].processed)

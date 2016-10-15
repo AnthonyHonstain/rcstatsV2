@@ -154,7 +154,7 @@ Stock Five           #1          1           35.952         35.952
         self.assertIn('Mod One', html_content)
         self.assertIn(self.trackname_obj.trackname, html_content)
         self.assertIn(
-            'http://localhost/results/racer-list/{}/racerid/'.format(self.trackname_obj.id),
+            'http://localhost/results/racer-list/{}/racer/'.format(self.trackname_obj.id),
             html_content)
 
 
@@ -250,11 +250,11 @@ Stock Five           #1          1           35.952         35.952
         with mock.patch('core.celery_manager._cache_results') as cache_results:
             celery_manager._compute_king_of_the_hill(self.trackname_obj, mod_class, koh_timeframe)
 
-            mod_one = models.RacerId.objects.filter(racerpreferredname='Mod One').first()
-            mod_two = models.RacerId.objects.filter(racerpreferredname='Mod Two').first()
-            mod_three = models.RacerId.objects.filter(racerpreferredname='Mod Three').first()
-            mod_four = models.RacerId.objects.filter(racerpreferredname='Mod Four').first()
-            mod_five = models.RacerId.objects.filter(racerpreferredname='Mod Five').first()
+            mod_one = models.Racer.objects.filter(racerpreferredname='Mod One').first()
+            mod_two = models.Racer.objects.filter(racerpreferredname='Mod Two').first()
+            mod_three = models.Racer.objects.filter(racerpreferredname='Mod Three').first()
+            mod_four = models.Racer.objects.filter(racerpreferredname='Mod Four').first()
+            mod_five = models.Racer.objects.filter(racerpreferredname='Mod Five').first()
 
             expected_data = []
             expected_data.append(KoHSummary(

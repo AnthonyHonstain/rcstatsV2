@@ -4,9 +4,9 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from core.models import TrackName, SingleRaceDetails, LapTimes, RacerId
+from core.models import TrackName, SingleRaceDetails, LapTimes, Racer
 from raceAPI.serializers import TrackNameSerializer, SingleRaceDetailsSerializer, SingleRaceDetailsSlimSerializer
-from raceAPI.serializers import LapTimesSerializer, RacerIdSerializer, SingleRaceDetailsByTrackSerializer
+from raceAPI.serializers import LapTimesSerializer, RacerSerializer, SingleRaceDetailsByTrackSerializer
 
 
 # ##################################################################################
@@ -27,12 +27,12 @@ class TrackNameList(viewsets.ReadOnlyModelViewSet):
     serializer_class = TrackNameSerializer
 
 
-class RacerIdList(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class RacerList(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     # We are only implementing GET functionality, we don't want to LIST
     # every single racer at once.
     permission_classes = (AllowAny,)
-    queryset = RacerId.objects.all()
-    serializer_class = RacerIdSerializer
+    queryset = Racer.objects.all()
+    serializer_class = RacerSerializer
 
 
 class SingleRaceDetailsList(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -91,7 +91,7 @@ class LapTimesList(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         single_race_details = self.kwargs['singleracedetails']
-        return LapTimes.objects.filter(raceid__exact=single_race_details).order_by('racerid', 'racelap')
+        return LapTimes.objects.filter(raceid__exact=single_race_details).order_by('racer', 'racelap')
 
 
 

@@ -24,7 +24,7 @@ Racers
       Races <span class="badge">{{ track_race_count }}</span>
     </button>
     <button class="btn btn-primary disabled" type="button">
-      Racers <span class="badge">{{ racerid_and_counts | length }}</span>
+      Racers <span class="badge">{{ racer_and_counts | length }}</span>
     </button>
   </div>
   
@@ -38,15 +38,15 @@ Racers
       </tr>
     </thead>
     <tbody>
-    {% for racerid in racerid_and_counts %}
+    {% for racer in racer_and_counts %}
       <tr>
-      <th class="hidden">{{ racerid.racerid }}</th>
+      <th class="hidden">{{ racer.racer }}</th>
       <td>
-        <a href="{% url 'single_racer' track_id=trackname.id racerid_id=racerid.racerid %}">
-        {{ racerid.racerid__racerpreferredname }}
+        <a href="{% url 'single_racer' track_id=trackname.id racer_id=racer.racer %}">
+        {{ racer.racer__racerpreferredname }}
         </a>
       </td>
-      <td>{{ racerid.racerid_count }}</td>
+      <td>{{ racer.racer_count }}</td>
       </tr>
       {% endfor %}
     </tbody>

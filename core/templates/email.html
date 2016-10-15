@@ -32,8 +32,8 @@ Race: {{ single_race_detail.racenumber }}
 <tr>
 <td>{{ result.finalpos }}</td>
 <td>
-<a href="http://{{ host }}{% url 'single_racer' track_id=single_race_detail.trackkey_id racerid_id=result.racerid.id %}">
-{{ result.racerid.racerpreferredname }}
+<a href="http://{{ host }}{% url 'single_racer' track_id=single_race_detail.trackkey_id racer_id=result.racer.id %}">
+{{ result.racer.racerpreferredname }}
 </a>
 </td>
 <td>{{ result.lapcount }}</td>

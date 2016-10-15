@@ -5,22 +5,22 @@ class KoHSummary():
         self, 
         official_class_id, 
         official_class_name, 
-        racerid__id, 
-        racerid__racerpreferredname,
+        racer__id, 
+        racer__racerpreferredname,
         score):
 
         self.official_class_id = official_class_id
         self.official_class_name = official_class_name
-        self.racerid__id = racerid__id
-        self.racerid__racerpreferredname = racerid__racerpreferredname
+        self.racer__id = racer__id
+        self.racer__racerpreferredname = racer__racerpreferredname
         self.score = score
 
     def __repr__(self):
         return '{} {} {} {} {}'.format(
             self.official_class_id,
             self.official_class_name,
-            self.racerid__id,
-            self.racerid__racerpreferredname,
+            self.racer__id,
+            self.racer__racerpreferredname,
             self.score)
 
     def __eq__(self, other):

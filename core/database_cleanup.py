@@ -12,16 +12,16 @@ from django.db import connection
 from core.models import (
     LapTimes,
     SingleRaceResults,
-    RacerId,
+    Racer,
     OfficialClassNames,
     AliasClassNames)
 
 import logging
 log = logging.getLogger('defaultlogger')
 
-class _ProcessRacerId():
+class _ProcessRacer():
     '''
-    _ProcessRacerId handles the work of identifying alias names and collapsing them
+    _ProcessRacer handles the work of identifying alias names and collapsing them
     to the alias with the most results.
 
     I have a number of different racer names, and many of them represent
@@ -30,12 +30,12 @@ class _ProcessRacerId():
     For the time being I need a quick and easy way to push these to a single name, so
     that people can get their data in a single place.
     '''
-    def __init__(self, racerid_data):
+    def __init__(self, racer_data):
         '''
         The constructor does the bulk of the work for this object.
 
-        racerid_data: has a very specific format. Each element should have the form:
-            [<racerid key>, <racer preferredname string>, <number of raceresults for this name>]
+        racer_data: has a very specific format. Each element should have the form:
+            [<racer key>, <racer preferredname string>, <number of raceresults for this name>]
 
             Example: [ [1, 'hovarter,kevin', 5], [2, 'gripentrog, kurt', 5], [3, 'Collins, Brandon', 2]
         '''
@@ -54,7 +54,7 @@ class _ProcessRacerId():
         # for result in results:
         #    print result
 
-        for result in racerid_data:
+        for result in racer_data:
             # We need to calculate the formated name (no case, reverse ordering of fname/lname).
             tempname = result[1].lower()
 
@@ -109,7 +109,7 @@ class _ProcessRacerId():
 
 def collapse_racer_names():
     '''
-    collapsenames uses the _ProcessRacerId object to identify aliases in the RacerId's
+    collapsenames uses the _ProcessRacer object to identify aliases in the Racer's
     and collapse them to a single name.
 
     This modifies and cleans up several of the core tables.
@@ -124,11 +124,11 @@ def collapse_racer_names():
     # idea of how many racers their are for each name, more popular
     # names will be the root (that others are collapsed to).
     get_racers_cmd = '''
-        SELECT racerid.id, racerid.racerpreferredname, COUNT(rresult.id)
-        FROM core_racerid as racerid ,
+        SELECT racer.id, racer.racerpreferredname, COUNT(rresult.id)
+        FROM core_racer as racer ,
             core_singleraceresults as rresult
-        WHERE racerid.id = rresult.racerid_id
-        GROUP BY racerid.id
+        WHERE racer.id = rresult.racer_id
+        GROUP BY racer.id
         ORDER BY COUNT(rresult.id) desc;
         '''
     cursor = connection.cursor()
@@ -137,7 +137,7 @@ def collapse_racer_names():
     # Example results
     # [ [1, 'hovarter,kevin', 5], [2, 'gripentrog, kurt', 5], [3, 'Collins, Brandon', 2]
 
-    processRacerObj = _ProcessRacerId(results)
+    processRacerObj = _ProcessRacer(results)
 
     for canidate in processRacerObj.likely_aliases:
 
@@ -174,22 +174,22 @@ def collapse_racer_names():
         for alias in alias_list:
 
             alias_id = alias[0]
-            new_racerid_obj = RacerId.objects.get(pk=primary_name[0])
+            new_racer_obj = Racer.objects.get(pk=primary_name[0])
             # ===================================
             # Update the race results
             # ===================================
-            raceresult_set = SingleRaceResults.objects.filter(racerid__exact=alias_id).update(racerid=new_racerid_obj)
+            raceresult_set = SingleRaceResults.objects.filter(racer__exact=alias_id).update(racer=new_racer_obj)
 
             # ===================================
             # Update the lap times
             # ===================================
-            laptimes_set = LapTimes.objects.filter(racerid__exact=alias_id).update(racerid=new_racerid_obj)
+            laptimes_set = LapTimes.objects.filter(racer__exact=alias_id).update(racer=new_racer_obj)
 
             # ===================================
-            # Remove the alias racerid
+            # Remove the alias racer
             # ===================================
-            racerid_obj = RacerId.objects.get(pk=alias_id)
-            racerid_obj.delete()
+            racer_obj = Racer.objects.get(pk=alias_id)
+            racer_obj.delete()
 
             log.debug('metric=CollapseRacerNames primary="%s" primary_id=%d '\
                 'aliasToDelete="%s" alias_id=%d',

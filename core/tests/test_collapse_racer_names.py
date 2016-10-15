@@ -9,34 +9,34 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    RacerId)
+    Racer)
 
 import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 
-from core.database_cleanup import _ProcessRacerId
+from core.database_cleanup import _ProcessRacer
 
 
-class TestProcessRacerIdSimple(TestCase):
+class TestProcessRacerSimple(TestCase):
 
     def setUp(self):
         db_results = [[1, 'honstain, anthony', 5], [2, 'anthony houstain', 1], [3, 'Brandon Collins', 2]]
-        self.processracerid = _ProcessRacerId(db_results)
+        self.processracer = _ProcessRacer(db_results)
 
     def test_misspell_count(self):
 
-        self.assertEqual(self.processracerid._misspell_count("abc", "adc"), 2)
-        self.assertEqual(self.processracerid._misspell_count("ab", "abcd"), 2)
-        self.assertEqual(self.processracerid._misspell_count("ab  ", "  ab"), 0)
+        self.assertEqual(self.processracer._misspell_count("abc", "adc"), 2)
+        self.assertEqual(self.processracer._misspell_count("ab", "abcd"), 2)
+        self.assertEqual(self.processracer._misspell_count("ab  ", "  ab"), 0)
 
     def test_check_edit_distance(self):
 
-        self.assertEqual(self.processracerid._check_edit_distance("anthony houstain"), "anthony honstain")
+        self.assertEqual(self.processracer._check_edit_distance("anthony houstain"), "anthony honstain")
 
         # Not checking a distance of 2 yet.
-        self.assertEqual(self.processracerid._check_edit_distance("brandon collonz"), "")
+        self.assertEqual(self.processracer._check_edit_distance("brandon collonz"), "")
 
 
-class TestProcessRacerId_E2E_simple(TestCase):
+class TestProcessRacer_E2E_simple(TestCase):
 
     def setUp(self):
         db_results = [[1, 'honstain, anthony', 100],
@@ -45,19 +45,19 @@ class TestProcessRacerId_E2E_simple(TestCase):
                       [4, 'ANTHONY HONSTAIN', 20],
                       [5, 'Brandon Collins', 10],
                       [6, 'Collins, Brandon', 5]]
-        self.processracerid = _ProcessRacerId(db_results)
+        self.processracer = _ProcessRacer(db_results)
 
     def test_primaryName_dict(self):
 
-        self.assertDictEqual(self.processracerid._primaryName_dict, {'anthony honstain':[[1, 'honstain, anthony', 100],
-                                                                                         [3, 'anthony houstain', 25],
-                                                                                         [4, 'ANTHONY HONSTAIN', 20]],
-                                                                     'john doe':[[2, 'john doe', 50],],
-                                                                     'brandon collins':[[5, 'Brandon Collins', 10],
-                                                                                        [6, 'Collins, Brandon', 5]]})
+        self.assertDictEqual(self.processracer._primaryName_dict, {'anthony honstain':[[1, 'honstain, anthony', 100],
+                                                                                       [3, 'anthony houstain', 25],
+                                                                                       [4, 'ANTHONY HONSTAIN', 20]],
+                                                                    'john doe':[[2, 'john doe', 50],],
+                                                                    'brandon collins':[[5, 'Brandon Collins', 10],
+                                                                                       [6, 'Collins, Brandon', 5]]})
 
 
-class TestProcessRacerId_E2E_detailed(TestCase):
+class TestProcessRacer_E2E_detailed(TestCase):
 
     def setUp(self):
         db_results = [[1, 'honstain, anthony', 100],
@@ -65,15 +65,15 @@ class TestProcessRacerId_E2E_detailed(TestCase):
                       [3, 'anthony houstain', 25],
                       [4, 'ANTHONY HONSTAIN', 20],
                       [5, 'Charlee, Jon', 1]]
-        self.processracerid = _ProcessRacerId(db_results)
+        self.processracer = _ProcessRacer(db_results)
 
     def test_primaryName_dict(self):
 
-        self.assertDictEqual(self.processracerid._primaryName_dict, {'anthony honstain':[[1, 'honstain, anthony', 100],
-                                                                                         [3, 'anthony houstain', 25],
-                                                                                         [4, 'ANTHONY HONSTAIN', 20]],
-                                                                     'jon charlie':[[2, 'Charlie, Jon', 2],
-                                                                                    [5, 'Charlee, Jon', 1]],})
+        self.assertDictEqual(self.processracer._primaryName_dict, {'anthony honstain':[[1, 'honstain, anthony', 100],
+                                                                                       [3, 'anthony houstain', 25],
+                                                                                       [4, 'ANTHONY HONSTAIN', 20]],
+                                                                    'jon charlie':[[2, 'Charlie, Jon', 2],
+                                                                                   [5, 'Charlee, Jon', 1]],})
 
 
 class CollapseRacerNames(uploadresultstests.GeneralRaceUploader):
@@ -253,31 +253,31 @@ Echo, Jon            #3          3         1:05.720         17.099
         # Validate Racers
         # =====================================================
         # The race should now be uploaded, we want to validate it is in the system.
-        car1 = RacerId.objects.get(racerpreferredname="Anthony Honstain")
-        car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
+        car1 = Racer.objects.get(racerpreferredname="Anthony Honstain")
+        car2 = Racer.objects.get(racerpreferredname="Hotel, Jon")
 
         # =====================================================
         # Validate Race Laps
         # =====================================================
         # Validate the corner cases for the lap times and positions
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car1,
+                             racer=car1,
                              racelap=0,
                              raceposition=1,
                              racelaptime='26.24')
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car1,
+                             racer=car1,
                              racelap=27,
                              raceposition=1,
                              racelaptime='20.71')
 
         LapTimes.objects.get(raceid=raceobj2,
-                             racerid=car2,
+                             racer=car2,
                              racelap=0,
                              raceposition=7,
                              racelaptime='32.44')
         LapTimes.objects.get(raceid=raceobj2,
-                             racerid=car2,
+                             racer=car2,
                              racelap=16,
                              raceposition=5,
                              racelaptime='20.83')
@@ -285,12 +285,12 @@ Echo, Jon            #3          3         1:05.720         17.099
         # =====================================================
         # Validate Race Results
         # =====================================================
-        SingleRaceResults.objects.get(racerid=car1,
+        SingleRaceResults.objects.get(racer=car1,
                                       raceid=raceobj1,
                                       carnum=2,
                                       lapcount=28)
 
-        SingleRaceResults.objects.get(racerid=car2,
+        SingleRaceResults.objects.get(racer=car2,
                                       raceid=raceobj2,
                                       carnum=6,
                                       lapcount=17)
@@ -304,30 +304,30 @@ Echo, Jon            #3          3         1:05.720         17.099
         # =====================================================
         # Validate that "Honstain, Anthony" was collapsed to "Anthony Honstain"
         # =====================================================
-        SingleRaceResults.objects.get(racerid=car1,
+        SingleRaceResults.objects.get(racer=car1,
                                       raceid=raceobj3,
                                       carnum=6,
                                       lapcount=21)
 
         LapTimes.objects.get(raceid=raceobj3,
-                             racerid=car1,
+                             racer=car1,
                              racelap=0,
                              raceposition=1,
                              racelaptime='23.78')
 
-        removed_racerid_queryset = RacerId.objects.filter(racerpreferredname__contains="Honstain, Anthony")
-        self.assertEqual(len(removed_racerid_queryset), 0)
+        removed_racer_queryset = Racer.objects.filter(racerpreferredname__contains="Honstain, Anthony")
+        self.assertEqual(len(removed_racer_queryset), 0)
 
         # =====================================================
         # Validate that "Charlee, John" was collapsed to "Charlie, Jon"
         # =====================================================
         # Helpful information to look at when investigating.
-        # for racerid in RacerId.objects.all():
-        #    print racerid
+        # for racer in Racer.objects.all():
+        #    print racer
 
-        car3 = RacerId.objects.get(racerpreferredname="Charlie, Jon")
+        car3 = Racer.objects.get(racerpreferredname="Charlie, Jon")
 
-        SingleRaceResults.objects.get(racerid=car3,
+        SingleRaceResults.objects.get(racer=car3,
                                       raceid=raceobj3,
                                       carnum=5,
                                       lapcount=20)
@@ -335,9 +335,9 @@ Echo, Jon            #3          3         1:05.720         17.099
         # =====================================================
         # Validate that "LOWERCASE JIM" was collapsed to "lowercase jim"
         # =====================================================
-        car4 = RacerId.objects.get(racerpreferredname="lowercase jim")
+        car4 = Racer.objects.get(racerpreferredname="lowercase jim")
 
-        SingleRaceResults.objects.get(racerid=car4,
+        SingleRaceResults.objects.get(racer=car4,
                                       raceid=raceobj3,
                                       carnum=1,
                                       lapcount=21)

@@ -1,4 +1,4 @@
-from core.models import TrackName, SingleRaceDetails, SingleRaceResults, LapTimes, RacerId
+from core.models import TrackName, SingleRaceDetails, SingleRaceResults, LapTimes, Racer
 from rest_framework import serializers, models
 
 
@@ -10,14 +10,14 @@ class TrackNameSerializer(serializers.HyperlinkedModelSerializer):
 
 class SingleRaceResultsSerializer(serializers.HyperlinkedModelSerializer):
     # Instead of using the PK, we are going to retrieve their actual name.
-    racerid = serializers.ReadOnlyField(source='racerid.racerpreferredname')
+    racer = serializers.ReadOnlyField(source='racer.racerpreferredname')
     racetime = serializers.TimeField(format="%M:%S.%f")
 
     class Meta:
         model = SingleRaceResults
         fields = (
             'id',
-            'racerid',
+            'racer',
             'carnum',
             'lapcount',
             'racetime',
@@ -65,10 +65,10 @@ class SingleRaceDetailsSlimSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class RacerIdSerializer(serializers.HyperlinkedModelSerializer):
+class RacerSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = RacerId
+        model = Racer
 
 
 class LapTimesSerializer(serializers.HyperlinkedModelSerializer):
@@ -76,14 +76,14 @@ class LapTimesSerializer(serializers.HyperlinkedModelSerializer):
     # SingleRaceDetails pk to find these laps in the first place.
     raceid = serializers.PrimaryKeyRelatedField(queryset=SingleRaceDetails.objects.all())
 
-    racerid = serializers.PrimaryKeyRelatedField(queryset=RacerId.objects.all())
+    racer = serializers.PrimaryKeyRelatedField(queryset=Racer.objects.all())
 
     class Meta:
         model = LapTimes
         fields = (
             'id',
             'raceid',
-            'racerid',
+            'racer',
             'racelap',
             'raceposition',
             'racelaptime',

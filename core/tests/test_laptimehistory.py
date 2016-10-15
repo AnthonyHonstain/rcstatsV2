@@ -4,7 +4,7 @@ Created on Aug 19, 2012
 @author: Anthony Honstain
 '''
 from django.test import TestCase
-from core.models import LapTimes, SingleRaceDetails, RacerId
+from core.models import LapTimes, SingleRaceDetails, Racer
 import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 
 from core.laptimehistory import _get_lap_time_history, _get_laptime_median
@@ -327,7 +327,7 @@ Echo, Jon            #1          1           35.952         35.952
         # Validate Racers
         # =====================================================
         # The race should now be uploaded, we want to validate it is in the system.
-        car1 = RacerId.objects.get(racerpreferredname="Anthony Honstain")
+        car1 = Racer.objects.get(racerpreferredname="Anthony Honstain")
 
         results = _get_lap_time_history(self.trackname_obj, "MODIFIED BUGGY", 8)
 
@@ -336,19 +336,19 @@ Echo, Jon            #1          1           35.952         35.952
         '''
         Example dump of the results (list of dictionaries):
 
-        result: {'racetime': datetime.time(8, 5), 'racerid': 11, 'singleracedetails_id': 18,
+        result: {'racetime': datetime.time(8, 5), 'racer': 11, 'singleracedetails_id': 18,
         'lapcount': 28, 'formated_time': 28.705882352941178, 'estimated_laptime': Decimal('17.480')}
 
-        result: {'racetime': datetime.time(8, 40), 'racerid': 11, 'singleracedetails_id': 17,
+        result: {'racetime': datetime.time(8, 40), 'racer': 11, 'singleracedetails_id': 17,
         'lapcount': 28, 'formated_time': 28.0, 'estimated_laptime': Decimal('17.480')}
 
-        result: {'racetime': datetime.time(8, 3), 'racerid': 11, 'singleracedetails_id': 16,
+        result: {'racetime': datetime.time(8, 3), 'racer': 11, 'singleracedetails_id': 16,
         'lapcount': 28, 'formated_time': 28.823529411764707, 'estimated_laptime': Decimal('17.480')}
 
-        result: {'racetime': datetime.time(8, 2), 'racerid': 11, 'singleracedetails_id': 15,
+        result: {'racetime': datetime.time(8, 2), 'racer': 11, 'singleracedetails_id': 15,
         'lapcount': 28, 'formated_time': 28.88235294117647, 'estimated_laptime': Decimal('17.480')}
 
-        result: {'racetime': datetime.time(8, 0), 'racerid': 11, 'singleracedetails_id': 14,
+        result: {'racetime': datetime.time(8, 0), 'racer': 11, 'singleracedetails_id': 14,
         'lapcount': 28, 'formated_time': 29.0, 'estimated_laptime': Decimal('17.480')}
         '''
 

@@ -13,9 +13,9 @@ router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetailsSlim',
                 base_name='singleracedetailslim')
 
 # Starting to clean up an provide generic endpoints for the API
-router.register(r'RacerId',
-                views.RacerIdList,
-                base_name='racerid')
+router.register(r'Racer',
+                views.RacerList,
+                base_name='racer')
 router.register(r'SingleRaceDetails',
                 views.SingleRaceDetailsList,
                 base_name='singleracedetails')

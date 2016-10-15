@@ -23,7 +23,7 @@ class RacerListTests(TestCase):
         self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         self.client.login(username='temporary', password='temporary')
 
-        self.racer = models.RacerId.objects.create(id=1, racerpreferredname='TestRacer')
+        self.racer = models.Racer.objects.create(id=1, racerpreferredname='TestRacer')
         
         # Adding a race so we trigger some of the logic to lookup race results and calculate stats.
         racedate = datetime.datetime(
@@ -50,7 +50,7 @@ class RacerListTests(TestCase):
         self.result0 = models.SingleRaceResults.objects.create(
             id=1,
             raceid=self.singlerace,
-            racerid=self.racer,
+            racer=self.racer,
             carnum=2,
             lapcount=28,
             racetime=datetime.time(second=20),
@@ -72,7 +72,7 @@ class RacerListTests(TestCase):
         '''
         Sanity check the page loads
         '''
-        response = self.client.get('/results/racer-list/1/racerid/1/')
+        response = self.client.get('/results/racer-list/1/racer/1/')
 
         self.assertEqual(response.status_code, 200, 'Check the page response code')
 
@@ -80,7 +80,7 @@ class RacerListTests(TestCase):
         '''
         Sanity check the page loads
         '''
-        response = self.client.get('/results/racer-list/1/racerid/1/history/')
+        response = self.client.get('/results/racer-list/1/racer/1/history/')
 
         self.assertEqual(response.status_code, 200, 'Check the page response code')
 
@@ -89,7 +89,7 @@ class RacerListTests(TestCase):
         Verify that the accessing the page without auth redirects us.
         '''
         client = Client()
-        response = client.get('/results/racer-list/1/racerid/1/history/')
+        response = client.get('/results/racer-list/1/racer/1/history/')
         self.assertRedirects(
             response, 
-            '/accounts/signin/?next=/results/racer-list/1/racerid/1/history/')
+            '/accounts/signin/?next=/results/racer-list/1/racer/1/history/')

@@ -74,11 +74,11 @@ def main_event_by_raceday_lookup(supported_track, date):
 
         formated_result = []
 
-        race_results = SingleRaceResults.objects.filter(raceid=race_detail.id).select_related('racerid')
+        race_results = SingleRaceResults.objects.filter(raceid=race_detail.id).select_related('racer')
         for individual_result in race_results:
 
             formated_result.append([individual_result.finalpos,  # final pos
-                                    individual_result.racerid.racerpreferredname,  # id
+                                    individual_result.racer.racerpreferredname,  # id
                                     individual_result.lapcount,  # lapcount
                                     str(individual_result.racetime),  # racetime
                                     str(individual_result.fastlap),  #fastlap

@@ -9,6 +9,6 @@ http://{{ host }}{% url 'results-singleracedetail' single_race_detail.id %} {{ s
 
 Pos|Name|Laps|Time|Fast
 {% for result in single_race_results %}
-{{ result.finalpos }}|{{ result.racerid }}|{{ result.lapcount }}|{{ result.racetime|time:"i:s" }}|{{ result.fastlap }}
+{{ result.finalpos }}|{{ result.racer }}|{{ result.lapcount }}|{{ result.racetime|time:"i:s" }}|{{ result.fastlap }}
 {% endfor %}
 

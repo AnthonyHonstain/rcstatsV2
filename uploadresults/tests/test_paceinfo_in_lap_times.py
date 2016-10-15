@@ -8,7 +8,7 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    RacerId)
+    Racer)
 
 from uploadresults.tests.test_general_race_uploader_easyupload import GeneralRaceUploader
 
@@ -174,31 +174,31 @@ Huddleston, Chris            #3          3           51.832         23.550
         # Validate Racers
         # ====================================================
         # The race should now be uploaded, we want to validate it is in the system.
-        car10 = RacerId.objects.get(racerpreferredname="Brown, Shaun")
-        car11 = RacerId.objects.get(racerpreferredname="Andres, Jonathan")
+        car10 = Racer.objects.get(racerpreferredname="Brown, Shaun")
+        car11 = Racer.objects.get(racerpreferredname="Andres, Jonathan")
 
         # ====================================================
         # Validate Race Laps
         # ====================================================
         # Validate the corner cases for the lap times and positions
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car10,
+                             racer=car10,
                              racelap=0,
                              raceposition=7,
                              racelaptime='6.126')
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car10,
+                             racer=car10,
                              racelap=15,
                              raceposition=7,
                              racelaptime='22.99')
 
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car11,
+                             racer=car11,
                              racelap=0,
                              raceposition=10,
                              racelaptime='6.60')
         LapTimes.objects.get(raceid=raceobj1,
-                             racerid=car11,
+                             racer=car11,
                              racelap=15,
                              raceposition=8,
                              racelaptime='23.59')
@@ -206,12 +206,12 @@ Huddleston, Chris            #3          3           51.832         23.550
         # ====================================================
         # Validate Race Results
         # ====================================================
-        SingleRaceResults.objects.get(racerid=car10,
+        SingleRaceResults.objects.get(racer=car10,
                                       raceid=raceobj1,
                                       carnum=10,
                                       lapcount=16)
 
-        SingleRaceResults.objects.get(racerid=car11,
+        SingleRaceResults.objects.get(racer=car11,
                                       raceid=raceobj1,
                                       carnum=11,
                                       lapcount=16)

@@ -98,7 +98,7 @@ def _construct_mail_content(host, username, single_race_detail):
     htmly = get_template('email.html')
 
     single_race_results = SingleRaceResults.objects.filter(raceid=single_race_detail)\
-        .select_related('racerid')\
+        .select_related('racer')\
         .order_by('finalpos')
 
     context = Context({
@@ -129,7 +129,7 @@ def _collect_koh_data(trackname_id, official_class_name, koh_timeframe):
         raceid__trackkey__exact=trackname_id,
         raceid__racedata__exact=official_class_name.raceclass,
         raceid__racedate__gt=koh_timeframe)\
-      .select_related('racerid').order_by('racerid')
+      .select_related('racer').order_by('racer')
 
     return single_race_results
 
@@ -145,9 +145,9 @@ def _compute_koh_scores(official_class_name, single_race_results):
     # just work our way through all the results.
     racer_temp_dict = defaultdict(int)
     for result in single_race_results:
-        #print('for racer', result.racerid.id, ' finished:', result.finalpos, ' score:', starting_score - result.finalpos)
-        racer_temp_dict[result.racerid] += starting_score - result.finalpos
-        #print('    ', racer_temp_dict[result.racerid])
+        #print('for racer', result.racer.id, ' finished:', result.finalpos, ' score:', starting_score - result.finalpos)
+        racer_temp_dict[result.racer] += starting_score - result.finalpos
+        #print('    ', racer_temp_dict[result.racer])
 
     # Now that we know all the racers and their scores, lets build
     # the final object.

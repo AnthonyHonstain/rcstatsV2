@@ -22,7 +22,7 @@ from core.models import (
     SingleRaceResults,
     SupportedTrackName,
     TrackName,
-    RacerId)
+    Racer)
 
 
 class RaceUploadRecord():
@@ -194,31 +194,31 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 #         # Validate Racers
 #         # ====================================================
 #         # The race should now be uploaded, we want to validate it is in the system.
-#         car1 = RacerId.objects.get(racerpreferredname="Alpha, Jon")
-#         car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
+#         car1 = Racer.objects.get(racerpreferredname="Alpha, Jon")
+#         car2 = Racer.objects.get(racerpreferredname="Hotel, Jon")
 #
 #         # ====================================================
 #         # Validate Race Laps
 #         # ====================================================
 #         # Validate the corner cases for the lap times and positions
 #         LapTimes.objects.get(raceid=raceobj1,
-#                              racerid=car1,
+#                              racer=car1,
 #                              racelap=0,
 #                              raceposition=1,
 #                              racelaptime='26.24')
 #         LapTimes.objects.get(raceid=raceobj1,
-#                              racerid=car1,
+#                              racer=car1,
 #                              racelap=27,
 #                              raceposition=1,
 #                              racelaptime='20.71')
 #
 #         LapTimes.objects.get(raceid=raceobj2,
-#                              racerid=car2,
+#                              racer=car2,
 #                              racelap=0,
 #                              raceposition=7,
 #                              racelaptime='32.44')
 #         LapTimes.objects.get(raceid=raceobj2,
-#                              racerid=car2,
+#                              racer=car2,
 #                              racelap=16,
 #                              raceposition=5,
 #                              racelaptime='20.83')
@@ -226,12 +226,12 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 #         # ====================================================
 #         # Validate Race Results
 #         # ====================================================
-#         SingleRaceResults.objects.get(racerid=car1,
+#         SingleRaceResults.objects.get(racer=car1,
 #                                       raceid=raceobj1,
 #                                       carnum=2,
 #                                       lapcount=28)
 #
-#         SingleRaceResults.objects.get(racerid=car2,
+#         SingleRaceResults.objects.get(racer=car2,
 #                                       raceid=raceobj2,
 #                                       carnum=6,
 #                                       lapcount=17)

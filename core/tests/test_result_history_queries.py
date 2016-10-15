@@ -6,7 +6,7 @@ Created on May 11, 2013
 import datetime
 import pytz
 
-from core.models import SingleRaceDetails, RacerId
+from core.models import SingleRaceDetails, Racer
 
 import uploadresults.tests.test_general_race_uploader_easyupload as uploadresultstests
 import core.result_history_queries as result_history
@@ -306,7 +306,7 @@ Echo, Jon            #1          1           35.952         35.952
         # Validate Racers
         # =====================================================
         # The race should now be uploaded, we want to validate it is in the system.
-        car1 = RacerId.objects.get(racerpreferredname="Anthony Honstain")
+        car1 = Racer.objects.get(racerpreferredname="Anthony Honstain")
 
         # We expect to find a race just for the given day, need to be careful that we
         # understand timezone of the user that is making the query.

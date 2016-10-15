@@ -1,11 +1,11 @@
 {% extends "rcstats_base.html" %}
 
 {% block title %}
-{{ racerid.racerpreferredname }}
+{{ racer.racerpreferredname }}
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Results for {{ racerid.racerpreferredname }}
+{{ trackname.trackname }} Results for {{ racer.racerpreferredname }}
 {% endblock %}
 
 {% block stylesheet %}
@@ -14,7 +14,7 @@
 
 {% block content %}
 <div class="container well">
-  <h3>{{ racerid.racerpreferredname }}</h3>
+  <h3>{{ racer.racerpreferredname }}</h3>
   <h4>
     <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
       {{ trackname.trackname }}
@@ -35,7 +35,7 @@
     </div>
   </div>  
 
-  <a class="btn btn-primary" type="button" href="{% url 'single_racer_race_list' track_id=trackname.id racerid_id=racerid.id %}">
+  <a class="btn btn-primary" type="button" href="{% url 'single_racer_race_list' track_id=trackname.id racer_id=racer.id %}">
     Complete Race History <span class="badge">{{ total_race_count }}</span>
   </a>
 

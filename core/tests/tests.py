@@ -71,8 +71,8 @@ class SingleRace(TestCase):
 
         self.track = models.TrackName.objects.create(id=1, trackname='Test_Track_0')
 
-        self.racer0 = models.RacerId.objects.create(id=1, racerpreferredname='Racer0')
-        self.racer1 = models.RacerId.objects.create(id=2, racerpreferredname='Racer1')
+        self.racer0 = models.Racer.objects.create(id=1, racerpreferredname='Racer0')
+        self.racer1 = models.Racer.objects.create(id=2, racerpreferredname='Racer1')
 
         self.singlerace = models.SingleRaceDetails.objects.create(id=1,
                                                                   trackkey=self.track,
@@ -101,7 +101,7 @@ class SingleRace(TestCase):
         result0 = models.SingleRaceResults.objects.create(
             id=1,
             raceid=self.singlerace,
-            racerid=self.racer0,
+            racer=self.racer0,
             carnum=2,
             lapcount=28,
             racetime=datetime.time(second=20),
@@ -111,7 +111,7 @@ class SingleRace(TestCase):
         result1 = models.SingleRaceResults.objects.create(
             id=2,
             raceid=self.singlerace,
-            racerid=self.racer1,
+            racer=self.racer1,
             carnum=1,
             lapcount=27,
             racetime=datetime.time(second=20),
@@ -131,7 +131,7 @@ class SingleRace(TestCase):
             racer0_lap = models.LapTimes.objects.create(
                 id=lapid,
                 raceid=self.singlerace,
-                racerid=self.racer0,
+                racer=self.racer0,
                 racelap=lapcount,
                 raceposition=1,
                 racelaptime=float(lap))
@@ -149,7 +149,7 @@ class SingleRace(TestCase):
             racer1_lap = models.LapTimes.objects.create(
                 id=lapid,
                 raceid=self.singlerace,
-                racerid=self.racer1,
+                racer=self.racer1,
                 racelap=lapcount,
                 raceposition=2,
                 racelaptime=lap)

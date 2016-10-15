@@ -1,5 +1,7 @@
-from core.models import SingleRaceDetails, RacerId, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames, ClassEmailSubscription
+from core.models import SingleRaceDetails, Racer, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames, ClassEmailSubscription
 from core.models import LapTimes
+
+from core.database_cleanup import collapse_alias_classnames
 
 from django.contrib import admin
 
@@ -12,16 +14,18 @@ class SingleRaceDetailsAdmin(admin.ModelAdmin):
     # fields = ['racedata', 'racedate']
     list_display = ('racedata', 'trackkey', 'racedate', 'roundnumber', 'racenumber')
     list_filter = ['racedate', 'trackkey']
-    # actions = [collapse_alias_classnames] # TODO - excluding from initial port
-    actions = (delete_selected_fast,)
+    actions = (
+        #collapse_alias_classnames, # TODO - need to
+        delete_selected_fast,
+        )
 
 
 class LapTimesAdmin(admin.ModelAdmin):
-    list_display = ('raceid', 'racerid')
-    fields = ['raceid', 'racerid', 'racelap', 'raceposition', 'racelaptime']
+    list_display = ('raceid', 'racer')
+    fields = ['raceid', 'racer', 'racelap', 'raceposition', 'racelaptime']
 
 
-class RacerIdAdmin(admin.ModelAdmin):
+class RacerAdmin(admin.ModelAdmin):
     fields = ['racerpreferredname']
     # Showing the pref name gives the admin useful info.
     list_display = ('racerpreferredname',)
@@ -50,7 +54,7 @@ class ClassEmailSubscriptionAdmin(admin.ModelAdmin):
 
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
 admin.site.register(LapTimes, LapTimesAdmin)
-admin.site.register(RacerId, RacerIdAdmin)
+admin.site.register(Racer, RacerAdmin)
 admin.site.register(TrackName, TrackNameAdmin)
 admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)
 admin.site.register(OfficialClassNames, OfficialClassNamesAdmin)

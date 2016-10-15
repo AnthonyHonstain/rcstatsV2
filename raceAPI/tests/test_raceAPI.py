@@ -6,7 +6,7 @@ Created on June 6, 2015
 import datetime
 import pytz
 
-from core.models import SingleRaceDetails, RacerId
+from core.models import SingleRaceDetails, Racer
 
 from uploadresults.tests.test_general_race_uploader_api_base import GeneralRaceUploaderAPIBase
 from uploadresults.tests.test_general_race_uploader_api_base import RaceUploadRecord
@@ -78,8 +78,8 @@ Echo, Jon            #1          1           35.952         35.952
 
         #for row in response.data:
         #    print(row)
-        race_winner = RacerId.objects.filter(racerpreferredname__exact='Anthony Honstain').first()
-        self.assertEqual(response.data[0]['racerid'], race_winner.id)
+        race_winner = Racer.objects.filter(racerpreferredname__exact='Anthony Honstain').first()
+        self.assertEqual(response.data[0]['racer'], race_winner.id)
         self.assertEqual(response.data[0]['raceposition'], 1)
         self.assertEqual(response.data[0]['racelaptime'], '26.240')
 

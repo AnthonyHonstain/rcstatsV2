@@ -65,7 +65,7 @@ def _get_laptime_median(laptimes):
     return nonblank_laptimes[int(len(nonblank_laptimes) * .5)].racelaptime
 
 
-def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=None, number_of_races=50):
+def _get_lap_time_history(track, raceclass, racelength, startdate=None, racer=None, number_of_races=50):
     '''
     Get the key race data for the track/class/racelength along with any additional
     conditions so that we can display a graphical representation of the most recent
@@ -104,7 +104,7 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
     # Now I have the races that we want to consider, need to
     # get the winner or specified racers times.
     # TODO - consider supplied racer id instead of winner.
-    if not racerid:
+    if not racer:
         for detail in details:
             # We want to query the winner.
             race_results = SingleRaceResults.objects.filter(raceid=detail, finalpos=1)
@@ -124,7 +124,7 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
             # TODO - (OLD) I am going to start with just the bottom 75% for the winner.
             #      - Now I am taking the median lap time
             laptimes = LapTimes.objects.filter(raceid=detail,
-                                               racerid=race_result.racerid).order_by('racelaptime')
+                                               racer=race_result.racer).order_by('racelaptime')
 
             estimated_laptime = _get_laptime_median(laptimes)
 
@@ -134,7 +134,7 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
                 continue
 
             graph_results.append({'singleracedetails_id': detail.id,
-                                  'racerid': race_result.racerid.id,
+                                  'racer': race_result.racer.id,
                                   'lapcount': race_result.lapcount,
                                   'racetime': race_result.racetime,
                                   'racedate': race_result.raceid.racedate,
