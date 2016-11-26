@@ -1,11 +1,11 @@
-from core.models import TrackName, SingleRaceDetails, SingleRaceResults, LapTimes, Racer
+from core.models import Track, SingleRaceDetails, SingleRaceResults, LapTimes, Racer
 from rest_framework import serializers, models
 
 
-class TrackNameSerializer(serializers.HyperlinkedModelSerializer):
+class TrackSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = TrackName
-        fields = ('id', 'trackname')
+        model = Track
+        fields = ('id', 'name')
 
 
 class SingleRaceResultsSerializer(serializers.HyperlinkedModelSerializer):
@@ -30,13 +30,13 @@ class SingleRaceDetailsByTrackSerializer(serializers.HyperlinkedModelSerializer)
     # We will include the entire race result object by specifying the SingleRaceResultsSerializer
     raceresults = SingleRaceResultsSerializer(source='singleraceresults_set', many=True)
     # Specifying the PK related field here overrides the hyperlink functionality.
-    trackkey = serializers.PrimaryKeyRelatedField(queryset=TrackName.objects.all())
+    track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all())
 
     class Meta:
         model = SingleRaceDetails
         fields = (
             'id',
-            'trackkey',
+            'track',
             'racedata',
             'roundnumber',
             'racenumber',
@@ -49,13 +49,13 @@ class SingleRaceDetailsByTrackSerializer(serializers.HyperlinkedModelSerializer)
 
 class SingleRaceDetailsSlimSerializer(serializers.HyperlinkedModelSerializer):
     # Specifying the PK related field here overrides the hyperlink functionality.
-    trackkey = serializers.PrimaryKeyRelatedField(queryset=TrackName.objects.all())
+    track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all())
 
     class Meta:
         model = SingleRaceDetails
         fields = (
             'id',
-            'trackkey',
+            'track',
             'racedata',
             'roundnumber',
             'racenumber',
@@ -92,13 +92,13 @@ class LapTimesSerializer(serializers.HyperlinkedModelSerializer):
 
 class SingleRaceDetailsSerializer(serializers.HyperlinkedModelSerializer):
     # Specifying the PK related field here overrides the hyperlink functionality.
-    #trackkey = serializers.PrimaryKeyRelatedField(queryset=TrackName.objects.all())
+    #track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all())
 
     class Meta:
         model = SingleRaceDetails
         fields = (
             'id',
-            'trackkey',
+            'track',
             'racedata',
             'roundnumber',
             'racenumber',

@@ -4,7 +4,7 @@
  * to populate a bootstrap-table on the page.
  *
  * Arguements:
- *  restURL: string url for the endpoint to hit http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/125/
+ *  restURL: string url for the endpoint to hit http://127.0.0.1:8000/api/Track/1/SingleRaceDetails/125/
  *  singleRaceDetailID: id/pk for the SingleRaceDetails model, this is used to identify the id of the
  *      header and the table we are going to populate.
  *
@@ -15,7 +15,7 @@
  */
 var populateSingleRaceFromRestEndpoint = function(restURL, singleRaceDetailID) {
   $.ajax({
-    // Example - http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/125/
+    // Example - http://127.0.0.1:8000/api/Track/1/SingleRaceDetails/125/
     url: restURL,
     contentType:"application/json; charset=utf-8",
     dataType: "json",

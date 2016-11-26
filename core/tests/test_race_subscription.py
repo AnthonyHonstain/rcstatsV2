@@ -18,7 +18,7 @@ class RaceEmailSubscription(TestCase):
     Validate the pages that handle user signup for race race emails.
     '''
     def setUp(self):
-        models.TrackName.objects.create(id=1, trackname='Test_Track_0')
+        models.Track.objects.create(id=1, name='Test_Track_0')
 
         self.mod = models.OfficialClassNames(raceclass='Mod_Buggy_Test')
         self.mod.save()

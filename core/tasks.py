@@ -41,11 +41,11 @@ def pre_compute_koh(self):
     # a celery Group http://docs.celeryproject.org/en/master/userguide/canvas.html#groups
     # but I am not convinced of the value (other than possibly doing
     # away with this gross list of tuples)
-    for trackname_id, official_class_name_id in track_and_class_list:
-        koh_track_class_task.delay(trackname_id, official_class_name_id)
+    for track_id, official_class_name_id in track_and_class_list:
+        koh_track_class_task.delay(track_id, official_class_name_id)
     return
 
 
 @shared_task(bind=True)
-def koh_track_class_task(self, trackname_id, official_class_name_id):
-    return compute_koh_by_track_class(trackname_id, official_class_name_id)
+def koh_track_class_task(self, track_id, official_class_name_id):
+    return compute_koh_by_track_class(track_id, official_class_name_id)

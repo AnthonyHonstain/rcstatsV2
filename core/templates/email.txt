@@ -1,6 +1,6 @@
 Here are new race results you requested {{ username }}
 
-New Race Results - {{ single_race_detail.trackkey }}
+New Race Results - {{ single_race_detail.track }}
 
 {% load tz %}
 Race date {{ single_race_detail.racedate |timezone:"America/Los_Angeles"}}

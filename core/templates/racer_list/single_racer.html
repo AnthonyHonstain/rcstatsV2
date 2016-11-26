@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Results for {{ racer.racerpreferredname }}
+{{ track.name }} Results for {{ racer.racerpreferredname }}
 {% endblock %}
 
 {% block stylesheet %}
@@ -16,8 +16,8 @@
 <div class="container well">
   <h3>{{ racer.racerpreferredname }}</h3>
   <h4>
-    <a href="{% url 'racer-list-by-track' track_id=trackname.id %}">
-      {{ trackname.trackname }}
+    <a href="{% url 'racer-list-by-track' track_id=track.id %}">
+      {{ track.name }}
     </a>
   </h4>
 
@@ -35,7 +35,7 @@
     </div>
   </div>  
 
-  <a class="btn btn-primary" type="button" href="{% url 'single_racer_race_list' track_id=trackname.id racer_id=racer.id %}">
+  <a class="btn btn-primary" type="button" href="{% url 'single_racer_race_list' track_id=track.id racer_id=racer.id %}">
     Complete Race History <span class="badge">{{ total_race_count }}</span>
   </a>
 

@@ -5,7 +5,7 @@ Race Results
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Race Results
+{{ track.name }} Race Results
 {% endblock %}
 
 {% block stylesheet %}
@@ -16,11 +16,11 @@ Race Results
 
 <div class="container well">
 
-  <h3>{{ trackname.trackname }}</h3>
+  <h3>{{ track.name }}</h3>
   <div class="alert alert-info" role="alert">
     <p>Select a row to navigate to that race</p>
   </div>
-  <table id="table-all-races-{{ trackname.id }}"></table>
+  <table id="table-all-races-{{ track.id }}"></table>
 
 </div>
 
@@ -29,11 +29,11 @@ Race Results
 {% block script %}
 <script>
 
-$("#table-all-races-" + {{ trackname.id }}).bootstrapTable({
+$("#table-all-races-" + {{ track.id }}).bootstrapTable({
   //data: raceData,
   pagination: "true",
   pageSize: 10,
-  url: "{% url 'singleracedetailslim-list' trackname=trackname.id %}",
+  url: "{% url 'singleracedetailslim-list' track=track.id %}",
   sidePagination: "server",
   responseHandler: function(rawRaceData) {
     // TODO - this is gross/hacky - FIX ME

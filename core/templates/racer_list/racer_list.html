@@ -5,7 +5,7 @@ Racers
 {% endblock %}
 
 {% block description %}
-{{ trackname.trackname }} Racer List
+{{ track.name }} Racer List
 {% endblock %}
 
 {% block stylesheet %}
@@ -15,7 +15,7 @@ Racers
 {% block content %}
 
 <div class="container well">
-  <h3>{{ trackname.trackname }}</h3>
+  <h3>{{ track.name }}</h3>
   <div class="alert alert-info" role="alert">
     <button class="btn btn-primary disabled" type="button">
       First Race <span class="badge">{{ tracks_first_race.racedate | date:'Y-m' }}</span>
@@ -42,7 +42,7 @@ Racers
       <tr>
       <th class="hidden">{{ racer.racer }}</th>
       <td>
-        <a href="{% url 'single_racer' track_id=trackname.id racer_id=racer.racer %}">
+        <a href="{% url 'single_racer' track_id=track.id racer_id=racer.racer %}">
         {{ racer.racer__racerpreferredname }}
         </a>
       </td>

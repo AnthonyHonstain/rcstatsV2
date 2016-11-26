@@ -70,8 +70,8 @@ Echo, Jon            #1          1           35.952         35.952
         self.assertEqual(len(self.racelist_to_upload), 1)
         single_race_detals_pk = self.racelist_to_upload[0].single_race_details_pk
 
-        laptime_url = '/api/TrackName/{0}/SingleRaceDetails/{1}/LapTimes/'.format(
-            self.supported_trackname_obj.pk, single_race_detals_pk)
+        laptime_url = '/api/Track/{0}/SingleRaceDetails/{1}/LapTimes/'.format(
+            self.supported_track_obj.pk, single_race_detals_pk)
 
         response = self.client.get(laptime_url)
         self.assertEqual(response.status_code, 200, laptime_url)

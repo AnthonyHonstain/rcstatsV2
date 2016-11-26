@@ -3,8 +3,8 @@ from django.contrib import admin
 
 
 class EasyUploadRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'ip', 'trackname', 'filename', 'filesize', 'filemd5', 'uploadstart', 'errorenum')
-    list_filter = ['user', 'ip', 'trackname']
+    list_display = ('id', 'user', 'ip', 'track', 'filename', 'filesize', 'filemd5', 'uploadstart', 'errorenum')
+    list_filter = ['user', 'ip', 'track']
     ordering = ('-uploadstart',)
 
 
@@ -13,7 +13,7 @@ class EasyUploadedRacesAdmin(admin.ModelAdmin):
 
     # http://stackoverflow.com/questions/163823/can-list-display-in-a-django-modeladmin-display-attributes-of-foreignkey-field
     def get_track(self, obj):
-        return '%s' % (obj.racedetails.trackkey)
+        return '%s' % (obj.racedetails.track)
     get_track.short_description = 'Track'
 
     def get_racedata(self, obj):
@@ -32,13 +32,13 @@ class SingleRaceDataInline(admin.StackedInline):
 
 
 class SingleRaceDataAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'ip', 'trackname', 'filename', 'created')
+    list_display = ('id', 'owner', 'ip', 'track', 'filename', 'created')
 
 
 class EasyUploaderPrimaryRecordAdmin(admin.ModelAdmin):
     inlines = [SingleRaceDataInline]
-    list_display = ('id', 'user', 'ip', 'trackname', 'filecount', 'filecountsucceed', 'uploadstart')
-    list_filter = ['user', 'ip', 'trackname']
+    list_display = ('id', 'user', 'ip', 'track', 'filecount', 'filecountsucceed', 'uploadstart')
+    list_filter = ['user', 'ip', 'track']
     ordering = ('-uploadstart',)
 
 

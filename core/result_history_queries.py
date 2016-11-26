@@ -24,7 +24,7 @@ def qualifying_by_raceday_lookup(supported_track, date):
 
     '''
     qual_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
-                                                    trackkey=supported_track.trackkey,
+                                                    track=supported_track.track,
                                                     mainevent=None).order_by('racedate')
     qual_results = []
     for qual in qual_details:
@@ -63,13 +63,13 @@ def main_event_by_raceday_lookup(supported_track, date):
     '''
     # Note - Date Format (year, month, date)
     race_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
-                                                    trackkey=supported_track.trackkey,
+                                                    track=supported_track.track,
                                                     mainevent__gte=1).order_by('racedate')
 
     # Note - the range (date1, date2) works like date1 <= x < date2
     results_template_format = []
 
-    # print "track", supported_track.trackkey, "date", date + relativedelta(days=+1) , 'race_details', race_details
+    # print "track", supported_track.track, "date", date + relativedelta(days=+1) , 'race_details', race_details
     for race_detail in race_details:
 
         formated_result = []

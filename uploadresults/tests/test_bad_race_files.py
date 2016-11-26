@@ -384,7 +384,7 @@ Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
         # Validate Race Details
         # ====================================================
         # Validate the race details have been uploaded.
-        raceobj = SingleRaceDetails.objects.filter(trackkey=self.trackname_obj,
+        raceobj = SingleRaceDetails.objects.filter(track=self.track_obj,
                                                    racedata="STOCK BUGGYDOUBLE",
                                                    racenumber=1,
                                                    roundnumber=1,

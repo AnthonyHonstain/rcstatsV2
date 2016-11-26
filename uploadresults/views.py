@@ -45,7 +45,7 @@ from django.utils import timezone
 from uploadresults.models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces, SingleRaceData
 from uploadresults.process_singlerace import create_single_race_details, FileAlreadyUploadedError
 
-from core.models import SupportedTrackName, TrackName
+from core.models import SupportedTrack, Track
 
 from uploadresults.rcscoringprotxtparser import RCScoringProTXTParser
 
@@ -58,7 +58,7 @@ import traceback
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework import generics
-from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackNameSerializer
+from uploadresults.serializers import EasyUploaderPrimaryRecordSerializer, EasyUploadRecordSerializer, SingleRaceUploadSerializer, TrackSerializer
 
 from core.tasks import mail_single_race
 
@@ -82,9 +82,9 @@ class EasyUploadRecordViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = EasyUploadRecordSerializer
 
 
-class TrackNameList(viewsets.ReadOnlyModelViewSet):
-    queryset = TrackName.objects.all()
-    serializer_class = TrackNameSerializer
+class TrackList(viewsets.ReadOnlyModelViewSet):
+    queryset = Track.objects.all()
+    serializer_class = TrackSerializer
 
 
 # It would appear I don't need this.
@@ -121,7 +121,7 @@ class SingleRaceDataCreate(generics.CreateAPIView):
         if 'HTTP_X_FORWARDED_FOR' in self.request.META:
             ip = self.request.META['HTTP_X_FORWARDED_FOR']
 
-        trackname = TrackName.objects.get(pk=serializer.validated_data['trackname'].id)
+        track = Track.objects.get(pk=serializer.validated_data['track'].id)
         filename = serializer.validated_data['filename']
 
         # First create a record for this upload action
@@ -131,7 +131,7 @@ class SingleRaceDataCreate(generics.CreateAPIView):
             filecount=1,
             filecountsucceed=0,
             uploadstart=timezone.now(),
-            trackname=trackname)
+            track=track)
         primary_record.save()
 
         md5 = hashlib.md5()
@@ -166,8 +166,8 @@ class SingleRaceDataCreate(generics.CreateAPIView):
             'Invalid filename - it is possible the upload to the server drive failed',
             'Unable to parse the file - likely is has incompatible format',
             'No races found in the file',
-            'There was no trackname/header set',
-            'Not all races in the file had the same trackname/header',
+            'There was no track/header set',
+            'Not all races in the file had the same track/header',
             'This race has ALREADY been uploaded.',
             'Unknown error processing the file.']
 
@@ -193,10 +193,10 @@ class SingleRaceDataCreate(generics.CreateAPIView):
 
             # We are going to set every race to have the same track name
             first_trackname_on_page = result_page.single_race_list[0].trackName
-            _modify_trackname(single_race_data, first_trackname_on_page, trackname.trackname)
+            _modify_trackname(single_race_data, first_trackname_on_page, track.name)
 
             # Short term fix - set the trackname here in case in the future we want to break it out
-            result_page.upload_record.trackname = trackname
+            result_page.upload_record.track = track
 
             _final_validation_and_upload(result_page)
 
@@ -244,7 +244,7 @@ def easyupload_track(request):
 
     Step 1
     '''
-    track_list = SupportedTrackName.objects.all().order_by('trackkey__trackname')
+    track_list = SupportedTrack.objects.all().order_by('track__name')
     return render_to_response('easyupload_track.html', {'track_list': track_list}, context_instance=RequestContext(request))
 
 
@@ -267,8 +267,8 @@ def easyupload_fileselect(request, track_id):
         <MultiValueDict: {u'file':
         [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>]}>
     '''
-    supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
-    track = supported_track.trackkey
+    supported_track = get_object_or_404(SupportedTrack, pk=track_id)
+    track = supported_track.track
 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -301,7 +301,7 @@ def easyupload_fileselect(request, track_id):
                                                        filecount=len(file_list),
                                                        filecountsucceed=0,
                                                        uploadstart=timezone.now(),
-                                                       trackname=track)
+                                                       track=track)
             primary_record.save()
 
             # For reference http://stackoverflow.com/questions/851336/multiple-files-upload-using-same-input-name-in-django
@@ -368,7 +368,7 @@ def _process_inmemmory_file(primary_record, ip, track, user, inmem_file):
         uploadrecord=upload_record,
         owner=user,
         ip=ip,
-        trackname=track,
+        track=track,
         filename=inmem_file.name,
         data=''.join(upload_data))
     single_race_data.save()
@@ -406,7 +406,7 @@ def easyupload_results(request, upload_id):
     Step 3
     '''
     primary_upload_record = get_object_or_404(EasyUploaderPrimaryRecord, pk=upload_id)
-    track = primary_upload_record.trackname
+    track = primary_upload_record.track
 
     # We have already recorded this file as processed, there is nothing more
     # this script can do at this point. It is likely a user error.
@@ -421,8 +421,8 @@ def easyupload_results(request, upload_id):
                      'Invalid filename - it is possible the upload to the server drive failed',
                      'Unable to parse the file - likely is has incompatible format',
                      'No races found in the file',
-                     'There was no trackname/header set',
-                     'Not all races in the file had the same trackname/header',
+                     'There was no track/header set',
+                     'Not all races in the file had the same track/header',
                      'This race has ALREADY been uploaded.',
                      'Unknown error processing the file.']
 
@@ -449,10 +449,10 @@ def easyupload_results(request, upload_id):
         # DATA RESTORATION - This is to hopefully simplify restoring data in the event of
         # an emergency (all that would be needed would be these text files).
         first_trackname_on_page = result_page.single_race_list[0].trackName
-        _modify_trackname(single_race_data, first_trackname_on_page, track.trackname)
+        _modify_trackname(single_race_data, first_trackname_on_page, track.name)
 
         # Short term fix - set the trackname here in case in the future we want to break it out
-        result_page.upload_record.trackname = track
+        result_page.upload_record.track = track
 
         _final_validation_and_upload(result_page)
 
@@ -528,14 +528,14 @@ def _initial_validation_of_uploaded_file(single_race_data):
         return
 
     # Check the first name of the list
-    upload_trackname = single_race_list[0].trackName
+    upload_track = single_race_list[0].trackName
 
     # We are going to force them to have a trackname already set.
     #     It makes this code so much simpler, if they need to change
     #     the trackname (then I can easily replace it and save the
     #     modified version).
-    if (upload_trackname.strip() == ''):
-        log.error('metric=UploadError type=TrackName_Missing single_race_data=%s', single_race_data.id)
+    if (upload_track.strip() == ''):
+        log.error('metric=UploadError type=Track_Missing single_race_data=%s', single_race_data.id)
         easy_upload_record.errorenum = 4
         easy_upload_record.save()
         return
@@ -544,8 +544,8 @@ def _initial_validation_of_uploaded_file(single_race_data):
     #     I don't think this would ever happen but I am going
     #     to check because I don't want people doing it.
     for race in single_race_list:
-        if (race.trackName != upload_trackname):
-            log.error('metric=UploadError type=TrackName_Missmatch single_race_data=%s', single_race_data.id)
+        if (race.trackName != upload_track):
+            log.error('metric=UploadError type=Track_Missmatch single_race_data=%s', single_race_data.id)
             easy_upload_record.errorenum = 5
             easy_upload_record.save()
             return
@@ -563,7 +563,7 @@ def _final_validation_and_upload(result_page):
     # Process each race and load it into the DB.
     for single_race in result_page.single_race_list:
         # Set the new trackname on each of the race objects.
-        single_race.trackName = result_page.upload_record.trackname.trackname
+        single_race.trackName = result_page.upload_record.track.name
 
         try:
             single_race_details = create_single_race_details(single_race)

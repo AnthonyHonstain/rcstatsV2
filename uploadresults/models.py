@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from core.models import SingleRaceDetails, TrackName, SupportedTrackName
+from core.models import SingleRaceDetails, Track, SupportedTrack
 
 
 class EasyUploaderPrimaryRecord(models.Model):
@@ -14,12 +14,12 @@ class EasyUploaderPrimaryRecord(models.Model):
     filecountsucceed = models.IntegerField()
     uploadstart = models.DateTimeField('Datetime upload was started.')
     uploadfinish = models.DateTimeField('Datetime the upload was completed.', null=True)
-    trackname = models.ForeignKey(TrackName, null=True)  # In the future I can see letting you set the track at the next page.
+    track = models.ForeignKey(Track, null=True)  # In the future I can see letting you set the track at the next page.
 
     def __str__(self):
         return '<EasyUploadPrimaryRecord id:' + str(self.id) + "|" +\
             str(self.user) + "|" +\
-            str(self.trackname) + '>'
+            str(self.track) + '>'
 
 
 class EasyUploadRecord(models.Model):
@@ -32,7 +32,7 @@ class EasyUploadRecord(models.Model):
     filemd5 = models.CharField(max_length=200, null=True)
     uploadstart = models.DateTimeField('Date the file was uploaded.', null=True)
     uploadfinish = models.DateTimeField('Date the file was finished uploaded and processed', null=True)
-    trackname = models.ForeignKey(TrackName, null=True)
+    track = models.ForeignKey(Track, null=True)
     processed = models.BooleanField('We processed some or all of the file (still possible there was an error)', default=False)
     errorenum = models.IntegerField(null=True)
 
@@ -52,7 +52,7 @@ class SingleRaceData(models.Model):
     uploadrecord = models.ForeignKey(EasyUploadRecord)
     owner = models.ForeignKey('auth.User')
     ip = models.GenericIPAddressField()
-    trackname = models.ForeignKey(TrackName, null=False)
+    track = models.ForeignKey(Track, null=False)
     filename = models.CharField(max_length=200, null=False)
     data = models.TextField('The contents of the race file.', null=False)
     created = models.DateTimeField(auto_now_add=True)

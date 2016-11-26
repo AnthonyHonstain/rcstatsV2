@@ -18,8 +18,8 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    SupportedTrackName,
-    TrackName,
+    SupportedTrack,
+    Track,
     Racer)
 
 
@@ -135,25 +135,25 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
-        trackname_obj = TrackName(trackname="TACOMA R/C RACEWAY")
-        trackname_obj.save()
-        self.trackname_obj = trackname_obj
+        track_obj = Track(name="TACOMA R/C RACEWAY")
+        track_obj.save()
+        self.track_obj = track_obj
 
-        sup_trackname_obj = SupportedTrackName(trackkey=trackname_obj)
-        sup_trackname_obj.save()
-        self.supported_trackname_obj = sup_trackname_obj
+        sup_track_obj = SupportedTrack(track=track_obj)
+        sup_track_obj.save()
+        self.supported_track_obj = sup_track_obj
 
         # Process each race/file from the list to upload separately.
         for race_to_upload in self.racelist_to_upload:
             upload_data = {
-                "trackname": trackname_obj.id,
+                "trackname": track_obj.id,
                 "filename": race_to_upload.filename,
                 "data": race_to_upload.filecontent}
             response = self.client.post('/upload/single_race_upload/', upload_data)
             # response.data {
             #     'uploadrecord': 2, 'id': 2, 'data': '.........raw-data....'
             #     'owner': 'temporary', 'ip': '127.0.0.1', 'primaryrecord': 2,
-            #     'trackname': 1, 'filename': 'upload2'}
+            #     'track': 1, 'filename': 'upload2'}
 
             single_race_data_pk = response.data['id']
             uploadrecord_pk = response.data['uploadrecord']

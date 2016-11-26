@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from core.models import TrackName, SingleRaceDetails, SingleRaceResults, OfficialClassNames
+from core.models import Track, SingleRaceDetails, SingleRaceResults, OfficialClassNames
 from core.models import Racer
 from core.models import ClassEmailSubscription
 from core.sharedmodels.king_of_the_hill_summary import KoHSummary
@@ -27,10 +27,10 @@ def index(request):
     logger.debug('metric=index')
     # Get the most recent TRCR race if it exists.
     # Just grab the first valid Track (assumed to be TRCR).
-    trackname = TrackName.objects.all().first()
+    track = Track.objects.all().first()
     # We want to most recent main event.
     singleracedetail = SingleRaceDetails.objects.filter(
-        trackkey__exact=trackname.id,
+        track__exact=track.id,
         mainevent__isnull=False).order_by('-racedate').first()
 
     # We will use the most recent race to use for the KoH stats.
@@ -39,12 +39,12 @@ def index(request):
         official_class_name = OfficialClassNames.objects.filter(
             raceclass__exact=singleracedetail.racedata).first()
         if official_class_name:
-            koh_summarys = get_koh_data(trackname, official_class_name, count=3, database_fallback=False)
+            koh_summarys = get_koh_data(track, official_class_name, count=3, database_fallback=False)
 
     racer_count = Racer.objects.all().count()
 
     return render(request, 'index.html', {
-        'trackname': trackname,
+        'track': track,
         'singleracedetail': singleracedetail,
         'koh_summarys': koh_summarys,
         'racer_count': racer_count,
@@ -54,10 +54,10 @@ def index(request):
 @login_required()
 def race_results(request, track_id):
     logger.debug('metric=race_results track_id=%s', track_id)
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
 
     return render(request, 'race_results.html', {
-        'trackname': trackname,
+        'track': track,
         })
 
 
@@ -73,9 +73,9 @@ def single_race_details(request, single_race_detail_id):
 
     if single_race_detail.maineventparsed is None:
         single_race_detail.maineventparsed = ''
-    trackname = single_race_detail.trackkey
+    track = single_race_detail.track
     return render(request, 'single_race_detail.html',
-                  {'trackname': trackname, 'singleracedetail': single_race_detail, 'raceresults': race_results})
+                  {'track': track, 'singleracedetail': single_race_detail, 'raceresults': race_results})
 
 
 @cache_page(60*60*6) # Doing an extra long cache on this since its expensive but relatively unchanged.
@@ -84,21 +84,21 @@ def racer_list(request, track_id):
     Lists all the racers for a given track, along with a count of races.
     '''
     logger.debug('metric=racer_list track_id=%s', track_id)
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
 
-    track_race_count = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
+    track_race_count = SingleRaceResults.objects.filter(raceid__track__exact=track.id)\
         .count()
-    tracks_first_race = SingleRaceDetails.objects.filter(trackkey__exact=trackname.id)\
+    tracks_first_race = SingleRaceDetails.objects.filter(track__exact=track.id)\
         .order_by('racedate').first()
 
-    racer_and_counts = SingleRaceResults.objects.filter(raceid__trackkey__exact=trackname.id)\
+    racer_and_counts = SingleRaceResults.objects.filter(raceid__track__exact=track.id)\
       .select_related('racer')\
       .values('racer', 'racer__racerpreferredname')\
       .annotate(racer_count=Count('racer'))\
       .order_by('-racer_count')
 
     return render(request, 'racer_list/racer_list.html', {
-        'trackname': trackname, 
+        'track': track, 
         'track_race_count': track_race_count,
         'tracks_first_race':tracks_first_race, 
         'racer_and_counts':racer_and_counts})
@@ -148,11 +148,11 @@ def single_racer(request, track_id, racer_id):
     '''
     logger.debug('metric=single_racer track_id=%s racer_id=%s', track_id, racer_id)
 
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
     racer = get_object_or_404(Racer, pk=racer_id)
 
     races = SingleRaceResults.objects.filter(
-        raceid__trackkey__exact=trackname.id,
+        raceid__track__exact=track.id,
         racer__exact=racer.id
         ).select_related('raceid').order_by('-raceid__racedate')
 
@@ -163,7 +163,7 @@ def single_racer(request, track_id, racer_id):
     racer_stats = RacerStats(races)
 
     return render(request, 'racer_list/single_racer.html', {
-        'trackname': trackname,
+        'track': track,
         'racer': racer,
         'total_race_count': total_race_count,
         'racer_stats': racer_stats,
@@ -178,23 +178,23 @@ def single_racer_race_list(request, track_id, racer_id):
     '''
     logger.debug('metric=single_racer_race_list track_id=%s racer_id=%s', track_id, racer_id)
 
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
     racer = get_object_or_404(Racer, pk=racer_id)
 
     races = SingleRaceResults.objects.filter(
-        raceid__trackkey__exact=trackname.id,
+        raceid__track__exact=track.id,
         racer__exact=racer.id
         ).select_related('raceid').order_by('-raceid__racedate')
 
     return render(request, 'racer_list/single_racer_race_list.html', {
-        'trackname': trackname,
+        'track': track,
         'racer': racer,
         'races':races})
 
 
 @login_required()
 def king_of_the_hill_summary(request, track_id):
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
 
     # We want a summary for the active classes.
     official_class_names = OfficialClassNames.objects.filter(active=True)
@@ -205,13 +205,13 @@ def king_of_the_hill_summary(request, track_id):
     koh_summary_by_class = {}
 
     for class_name in official_class_names:
-        koh_summary_by_class[class_name] = get_koh_data(trackname, class_name, 3)
+        koh_summary_by_class[class_name] = get_koh_data(track, class_name, 3)
 
     #import pprint
     #pprint.pprint(race_summary)
 
     return render(request, 'king_of_the_hill/king_of_the_hill_summary.html', {
-        'trackname': trackname,
+        'track': track,
         'start_time': two_weeks_ago,
         'koh_summary_by_class': koh_summary_by_class,
         })
@@ -219,22 +219,22 @@ def king_of_the_hill_summary(request, track_id):
 
 @login_required()
 def king_of_the_hill_class(request, track_id, official_class_name_id):
-    trackname = get_object_or_404(TrackName, pk=track_id)
+    track = get_object_or_404(Track, pk=track_id)
     official_class_name = get_object_or_404(OfficialClassNames, pk=official_class_name_id)
 
     two_weeks_ago = timezone.now() - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
 
-    koh_summarys = get_koh_data(trackname, official_class_name)
+    koh_summarys = get_koh_data(track, official_class_name)
 
     return render(request, 'king_of_the_hill/king_of_the_hill_class.html', {
-        'trackname': trackname,
+        'track': track,
         'official_class_name': official_class_name,
         'start_time': two_weeks_ago,
         'koh_summarys': koh_summarys,
         })
 
 
-def get_koh_data(trackname, offical_class_name, count=None, database_fallback=True):
+def get_koh_data(track, offical_class_name, count=None, database_fallback=True):
     '''
     I probably want to pull this to a special KoH module.
 
@@ -247,7 +247,7 @@ def get_koh_data(trackname, offical_class_name, count=None, database_fallback=Tr
     '''
     koh_summarys = []
 
-    result = cache.get('{}_{}'.format(trackname.trackname, offical_class_name.raceclass))
+    result = cache.get('{}_{}'.format(track.name, offical_class_name.raceclass))
 
     if result:
         json_dicts = json.loads(result)
@@ -258,15 +258,15 @@ def get_koh_data(trackname, offical_class_name, count=None, database_fallback=Tr
 
         return koh_summarys
     elif database_fallback:
-        logger.error('metric=koh_cache_fail trackname=%d official_class_name=%d',
-            trackname.id, offical_class_name.id)
+        logger.error('metric=koh_cache_fail track=%d official_class_name=%d',
+            track.id, offical_class_name.id)
 
         # TODO - need to robustify this and add more test coverage.
-        complete_results = compute_koh_by_track_class(trackname.id, offical_class_name.id)
+        complete_results = compute_koh_by_track_class(track.id, offical_class_name.id)
         return complete_results[0:count]
     else:
-        logger.error('metric=koh_cache_fail trackname=%d official_class_name=%d',
-            trackname.id, offical_class_name.id)
+        logger.error('metric=koh_cache_fail track=%d official_class_name=%d',
+            track.id, offical_class_name.id)
         return koh_summarys
 
 

@@ -15,7 +15,7 @@ def lap_time_history_fastest_each_night_flot_data(racedetails_obj):
     and format them for the flot graph.
     '''
     # Get the data to display the recent race times graph
-    recent_laptimes = _get_lap_time_history(racedetails_obj.trackkey,
+    recent_laptimes = _get_lap_time_history(racedetails_obj.track,
                                             racedetails_obj.racedata,
                                             racedetails_obj.racelength,
                                             startdate=racedetails_obj.racedate)
@@ -89,13 +89,13 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racer=No
     #
     # TODO - join with results table to get the racer.
     if startdate:
-        details = SingleRaceDetails.objects.filter(trackkey=track,
+        details = SingleRaceDetails.objects.filter(track=track,
                                                    racedata__contains=raceclass,
                                                    racedate__lte=startdate,
                                                    racelength=racelength).order_by('-racedate')[:number_of_races]
 
     else:
-        details = SingleRaceDetails.objects.filter(trackkey=track,
+        details = SingleRaceDetails.objects.filter(track=track,
                                                    racedata__contains=raceclass,
                                                    racelength=racelength).order_by('-racedate')[:number_of_races]
 

@@ -143,7 +143,7 @@ Stock Five           #1          1           35.952         35.952
         username = user_with_sub
 
         race_pk = self.racelist_to_upload[0].single_race_details_pk
-        single_race_detail = models.SingleRaceDetails.objects.select_related('trackkey').get(pk=race_pk)
+        single_race_detail = models.SingleRaceDetails.objects.select_related('track').get(pk=race_pk)
 
         text_content, html_content = celery_manager._construct_mail_content(host, username, single_race_detail)
 
@@ -152,9 +152,9 @@ Stock Five           #1          1           35.952         35.952
 
         self.assertIn('http://localhost/results/singleracedetail/{}/'.format(single_race_detail.id), html_content)
         self.assertIn('Mod One', html_content)
-        self.assertIn(self.trackname_obj.trackname, html_content)
+        self.assertIn(self.track_obj.name, html_content)
         self.assertIn(
-            'http://localhost/results/racer-list/{}/racer/'.format(self.trackname_obj.id),
+            'http://localhost/results/racer-list/{}/racer/'.format(self.track_obj.id),
             html_content)
 
 
@@ -216,8 +216,8 @@ Stock Five           #1          1           35.952         35.952
         track_and_class_list = celery_manager.find_king_of_the_hill_classes()
 
         self.assertEqual(track_and_class_list, [
-            (self.trackname_obj.id, mod_class.id),
-            (self.trackname_obj.id, stock_class.id),
+            (self.track_obj.id, mod_class.id),
+            (self.track_obj.id, stock_class.id),
             ])
 
 
@@ -227,9 +227,9 @@ Stock Five           #1          1           35.952         35.952
         mod_class.save()
 
         with mock.patch('core.celery_manager._compute_king_of_the_hill') as compute_patch:
-            celery_manager.compute_koh_by_track_class(self.trackname_obj.id, mod_class.id)
+            celery_manager.compute_koh_by_track_class(self.track_obj.id, mod_class.id)
 
-            compute_patch.assert_called_once_with(self.trackname_obj, mod_class, mock.ANY)
+            compute_patch.assert_called_once_with(self.track_obj, mod_class, mock.ANY)
 
 
     def test_pre_compute_KoH(self):
@@ -248,7 +248,7 @@ Stock Five           #1          1           35.952         35.952
         koh_timeframe = now - datetime.timedelta(days=15)
 
         with mock.patch('core.celery_manager._cache_results') as cache_results:
-            celery_manager._compute_king_of_the_hill(self.trackname_obj, mod_class, koh_timeframe)
+            celery_manager._compute_king_of_the_hill(self.track_obj, mod_class, koh_timeframe)
 
             mod_one = models.Racer.objects.filter(racerpreferredname='Mod One').first()
             mod_two = models.Racer.objects.filter(racerpreferredname='Mod Two').first()
@@ -292,4 +292,4 @@ Stock Five           #1          1           35.952         35.952
                 mod_five.racerpreferredname,
                 16))
 
-            cache_results.assert_called_with(self.trackname_obj, mod_class, expected_data)
+            cache_results.assert_called_with(self.track_obj, mod_class, expected_data)

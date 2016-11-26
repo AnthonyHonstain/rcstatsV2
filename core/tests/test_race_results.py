@@ -16,7 +16,7 @@ class RaceResultsTests(TestCase):
     Validate the pages that display all the race events for a track.
     '''
     def setUp(self):
-        models.TrackName.objects.create(id=1, trackname='Test_Track_0')
+        models.Track.objects.create(id=1, name='Test_Track_0')
 
         self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         self.client.login(username='temporary', password='temporary')

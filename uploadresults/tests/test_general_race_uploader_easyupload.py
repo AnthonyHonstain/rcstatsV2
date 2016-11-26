@@ -18,8 +18,8 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    SupportedTrackName,
-    TrackName,
+    SupportedTrack,
+    Track,
     Racer)
 
 
@@ -120,13 +120,13 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
-        trackname_obj = TrackName(trackname="TACOMA R/C RACEWAY")
-        trackname_obj.save()
-        self.trackname_obj = trackname_obj
+        track_obj = Track(name="TACOMA R/C RACEWAY")
+        track_obj.save()
+        self.track_obj = track_obj
 
-        sup_trackname_obj = SupportedTrackName(trackkey=trackname_obj)
-        sup_trackname_obj.save()
-        self.supported_trackname_obj = sup_trackname_obj
+        sup_track_obj = SupportedTrack(track=track_obj)
+        sup_track_obj.save()
+        self.supported_track_obj = sup_track_obj
 
         test_ip = "1.1.1.1"
 
@@ -142,7 +142,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                                                           filecount=len(self.racelist_to_upload),
                                                           filecountsucceed=0,
                                                           uploadstart=utcnow,
-                                                          trackname=trackname_obj)
+                                                          track=track_obj)
         primary_record.save()
         self.primary_record = primary_record
 
@@ -164,11 +164,11 @@ Golf, Jon            #7         17         6:16.439         18.222            13
             views._process_inmemmory_file(
                 primary_record,
                 test_ip,
-                trackname_obj,
+                track_obj,
                 uploaduser,
                 FakeInMemoryUploadedFile(upload['filename'], upload['filecontent']))
 
-        response = self.client.get("/upload/easyupload_fileselect/" + str(sup_trackname_obj.id) + "/")
+        response = self.client.get("/upload/easyupload_fileselect/" + str(sup_track_obj.id) + "/")
         self.assertEqual(response.status_code, 200)
 
         # This starts the processing, bulk of the work is done here.
@@ -189,14 +189,14 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # all_races = SingleRaceDetails.objects.all()
         # for race in all_races:
         #     print race
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
                                                  roundnumber=3,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj2 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=1,
                                                  roundnumber=3,

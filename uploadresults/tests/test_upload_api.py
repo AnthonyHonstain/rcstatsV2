@@ -83,13 +83,13 @@ Echo, Jon            #1          1           35.952         35.952
         self.client.login(username='temporary', password='temporary')
 
         # Need a supported track in the system.
-        trackname_obj = core_models.TrackName(trackname="TACOMA R/C RACEWAY")
-        trackname_obj.save()
-        self.trackname_obj = trackname_obj
+        track_obj = core_models.Track(name="TACOMA R/C RACEWAY")
+        track_obj.save()
+        self.track_obj = track_obj
 
-        sup_trackname_obj = core_models.SupportedTrackName(trackkey=trackname_obj)
-        sup_trackname_obj.save()
-        self.supported_trackname_obj = sup_trackname_obj
+        sup_track_obj = core_models.SupportedTrack(track=track_obj)
+        sup_track_obj.save()
+        self.supported_track_obj = sup_track_obj
 
     def test_basic_upload_endpoint_invalid_data(self):
         '''
@@ -97,7 +97,8 @@ Echo, Jon            #1          1           35.952         35.952
         '''
         # Check None, note - these get turned to strings 'None'
         upload_data = {
-            "trackname": self.trackname_obj.id,
+            # NOTE - trackname is used to provide backwards compatibility (old uploader app)
+            "trackname": self.track_obj.id,
             "filename": None,
             "data": None}
         response = self.client.post('/upload/single_race_upload/', upload_data)
@@ -106,7 +107,7 @@ Echo, Jon            #1          1           35.952         35.952
         # Check min length and for empty fields.
         for race_to_upload in self.racelist_to_upload:
             upload_data = {
-                "trackname": self.trackname_obj.id,
+                "trackname": self.track_obj.id,
                 "filename": "",
                 "data": "fail"}
             response = self.client.post('/upload/single_race_upload/', upload_data)
@@ -124,11 +125,11 @@ Echo, Jon            #1          1           35.952         35.952
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.data['trackname'], ['Incorrect type. Expected pk value, received str.'])
 
-    def test_endpoint_to_get_tracknames(self):
-        response = self.client.get("/upload/TrackNameList/")
+    def test_endpoint_to_get_tracks(self):
+        response = self.client.get("/upload/TrackList/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1, 'Should only be one track in the system')
-        self.assertEqual(response.data[0]['trackname'], "TACOMA R/C RACEWAY")
+        self.assertEqual(response.data[0]['name'], "TACOMA R/C RACEWAY")
 
 
     def test_outgoing_email_triggered_by_upload(self):
@@ -143,14 +144,15 @@ Echo, Jon            #1          1           35.952         35.952
             # Process each race/file from the list to upload separately.
             for race_to_upload in self.racelist_to_upload:
                 upload_data = {
-                    "trackname": self.trackname_obj.id,
+                    # NOTE - trackname is used to provide backwards compatibility (old uploader app)
+                    "trackname": self.track_obj.id,
                     "filename": race_to_upload.filename,
                     "data": race_to_upload.filecontent}
                 response = self.client.post('/upload/single_race_upload/', upload_data)
                 # response.data {
                 #     'uploadrecord': 2, 'id': 2, 'data': '.........raw-data....'
                 #     'owner': 'temporary', 'ip': '127.0.0.1', 'primaryrecord': 2,
-                #     'trackname': 1, 'filename': 'upload2'}
+                #     'track': 1, 'filename': 'upload2'}
 
                 single_race_data_pk = response.data['id']
                 uploadrecord_pk = response.data['uploadrecord']

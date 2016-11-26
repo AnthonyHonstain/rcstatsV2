@@ -7,7 +7,7 @@ from core.models import SingleRaceDetails
 from core.models import SingleRaceResults
 from core.models import ClassEmailSubscription
 from core.models import OfficialClassNames
-from core.models import TrackName
+from core.models import Track
 
 from core.sharedmodels.king_of_the_hill_summary import KoHSummary
 
@@ -29,7 +29,7 @@ log = logging.getLogger('defaultlogger')
 
 
 def mail_all_users(single_race_details_id):
-    single_race_details = SingleRaceDetails.objects.select_related('trackkey')\
+    single_race_details = SingleRaceDetails.objects.select_related('track')\
         .get(pk=single_race_details_id)
 
     log.debug('metric=EmailCheck racedata=%s', single_race_details.racedata)
@@ -124,9 +124,9 @@ def _construct_mail_content(host, username, single_race_detail):
 # -----------------------------------------------------------------------
 
 
-def _collect_koh_data(trackname_id, official_class_name, koh_timeframe):
+def _collect_koh_data(track_id, official_class_name, koh_timeframe):
     single_race_results = SingleRaceResults.objects.filter(
-        raceid__trackkey__exact=trackname_id,
+        raceid__track__exact=track_id,
         raceid__racedata__exact=official_class_name.raceclass,
         raceid__racedate__gt=koh_timeframe)\
       .select_related('racer').order_by('racer')
@@ -166,7 +166,7 @@ def _compute_koh_scores(official_class_name, single_race_results):
     return computed_result
 
 
-def _cache_results(trackname, official_class_name, computed_scores):
+def _cache_results(track, official_class_name, computed_scores):
     '''
     I am not sure if this should cache to redis or if I should just toss it in DB.
     In the past I have had availability issues with redis in heroku (still on free stack).
@@ -177,18 +177,18 @@ def _cache_results(trackname, official_class_name, computed_scores):
         return obj
 
     cache.set(
-        '{}_{}'.format(trackname.trackname, official_class_name.raceclass),
+        '{}_{}'.format(track.name, official_class_name.raceclass),
         json.dumps(computed_scores, default=from_KoHSummary), 
         settings.KING_OF_THE_HILL_CACHE_TTL)
 
 
-def _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe):
-    log.debug('metric=Compute_the_KoH  track=%d class=%d koh_timeframe="%s"', trackname.id, official_class_name.id, koh_timeframe)
-    single_race_results = _collect_koh_data(trackname.id, official_class_name, koh_timeframe)
+def _compute_king_of_the_hill(track, official_class_name, koh_timeframe):
+    log.debug('metric=Compute_the_KoH  track=%d class=%d koh_timeframe="%s"', track.id, official_class_name.id, koh_timeframe)
+    single_race_results = _collect_koh_data(track.id, official_class_name, koh_timeframe)
 
     computed_scores = _compute_koh_scores(official_class_name, single_race_results)
 
-    _cache_results(trackname, official_class_name, computed_scores)
+    _cache_results(track, official_class_name, computed_scores)
 
     return computed_scores
 
@@ -197,21 +197,21 @@ def find_king_of_the_hill_classes():
     '''
     Look up all of the track and race classes being considered for King of the Hill
     '''
-    tracknames = TrackName.objects.all()
+    tracks = Track.objects.all()
     official_class_names = OfficialClassNames.objects.filter(active=True)
 
     track_and_class_list = []
-    for trackname in tracknames:
+    for track in tracks:
         for official_class_name in official_class_names:
-            track_and_class_list.append((trackname.id, official_class_name.id))
+            track_and_class_list.append((track.id, official_class_name.id))
     return track_and_class_list
 
 
-def compute_koh_by_track_class(trackname_id, official_class_name_id):
+def compute_koh_by_track_class(track_id, official_class_name_id):
     '''
     Compute the KoH score for a specific track and class.
     '''
-    trackname = TrackName.objects.get(pk=trackname_id)
+    track = Track.objects.get(pk=track_id)
     official_class_name = OfficialClassNames.objects.get(pk=official_class_name_id)
 
     # TODO - have I picked the right time here, now that I am computing it offline,
@@ -222,4 +222,4 @@ def compute_koh_by_track_class(trackname_id, official_class_name_id):
     #utcnow.replace(tzinfo=pytz.utc)
     koh_timeframe = now - datetime.timedelta(days=settings.KING_OF_THE_HILL_DAYS)
 
-    return _compute_king_of_the_hill(trackname, official_class_name, koh_timeframe)
+    return _compute_king_of_the_hill(track, official_class_name, koh_timeframe)

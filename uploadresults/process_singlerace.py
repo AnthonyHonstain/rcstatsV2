@@ -1,7 +1,7 @@
 from core.database_cleanup import collapse_alias_classnames, collapse_racer_names
 
 from core.models import (
-    TrackName,
+    Track,
     LapTimes,
     SingleRaceResults,
     SingleRaceDetails,
@@ -38,12 +38,12 @@ def create_single_race_details(single_race):
     '''
 
     # ====================================================
-    # Trackname
+    # Track
     # ====================================================
     # Track - We assume it has already been validated that this is a known track.
     #    NOTE - we do not want to be creating new tracks in this code, if the track
     #    is new it probably means they are not uploading appropriately.
-    track_obj = TrackName.objects.get(trackname=single_race.trackName)
+    track_obj = Track.objects.get(name=single_race.trackName)
 
     # ====================================================
     # Get additional meta info for creating the race details
@@ -68,7 +68,7 @@ def create_single_race_details(single_race):
     # ====================================================
     # We want to stop if this race is already in the database
     test_objs = SingleRaceDetails.objects.filter(
-        # trackkey=track_obj, # I dont want to accidentally upload results across tracks
+        # track=track_obj, # I dont want to accidentally upload results across tracks
         # racedata=single_race.raceClass, # This gets modified by the collapse names code.
         roundnumber=single_race.roundNumber,
         racenumber=single_race.raceNumber,
@@ -96,8 +96,8 @@ def create_single_race_details(single_race):
     # Insert Race Details
     # ====================================================
     log.debug('metric=UploadSingleRaceDetails trackName=%s racedata=%s racenumber=%s', 
-        track_obj.trackname, single_race.raceClass, single_race.raceNumber)
-    details_obj = SingleRaceDetails(trackkey=track_obj,
+        track_obj.name, single_race.raceClass, single_race.raceNumber)
+    details_obj = SingleRaceDetails(track=track_obj,
                                     racedata=single_race.raceClass,
                                     roundnumber=single_race.roundNumber,
                                     racenumber=single_race.raceNumber,
@@ -143,7 +143,7 @@ def create_single_race_details(single_race):
             bulk_laptimes.append(lap_obj)
 
     log.debug('metric=UploadSingleRaceLaps trackName=%s racedata=%s racenumber=%s totalLapCount=%d', 
-        track_obj.trackname, single_race.raceClass, single_race.raceNumber, len(bulk_laptimes))
+        track_obj.name, single_race.raceClass, single_race.raceNumber, len(bulk_laptimes))
     LapTimes.objects.bulk_create(bulk_laptimes)
 
     # ====================================================

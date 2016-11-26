@@ -3,25 +3,25 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class TrackName(models.Model):
+class Track(models.Model):
     '''
     Holds the raw track identifier for the race data being
     uploaded.
     '''
-    trackname = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
 
     def __str__(self):
-        return str(self.trackname)
+        return str(self.name)
 
 
-class SupportedTrackName(models.Model):
+class SupportedTrack(models.Model):
     '''
     This model will contain the additional meta data for race tracks so that
     they can presented in the trackdata section. These is meant to encompass
     all the additional data we want to present to the user about the track
     (especially information that is not stored in race results).
     '''
-    trackkey = models.ForeignKey(TrackName)
+    track = models.ForeignKey(Track)
 
 
 # A single racer, their name (probably not going be be unique by default)
@@ -33,7 +33,7 @@ class Racer(models.Model):
 
 
 class SingleRaceDetails(models.Model):
-    trackkey = models.ForeignKey(TrackName)
+    track = models.ForeignKey(Track)
     racedata = models.CharField(max_length=200)
     # roundnumber and racenumber do not exist in older formats
     roundnumber = models.IntegerField(null=True)
@@ -52,7 +52,7 @@ class SingleRaceDetails(models.Model):
 
     def __str__(self):
         return str(self.id) + " | " +\
-            str(self.trackkey) + " | " +\
+            str(self.track) + " | " +\
             str(self.racedata) + " | " +\
             str(self.racedate)
 

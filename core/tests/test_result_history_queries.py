@@ -267,35 +267,35 @@ Echo, Jon            #1          1           35.952         35.952
         #
         # WARNING - if these fail, it likely means the upload failed.
         #
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=1,
                                                  roundnumber=1,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj2 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
                                                  roundnumber=2,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj3 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj3 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=3,
                                                  roundnumber=3,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj4 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj4 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=4,
                                                  roundnumber=4,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj5 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj5 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=5,
                                                  roundnumber=5,
@@ -311,7 +311,7 @@ Echo, Jon            #1          1           35.952         35.952
         # We expect to find a race just for the given day, need to be careful that we
         # understand timezone of the user that is making the query.
         date = datetime.datetime(2012, 7, 3, 0, 0, 0, tzinfo=pytz.timezone('America/Los_Angeles'))
-        results_template_format = result_history.main_event_by_raceday_lookup(self.supported_trackname_obj, date)
+        results_template_format = result_history.main_event_by_raceday_lookup(self.supported_track_obj, date)
 
         self.assertEquals(len(results_template_format), 1)
 

@@ -48,7 +48,7 @@ Install initial SQL Data (sync db first)
 python manage.py syncdb
 python manage.py loaddata core/fixture/ClassNames.json
 // Create a starter track so you can see the landing page
-python manage.py loaddata core/fixture/TrackName.json
+python manage.py loaddata core/fixture/Track.json
 
 // FOR HEROKU
 heroku run python manage.py loaddata core/fixture/ClassNames.json

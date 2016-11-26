@@ -15,7 +15,7 @@ King of the Hill
 <div class="container">
   <div class="row">
     <div class="col-md-12 well">
-      <h3>King of the Hill {{ trackname.trackname }}</h3>
+      <h3>King of the Hill {{ track.name }}</h3>
       <p>Updated after every race!
       <br/>
       Only considering races since {{ start_time | date:'Y-m-d' }}</p>
@@ -47,12 +47,12 @@ King of the Hill
   <div class="row">
     {% for official_class,koh_summarys in koh_summary_by_class.items %}
     <div class="col-md-12 well">
-      <a href="{% url 'koh-summary-class' track_id=trackname.id official_class_name_id=official_class.id %}">
+      <a href="{% url 'koh-summary-class' track_id=track.id official_class_name_id=official_class.id %}">
       <h3>{{ official_class.raceclass }}</h3>
       </a>
 
       {% if koh_summarys %}
-      <a class="btn btn-info btn-sm" href="{% url 'koh-summary-class' track_id=trackname.id official_class_name_id=official_class.id %}">Complete Results for {{ official_class.raceclass }}</a>
+      <a class="btn btn-info btn-sm" href="{% url 'koh-summary-class' track_id=track.id official_class_name_id=official_class.id %}">Complete Results for {{ official_class.raceclass }}</a>
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -66,7 +66,7 @@ King of the Hill
           <tr>
           <td>{{ forloop.counter }}</td>
           <td>
-            <a href="{% url 'single_racer' track_id=trackname.id racer_id=koh_summary.racer__id %}">
+            <a href="{% url 'single_racer' track_id=track.id racer_id=koh_summary.racer__id %}">
             {{ koh_summary.racer__racerpreferredname }}
             </a>
           </td>

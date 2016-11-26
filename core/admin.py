@@ -1,4 +1,4 @@
-from core.models import SingleRaceDetails, Racer, TrackName, SupportedTrackName, OfficialClassNames, AliasClassNames, ClassEmailSubscription
+from core.models import SingleRaceDetails, Racer, Track, SupportedTrack, OfficialClassNames, AliasClassNames, ClassEmailSubscription
 from core.models import LapTimes
 
 from core.database_cleanup import collapse_alias_classnames
@@ -12,8 +12,8 @@ def delete_selected_fast(modeladmin, request, queryset):
 
 class SingleRaceDetailsAdmin(admin.ModelAdmin):
     # fields = ['racedata', 'racedate']
-    list_display = ('racedata', 'trackkey', 'racedate', 'roundnumber', 'racenumber')
-    list_filter = ['racedate', 'trackkey']
+    list_display = ('racedata', 'track', 'racedate', 'roundnumber', 'racenumber')
+    list_filter = ['racedate', 'track']
     actions = (
         #collapse_alias_classnames, # TODO - need to
         delete_selected_fast,
@@ -32,12 +32,12 @@ class RacerAdmin(admin.ModelAdmin):
     search_fields = ('racerpreferredname',)
 
 
-class TrackNameAdmin(admin.ModelAdmin):
-    list_display = ('id', 'trackname',)
+class TrackAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
 
 
-class SupportedTrackNameAdmin(admin.ModelAdmin):
-    list_display = ('id', 'trackkey',)
+class SupportedTrackAdmin(admin.ModelAdmin):
+    list_display = ('id', 'track',)
 
 
 class OfficialClassNamesAdmin(admin.ModelAdmin):
@@ -55,8 +55,8 @@ class ClassEmailSubscriptionAdmin(admin.ModelAdmin):
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
 admin.site.register(LapTimes, LapTimesAdmin)
 admin.site.register(Racer, RacerAdmin)
-admin.site.register(TrackName, TrackNameAdmin)
-admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)
+admin.site.register(Track, TrackAdmin)
+admin.site.register(SupportedTrack, SupportedTrackAdmin)
 admin.site.register(OfficialClassNames, OfficialClassNamesAdmin)
 admin.site.register(AliasClassNames, AliasClassNamesAdmin)
 admin.site.register(ClassEmailSubscription, ClassEmailSubscriptionAdmin)

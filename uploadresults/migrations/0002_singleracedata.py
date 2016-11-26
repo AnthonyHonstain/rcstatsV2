@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('primaryrecord', models.ForeignKey(to='uploadresults.EasyUploaderPrimaryRecord')),
-                ('trackname', models.ForeignKey(to='core.TrackName')),
+                ('trackname', models.ForeignKey(to='core.Track')),
                 ('uploadrecord', models.ForeignKey(to='uploadresults.EasyUploadRecord')),
             ],
             options={

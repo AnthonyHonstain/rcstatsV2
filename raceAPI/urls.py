@@ -4,11 +4,11 @@ from raceAPI import views
 
 
 router = routers.DefaultRouter()
-router.register(r'TrackName', views.TrackNameList)
-router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails',
+router.register(r'Track', views.TrackList)
+router.register(r'Track/(?P<track>.+)/SingleRaceDetails',
                 views.SingleRaceDetailsByTrackList,
                 base_name='singleracedetailsbytrack')
-router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetailsSlim',
+router.register(r'Track/(?P<track>.+)/SingleRaceDetailsSlim',
                 views.SingleRaceDetailsSlimList,
                 base_name='singleracedetailslim')
 
@@ -22,7 +22,7 @@ router.register(r'SingleRaceDetails',
 # TODO - starting with the laptimes, if this url structure is cleaner/more-organize
 # than I should fix the race SingleRaceDetails and the SingleRaceDetailsSlim so
 # that everything is more consistent.
-router.register(r'TrackName/(?P<trackname>.+)/SingleRaceDetails/(?P<singleracedetails>.+)/LapTimes',
+router.register(r'Track/(?P<track>.+)/SingleRaceDetails/(?P<singleracedetails>.+)/LapTimes',
                 views.LapTimesList,
                 base_name='laptimes')
 

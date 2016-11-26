@@ -6,7 +6,7 @@ from uploadresults import views
 router = routers.DefaultRouter()
 router.register(r'EasyUploaderPrimaryRecord', views.EasyUploaderPrimaryRecordViewSet)
 router.register(r'EasyUploadRecord', views.EasyUploadRecordViewSet)
-router.register(r'TrackNameList', views.TrackNameList)
+router.register(r'TrackList', views.TrackList)
 
 
 urlpatterns = [

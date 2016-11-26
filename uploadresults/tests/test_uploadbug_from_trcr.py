@@ -20,8 +20,8 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    SupportedTrackName,
-    TrackName,
+    SupportedTrack,
+    Track,
     Racer)
 
 

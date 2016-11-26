@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('filecountsucceed', models.IntegerField()),
                 ('uploadstart', models.DateTimeField(verbose_name='Datetime upload was started.')),
                 ('uploadfinish', models.DateTimeField(null=True, verbose_name='Datetime the upload was completed.')),
-                ('trackname', models.ForeignKey(null=True, to='core.TrackName')),
+                ('trackname', models.ForeignKey(null=True, to='core.Track')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('uploadfinish', models.DateTimeField(null=True, verbose_name='Date the file was finished uploaded and processed')),
                 ('processed', models.BooleanField(default=False, verbose_name='We processed some or all of the file (still possible there was an error)')),
                 ('errorenum', models.IntegerField(null=True)),
-                ('trackname', models.ForeignKey(null=True, to='core.TrackName')),
+                ('trackname', models.ForeignKey(null=True, to='core.Track')),
                 ('uploadrecord', models.ForeignKey(to='uploadresults.EasyUploaderPrimaryRecord')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],

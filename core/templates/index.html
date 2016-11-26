@@ -38,10 +38,10 @@ RC-Stats is a racing community to track and share your RC race results.
   {% endif %}
 
   <div class="row">
-    {% if trackname != null %}
+    {% if track != null %}
     <div class="col-md-12 well">
       <h3>
-        <a href={% url 'koh-summary' trackname.id %}>
+        <a href={% url 'koh-summary' track.id %}>
           <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> King Of the Hill
         </a>
       </h3>
@@ -62,7 +62,7 @@ RC-Stats is a racing community to track and share your RC race results.
           <tr>
           <td>{{ forloop.counter }}</td>
           <td>
-            <a href="{% url 'single_racer' track_id=trackname.id racer_id=koh_summary.racer__id %}">
+            <a href="{% url 'single_racer' track_id=track.id racer_id=koh_summary.racer__id %}">
             {{ koh_summary.racer__racerpreferredname }}
             </a>
           </td>
@@ -77,29 +77,29 @@ RC-Stats is a racing community to track and share your RC race results.
   </div>
 
   <div class="row">
-    {% if trackname != null %}
+    {% if track != null %}
     <div class="col-md-12 well">
       <h3>
-        <a href={% url 'race-results-by-track' trackname.id %}>
+        <a href={% url 'race-results-by-track' track.id %}>
           <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Race Results
         </a>
       </h3>
-      <p>View ALL the race results for {{ trackname.trackname }}</p>
-      <a type="button" class="btn btn-info" href={% url 'race-results-by-track' trackname.id %}>{{ trackname.trackname }} Race Resuts</a>
+      <p>View ALL the race results for {{ track.name }}</p>
+      <a type="button" class="btn btn-info" href={% url 'race-results-by-track' track.id %}>{{ track.name }} Race Resuts</a>
     </div>
     {% endif %}
   </div>
 
   <div class="row">
-    {% if trackname != null %}
+    {% if track != null %}
     <div class="col-md-12 well">
       <h3>
-        <a href={% url 'racer-list-by-track' trackname.id %}>
+        <a href={% url 'racer-list-by-track' track.id %}>
           <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Racer List
         </a>
       </h3>
-      <p>View {{ trackname.trackname }} racers and all the events for a specific racer.</p>
-      <a type="button" class="btn btn-info" href={% url 'racer-list-by-track' trackname.id %}>{{ trackname.trackname }} Racer List <span class="badge">{{ racer_count }}</span></a>
+      <p>View {{ track.name }} racers and all the events for a specific racer.</p>
+      <a type="button" class="btn btn-info" href={% url 'racer-list-by-track' track.id %}>{{ track.name }} Racer List <span class="badge">{{ racer_count }}</span></a>
     </div>
     {% endif %}
   </div>
@@ -126,7 +126,7 @@ RC-Stats is a racing community to track and share your RC race results.
 <script type="text/javascript" charset="utf-8">
 
 $(document).ready(function(){
-  populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+  populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' track=track.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
 });
 
 </script>

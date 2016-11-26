@@ -15,7 +15,7 @@ import core.models as models
 class CollapseClassNamesTestCases(TestCase):
 
     def test_collapse_classnames_simple(self):
-        trackname_obj = models.TrackName.objects.create(id=1, trackname="TACOMA R/C RACEWAY")
+        track_obj = models.Track.objects.create(id=1, name="TACOMA R/C RACEWAY")
 
         officialclass = models.OfficialClassNames(raceclass="Mod Buggy")
         officialclass.save()
@@ -26,10 +26,10 @@ class CollapseClassNamesTestCases(TestCase):
         classnames = [['mod buggy', None, 'Mod Buggy'],
                       ['modified buggy', None, 'Mod Buggy'],]
 
-        self._create_and_validate_classnames(trackname_obj, classnames)
+        self._create_and_validate_classnames(track_obj, classnames)
 
     def test_collapse_classnames_multipleclasses(self):
-        trackname_obj = models.TrackName.objects.create(id=1, trackname="TACOMA R/C RACEWAY")
+        track_obj = models.Track.objects.create(id=1, name="TACOMA R/C RACEWAY")
 
         officialclass = models.OfficialClassNames(raceclass="Mod Buggy")
         officialclass.save()
@@ -54,13 +54,13 @@ class CollapseClassNamesTestCases(TestCase):
                       ['4WD SHORT COURSE', None, '4wd Short Course'],
                       ['4x4 SC', None, '4wd Short Course'],]
 
-        self._create_and_validate_classnames(trackname_obj, classnames)
+        self._create_and_validate_classnames(track_obj, classnames)
 
-    def _create_and_validate_classnames(self, trackname_obj, classnames):
+    def _create_and_validate_classnames(self, track_obj, classnames):
         # Create all the required singleracedetail objects in the DB
         racenum_count = 1
         for classname in classnames:
-            classname[1] = self._create_racedetail(trackname_obj, classname[0], racenum_count)
+            classname[1] = self._create_racedetail(track_obj, classname[0], racenum_count)
             racenum_count += 1
 
         database_cleanup.collapse_alias_classnames(models.SingleRaceDetails.objects.all())
@@ -70,11 +70,11 @@ class CollapseClassNamesTestCases(TestCase):
             racedetail = models.SingleRaceDetails.objects.get(pk=classname[1])
             self.assertEqual(classname[2], racedetail.racedata)
 
-    def _create_racedetail(self, trackname_obj, classname, racenumber):
+    def _create_racedetail(self, track_obj, classname, racenumber):
         racedate = datetime.datetime(year=2011, month=5, day=14, hour=20, minute=9, second=3, tzinfo=pytz.UTC)
         uploaddate = datetime.datetime(year=2011, month=5, day=15, hour=20, minute=9, second=3, tzinfo=pytz.UTC)
 
-        singlerace = models.SingleRaceDetails(trackkey=trackname_obj,
+        singlerace = models.SingleRaceDetails(track=track_obj,
                                               racedata=classname,
                                               racedate=racedate,
                                               uploaddate=uploaddate,

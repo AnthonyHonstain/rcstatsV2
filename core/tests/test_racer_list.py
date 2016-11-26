@@ -18,7 +18,7 @@ class RacerListTests(TestCase):
     Validate the pages that list all of a tracks racers and pages that drill in on a specific racer.
     '''
     def setUp(self):
-        self.track = models.TrackName.objects.create(id=1, trackname='Test_Track_0')
+        self.track = models.Track.objects.create(id=1, name='Test_Track_0')
 
         self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         self.client.login(username='temporary', password='temporary')
@@ -37,7 +37,7 @@ class RacerListTests(TestCase):
       
         self.singlerace = models.SingleRaceDetails.objects.create(
             id=1,
-            trackkey=self.track,
+            track=self.track,
             racedata='TestClassBuggy0 A main',
             racedate=racedate,
             uploaddate=racedate,

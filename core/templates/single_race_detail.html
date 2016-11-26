@@ -12,7 +12,7 @@ Single race results for {{ singleracedetail.racedata }} {{ singleracedetail.main
 <div class="container well">
   <!-- The race results table -->
   <h3>{{ singleracedetail.racedata }} {{ singleracedetail.maineventparsed}}</h3>
-  <h4>{{ trackname.trackname }}</h4>
+  <h4>{{ track.name }}</h4>
   <div id="span-new-race-{{ singleracedetail.id }}"></div>
   <table id="table-new-race-{{ singleracedetail.id }}"></table>
 </div>
@@ -66,7 +66,7 @@ TODO - refactor this once it starts working
 <script type="text/javascript" charset="utf-8">
 
 $(document).ready(function(){
-    populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' trackname=trackname.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
+    populateSingleRaceFromRestEndpoint("{% url 'singleracedetailsbytrack-detail' track=track.id pk=singleracedetail.id  %}", {{ singleracedetail.id }});
 });
 
 // ************************************************************************
@@ -136,8 +136,8 @@ $(document).ready(function(){
     };
 
     $.ajax({
-      //'http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/865/LapTimes/',
-      url: "{% url 'laptimes-list' trackname=trackname.id singleracedetails=singleracedetail.id  %}",
+      //'http://127.0.0.1:8000/api/Track/1/SingleRaceDetails/865/LapTimes/',
+      url: "{% url 'laptimes-list' track=track.id singleracedetails=singleracedetail.id  %}",
       contentType:"application/json; charset=utf-8",
       type: "GET",
       dataType: "json",
@@ -197,8 +197,8 @@ $(document).ready(function() {
     };
 
     $.ajax({
-      //'http://127.0.0.1:8000/api/TrackName/1/SingleRaceDetails/865/LapTimes/',
-      url: "{% url 'laptimes-list' trackname=trackname.id singleracedetails=singleracedetail.id  %}",
+      //'http://127.0.0.1:8000/api/Track/1/SingleRaceDetails/865/LapTimes/',
+      url: "{% url 'laptimes-list' track=track.id singleracedetails=singleracedetail.id  %}",
       contentType:"application/json; charset=utf-8",
       type: "GET",
       dataType: "json",

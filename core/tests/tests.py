@@ -69,13 +69,13 @@ class SingleRace(TestCase):
         # Every test needs a client.
         self.client = Client()
 
-        self.track = models.TrackName.objects.create(id=1, trackname='Test_Track_0')
+        self.track = models.Track.objects.create(id=1, name='Test_Track_0')
 
         self.racer0 = models.Racer.objects.create(id=1, racerpreferredname='Racer0')
         self.racer1 = models.Racer.objects.create(id=2, racerpreferredname='Racer1')
 
         self.singlerace = models.SingleRaceDetails.objects.create(id=1,
-                                                                  trackkey=self.track,
+                                                                  track=self.track,
                                                                   racedata='TestClassBuggy0 A main',
                                                                   racedate=datetime.datetime(year=2012,
                                                                                              month=1,
@@ -179,7 +179,7 @@ class SingleRace(TestCase):
         '''
         Sanity Check - Validate the basic track information is loaded.
         '''
-        self.assertEqual(models.TrackName.objects.get(pk=1).trackname, 'Test_Track_0')
+        self.assertEqual(models.Track.objects.get(pk=1).name, 'Test_Track_0')
 
     def test_index_page(self):
         '''
@@ -190,7 +190,7 @@ class SingleRace(TestCase):
         self.assertEqual(response.status_code, 200, 'Check the root page response code')
 
         # Basic sanity check to see we get a track and a race (main event).
-        self.assertEqual(response.context['trackname'].trackname, self.track.trackname)
+        self.assertEqual(response.context['track'].name, self.track.name)
         self.assertEqual(response.context['singleracedetail'].id, self.singlerace.id)
         # Currently most of the interesting stuff uses JS and the REST endpoint
 
@@ -203,6 +203,6 @@ class SingleRace(TestCase):
         self.assertEqual(response.status_code, 200, 'Check the root page response code')
 
         # Basic sanity check to see we get a track and a race (main event).
-        self.assertEqual(response.context['trackname'].trackname, self.track.trackname)
+        self.assertEqual(response.context['track'].name, self.track.name)
         self.assertEqual(response.context['singleracedetail'].id, self.singlerace.id)
         # Currently most of the interesting stuff uses JS and the REST endpoint

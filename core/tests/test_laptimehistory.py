@@ -288,35 +288,35 @@ Echo, Jon            #1          1           35.952         35.952
         #
         # WARNING - if these fail, it likely means the upload failed.
         #
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=1,
                                                  roundnumber=1,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj2 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
                                                  roundnumber=2,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj3 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj3 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=3,
                                                  roundnumber=3,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj4 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj4 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=4,
                                                  roundnumber=4,
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        raceobj5 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj5 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=5,
                                                  roundnumber=5,
@@ -329,7 +329,7 @@ Echo, Jon            #1          1           35.952         35.952
         # The race should now be uploaded, we want to validate it is in the system.
         car1 = Racer.objects.get(racerpreferredname="Anthony Honstain")
 
-        results = _get_lap_time_history(self.trackname_obj, "MODIFIED BUGGY", 8)
+        results = _get_lap_time_history(self.track_obj, "MODIFIED BUGGY", 8)
 
         # for result in results:
         #     print('result:', result)

@@ -20,8 +20,8 @@ from core.models import (
     LapTimes,
     SingleRaceDetails,
     SingleRaceResults,
-    SupportedTrackName,
-    TrackName,
+    SupportedTrack,
+    Track,
     Racer)
 
 
@@ -174,14 +174,14 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # all_races = SingleRaceDetails.objects.all()
         # for race in all_races:
         #     print race
-#         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+#         raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
 #                                                  racedata="MODIFIED BUGGY",
 #                                                  racenumber=2,
 #                                                  roundnumber=3,
 #                                                  racelength=8,
 #                                                  winninglapcount=28,
 #                                                  mainevent=1)
-#         raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+#         raceobj2 = SingleRaceDetails.objects.get(track=self.track_obj,
 #                                                  racedata="MODIFIED BUGGY",
 #                                                  racenumber=1,
 #                                                  roundnumber=3,

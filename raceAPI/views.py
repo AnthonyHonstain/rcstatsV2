@@ -4,8 +4,8 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from core.models import TrackName, SingleRaceDetails, LapTimes, Racer
-from raceAPI.serializers import TrackNameSerializer, SingleRaceDetailsSerializer, SingleRaceDetailsSlimSerializer
+from core.models import Track, SingleRaceDetails, LapTimes, Racer
+from raceAPI.serializers import TrackSerializer, SingleRaceDetailsSerializer, SingleRaceDetailsSlimSerializer
 from raceAPI.serializers import LapTimesSerializer, RacerSerializer, SingleRaceDetailsByTrackSerializer
 
 
@@ -21,10 +21,10 @@ the relationships defined in the serializer.
 '''
 
 
-class TrackNameList(viewsets.ReadOnlyModelViewSet):
+class TrackList(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
-    queryset = TrackName.objects.all()
-    serializer_class = TrackNameSerializer
+    queryset = Track.objects.all()
+    serializer_class = TrackSerializer
 
 
 class RacerList(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -51,8 +51,8 @@ class SingleRaceDetailsByTrackList(viewsets.ReadOnlyModelViewSet):
     serializer_class = SingleRaceDetailsByTrackSerializer
 
     def get_queryset(self):
-        trackkey = self.kwargs['trackname']
-        return SingleRaceDetails.objects.filter(trackkey__exact=trackkey)
+        track = self.kwargs['track']
+        return SingleRaceDetails.objects.filter(track__exact=track)
 
 
 class SingleRaceDetailsSlimList(viewsets.ReadOnlyModelViewSet):
@@ -68,13 +68,13 @@ class SingleRaceDetailsSlimList(viewsets.ReadOnlyModelViewSet):
     serializer_class = SingleRaceDetailsSlimSerializer
 
     def get_queryset(self):
-        trackkey = self.kwargs['trackname']
+        track = self.kwargs['track']
         # Note - this doesn't have good test coverage, I just hacked it together to make TRCR in PT timezone
         # return nice results, the race computer does insane things with time so I am trying to cobble them together.
         # postgres - http://www.postgresql.org/docs/9.1/static/datatype-datetime.html#DATATYPE-TIMEZONES
         #   http://www.postgresql.org/docs/9.1/static/functions-datetime.html
         # orm - http://stackoverflow.com/questions/4236226/ordering-a-django-queryset-by-a-datetimes-month-day
-        return SingleRaceDetails.objects.filter(trackkey__exact=trackkey)\
+        return SingleRaceDetails.objects.filter(track__exact=track)\
             .extra(select={'raceday':'date_trunc(\'day\', racedate AT TIME ZONE \'america/los_angeles\')'})\
             .order_by('-raceday', '-roundnumber', '-racenumber')
 

@@ -162,7 +162,7 @@ Huddleston, Chris            #3          3           51.832         23.550
         #
         # WARNING - if this fails it means one of the uploads probably failed.
         #
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="SC Pro 4",
                                                  racenumber=7,
                                                  roundnumber=3,

@@ -15,8 +15,8 @@ King of the Hill for {{ official_class_name.raceclass }}
 <div class="container">
   <div class="row">
     <div class="col-md-12 well">
-      <a href="{% url 'koh-summary' track_id=trackname.id %}">
-        <h3>King of the Hill {{ trackname.trackname }}</h3>
+      <a href="{% url 'koh-summary' track_id=track.id %}">
+        <h3>King of the Hill {{ track.name }}</h3>
       </a>
       <p>Updated after every race!
       <br/>
@@ -64,7 +64,7 @@ King of the Hill for {{ official_class_name.raceclass }}
           <tr>
           <td>{{ forloop.counter }}</td>
           <td>
-            <a href="{% url 'single_racer' track_id=trackname.id racer_id=koh_summary.racer__id %}">
+            <a href="{% url 'single_racer' track_id=track.id racer_id=koh_summary.racer__id %}">
             {{ koh_summary.racer__racerpreferredname }}
             </a>
           </td>

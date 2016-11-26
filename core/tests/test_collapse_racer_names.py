@@ -225,7 +225,7 @@ Echo, Jon            #3          3         1:05.720         17.099
         # for race in all_races:
         #    print race
 
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj1 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
                                                  roundnumber=3,
@@ -233,7 +233,7 @@ Echo, Jon            #3          3         1:05.720         17.099
                                                  winninglapcount=28,
                                                  mainevent=1)
 
-        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj2 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=1,
                                                  roundnumber=3,
@@ -241,7 +241,7 @@ Echo, Jon            #3          3         1:05.720         17.099
                                                  winninglapcount=19,
                                                  mainevent=1)
 
-        raceobj3 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+        raceobj3 = SingleRaceDetails.objects.get(track=self.track_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
                                                  roundnumber=3,

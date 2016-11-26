@@ -10,7 +10,7 @@ from rcstatsV2.settings.settings_secret import *
 # ---------------------------------------------------------------------------
 
 # Dev environment overrides for working on the KoH features
-KING_OF_THE_HILL_DAYS = 120
+KING_OF_THE_HILL_DAYS = 180
 KING_OF_THE_HILL_CACHE_TTL = 60*2 # <sec>*<min>*<hour>
 KING_OF_THE_HILL_TASK_SCHEDULE_MINUTES = 1
 
